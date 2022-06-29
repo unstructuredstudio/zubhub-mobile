@@ -22,7 +22,7 @@ const BottomNavigator = () => {
           headerShown: false,
           tabBarLabel: 'Home',
           tabBarIcon: ({ color }) => (
-            <AntDesign name="home" size={21} color={color} />
+            <AntDesign name="home" size={22} color={color} />
           ),
         }}
       />
@@ -33,7 +33,7 @@ const BottomNavigator = () => {
           headerShown: false,
           tabBarLabel: 'Search',
           tabBarIcon: ({ color }) => (
-            <AntDesign name="search1" size={21} color={color} />
+            <AntDesign name="search1" size={22} color={color} />
           ),
         }}
       />
@@ -44,7 +44,7 @@ const BottomNavigator = () => {
           headerShown: false,
           tabBarLabel: 'Projects',
           tabBarIcon: ({ color }) => (
-            <Ionicons name="add-circle-outline" size={21} color={color} />
+            <Ionicons name="add-circle-outline" size={22} color={color} />
           ),
         }}
       />
@@ -55,7 +55,7 @@ const BottomNavigator = () => {
           headerShown: false,
           tabBarLabel: 'Profile',
           tabBarIcon: ({ color }) => (
-            <Feather name="user" size={21} color={color} />
+            <Feather name="user" size={22} color={color} />
           ),
         }}
       />
