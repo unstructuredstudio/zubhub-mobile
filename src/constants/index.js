@@ -1,5 +1,5 @@
-import DefaultStyles from './DefaultStyles.style';
 import layout from './layout';
+import DefaultStyles from './DefaultStyles.style';
 import theme from './theme';
 
-export { DefaultStyles, layout, theme };
+export { layout, DefaultStyles, theme };
