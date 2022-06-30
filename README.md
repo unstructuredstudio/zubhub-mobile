@@ -52,20 +52,6 @@ The copied URL will have the format of `https://github.com/<your github username
 
 ## Setup Frontend
 
-## SETUP ON ANDOID EMULATOR
-- Install the expo-cli on your machine with the following command (`npm install -g expo-cli`)
-- Open the terminal on the root of the cloned project and run npm install to install the dependencies
-- Run `react-native run-android` to start the mobile app on your emulator. or yarn ios(If using yarn package manager)
-
-<br/>
-<br/>
-## SETUP ON IOS SIMULATOR
-- Install the expo-cli on your machine with the following command (`npm install -g expo-cli`)
-- Open the terminal on the root of the cloned project and run npm install to install the dependencies
-- Run `react-native run-ios` to start the mobile app on your emulator. or yarn ios(If using yarn package manager)
-
-<br/>
-<br/>
 ## SETUP ON ANDROID DEVICE
 - Install the expo-cli on your machine with the following command (`npm install -g expo-cli`)
 - Open the terminal on the root of the cloned project and run npm install to install the dependencies
