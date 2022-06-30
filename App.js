@@ -1,26 +1,12 @@
+import { View, Text } from 'react-native';
 import React from 'react';
-import { View, StyleSheet, StatusBar } from 'react-native';
-import Navigation from './src/navigation/Navigation';
-import * as THEME from './src/constants/theme';
-import Constants from 'expo-constants';
-// import { StatusBar } from 'expo-status-bar';
 
 const App = () => {
   return (
-    <View style={styles.container}>
-      <StatusBar backgroundColor={THEME.COLORS.PRIMARY_RED} />
-      <Navigation />
+    <View>
+      <Text>Welcome to Zubhubs Mobile Application</Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: THEME.COLORS.PRIMARY_RED,
-    justifyContent: 'center',
-    paddingTop: Constants.statusBarHeight,
-  },
-});
 
 export default App;
