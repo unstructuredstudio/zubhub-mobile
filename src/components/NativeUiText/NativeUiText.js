@@ -6,19 +6,15 @@ const NativeUiText = ({
   textType = 'regular',
   style,
   textColor,
-  fontSize = 14,
+  fontSize,
 }) => {
-  const passedStyles = Array.isArray(style)
-    ? Object.assign({}, ...style)
-    : style;
-
   return (
     <Text
       style={[
-        passedStyles,
+        style,
         {
-          fontSize: fontSize,
-          color: textColor,
+          fontSize: fontSize && fontSize,
+          color: textColor && textColor,
           fontWeight:
             textType === 'light'
               ? '100'

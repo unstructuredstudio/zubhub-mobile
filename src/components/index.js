@@ -4,6 +4,7 @@ import NativeUiInput from './NativeUiInput/NativeUiInput';
 import NativeKeyboardAvoidingView from './NativeKeyboardAvoidingView/NativeKeyboardAvoidingView';
 import NativeUiHeader from './NativeUiHeader/NativeUiHeader';
 import Avater from './Avater/Avater';
+import ProjectCard from './ProjectCard/ProjectCard';
 
 export {
   NativeUiText,
@@ -12,4 +13,5 @@ export {
   NativeUiHeader,
   NativeUiInput,
   Avater,
+  ProjectCard,
 };

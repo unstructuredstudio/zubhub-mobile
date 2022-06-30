@@ -13,7 +13,7 @@ const COLORS = {
 const FONT_SIZE = {
   EXTRA_LARGE: 30,
   LARGE: 22,
-  MEDIUM: 16,
+  MEDIUM: 18,
   NORMAL: 14,
   SMALL: 12,
 };
