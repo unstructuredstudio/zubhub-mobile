@@ -54,6 +54,15 @@ const styles = StyleSheet.create({
     marginLeft: 7,
     marginTop: 4,
   },
+
+  bottomContainer: {
+    marginHorizontal: 15,
+    paddingBottom: 12,
+  },
+
+  wizard: {
+    marginBottom: 10,
+  },
 });
 
 export default styles;
