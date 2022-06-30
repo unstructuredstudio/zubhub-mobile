@@ -9,6 +9,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import { NativeUiText, NativeUiActionSheet, NativeUiButton } from '..';
 import { SheetManager } from 'react-native-actions-sheet';
+import { useNavigation } from '@react-navigation/native';
 
 const ProjectCard = ({
   image,
@@ -22,6 +23,8 @@ const ProjectCard = ({
   messages,
   clap,
 }) => {
+  const navigation = useNavigation();
+
   const [bookmark, setBookmark] = useState(false);
   const [clapVal, setclapVal] = useState(false);
   const [shouldUpdateVal, setShouldUpdateVal] = useState(0);
@@ -49,7 +52,14 @@ const ProjectCard = ({
         <NativeUiText style={styles.space}>
           Lets create an account for you first! so you can bookmark this project
         </NativeUiText>
-        <NativeUiButton label={'Create Account'} style={styles.space} />
+        <NativeUiButton
+          onPress={async () => {
+            navigation.navigate('Register');
+            await SheetManager.hide('authenticationSheet');
+          }}
+          label={'Create Account'}
+          style={styles.space}
+        />
       </NativeUiActionSheet>
 
       <View style={styles.imageContainer}>

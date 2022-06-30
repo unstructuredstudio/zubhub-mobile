@@ -5,21 +5,19 @@ import styles from './NativeUiInput.style';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import * as THEME from '../../constants/theme';
 
-const NativeUiInput = (props) => {
-  const {
-    label,
-    labelColor = '#ccc',
-    placeholder,
-    placeholderTextColor = '#A8A8A8',
-    onChangeText,
-    number,
-    phone,
-    email,
-    bottomText,
-    children,
-    width,
-  } = props;
-
+const NativeUiInput = ({
+  label,
+  labelColor = '#ccc',
+  placeholder,
+  placeholderTextColor = '#A8A8A8',
+  onChangeText,
+  number,
+  phone,
+  email,
+  bottomText,
+  children,
+  width,
+}) => {
   const inputType = email
     ? 'email-address'
     : number
@@ -34,7 +32,7 @@ const NativeUiInput = (props) => {
           <NativeUiText
             style={styles(labelColor).labelItem}
             textColor={THEME.PRIMARY_COLOR}
-            textType="bold"
+            textType="medium"
           >
             {label}
           </NativeUiText>

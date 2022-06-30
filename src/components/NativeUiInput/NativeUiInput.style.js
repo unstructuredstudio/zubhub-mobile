@@ -24,7 +24,7 @@ const styles = (textColor) =>
       paddingHorizontal: 15,
       borderRadius: 10,
       height: 55,
-      backgroundColor: THEME.WHITE,
+      backgroundColor: THEME.COLORS.WHITE,
       shadowColor: '#ccc',
       shadowOffset: {
         width: 0,
