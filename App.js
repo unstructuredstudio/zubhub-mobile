@@ -3,7 +3,6 @@ import { View, StyleSheet, StatusBar } from 'react-native';
 import Navigation from './src/navigation/Navigation';
 import * as THEME from './src/constants/theme';
 import Constants from 'expo-constants';
-// import { StatusBar } from 'expo-status-bar';
 
 const App = () => {
   return (
