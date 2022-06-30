@@ -1,4 +1,4 @@
-import { View, ScrollView, FlatList } from 'react-native';
+import { View, ScrollView, FlatList, Pressable } from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
 import {
   NativeUiHeader,
@@ -12,8 +12,11 @@ import DefaultStyles from '../../constants/DefaultStyles.style';
 import layout from '../../constants/layout';
 import Entypo from 'react-native-vector-icons/Entypo';
 import RNBounceable from '@freakycoder/react-native-bounceable';
+import { useNavigation } from '@react-navigation/native';
 
 const Register = () => {
+  const navigation = useNavigation();
+
   const ref = useRef(null);
   const [currentElemIndex, setCurrentElemIndex] = useState(0);
   const [componentsArray, setComponentsArray] = useState([]);
@@ -188,15 +191,18 @@ const Register = () => {
           }
           onPress={() => goToNextSlide()}
         />
-        <NativeUiText textType="medium" style={styles.member}>
-          Already a member ?{'  '}
-          <NativeUiText
-            textColor={THEME.COLORS.PRIMARY_TEAL}
-            textType={'medium'}
-          >
-            Login
+        <Pressable onPress={() => navigation.navigate('Login')}>
+          <NativeUiText textType="medium" style={styles.member}>
+            Already a member ?
+            <NativeUiText
+              textColor={THEME.COLORS.PRIMARY_TEAL}
+              textType={'medium'}
+            >
+              {' '}
+              Login
+            </NativeUiText>
           </NativeUiText>
-        </NativeUiText>
+        </Pressable>
       </View>
     </View>
   );
