@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "*": ["./src/*"],
+      "@screens/*": ["./src/screens"],
+      "@components/*": ["./src/components/"],
+      "@constants/*": ["./src/constants"]
+    }
+  }
+}

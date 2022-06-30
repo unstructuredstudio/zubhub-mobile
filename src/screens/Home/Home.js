@@ -1,6 +1,6 @@
 import { View, Text, SafeAreaView } from 'react-native';
+import { NativeUiText } from '@components';
 import React from 'react';
-import { NativeUiText } from '../../components';
 
 const Home = () => {
   return (
