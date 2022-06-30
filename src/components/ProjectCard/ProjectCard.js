@@ -7,7 +7,8 @@ import RNBounceable from '@freakycoder/react-native-bounceable';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DefaultStyles from '../../constants/DefaultStyles.style';
-import { NativeUiText } from '..';
+import { NativeUiText, NativeUiActionSheet, NativeUiButton } from '..';
+import { SheetManager } from 'react-native-actions-sheet';
 
 const ProjectCard = ({
   image,
@@ -26,11 +27,13 @@ const ProjectCard = ({
   const [shouldUpdateVal, setShouldUpdateVal] = useState(0);
 
   const toggleBookmark = () => {
-    setBookmark(!bookmark);
+    // setBookmark(!bookmark);
+    SheetManager.show('authenticationSheet');
   };
 
   const toggleClap = (val) => {
-    setclapVal(!clapVal);
+    // setclapVal(!clapVal);
+    SheetManager.show('authenticationSheet');
   };
   useEffect(() => {
     if (clapVal === true) {
@@ -42,9 +45,17 @@ const ProjectCard = ({
 
   return (
     <RNBounceable bounceEffect={0.95} style={styles.mainCard}>
+      <NativeUiActionSheet id="authenticationSheet" sheetTitle="Create Account">
+        <NativeUiText style={styles.space}>
+          Lets create an account for you first! so you can bookmark this project
+        </NativeUiText>
+        <NativeUiButton label={'Create Account'} style={styles.space} />
+      </NativeUiActionSheet>
+
       <View style={styles.imageContainer}>
         <Image source={image} style={styles.image} />
       </View>
+
       <View style={styles.cardCOntainer}>
         <View style={styles.iconContainer}>
           <TouchableOpacity
@@ -82,9 +93,11 @@ const ProjectCard = ({
             )}
           </TouchableOpacity>
         </View>
+
         <NativeUiText fontSize={THEME.FONT_SIZE.MEDIUM} textType={'bold'}>
           {title}
         </NativeUiText>
+
         <NativeUiText
           textColor={THEME.COLORS.SECONDARY_TEXT}
           numberOfLines={1}
@@ -92,7 +105,8 @@ const ProjectCard = ({
         >
           {desc}
         </NativeUiText>
-        <View style={DefaultStyles.conainerRow}>
+
+        <View style={DefaultStyles.containerRow}>
           <View style={styles.avaterContainer}>
             <Image source={avater} style={styles.avater} />
           </View>
@@ -110,11 +124,12 @@ const ProjectCard = ({
           </View>
         </View>
 
-        <View style={DefaultStyles.conainerRow}>
+        <View style={DefaultStyles.containerRow}>
           <View style={styles.avaterContainer}></View>
+
           <View style={styles.lastItems}>
-            <View style={DefaultStyles.conainerRow}>
-              <View style={DefaultStyles.conainerRow}>
+            <View style={DefaultStyles.containerRow}>
+              <View style={DefaultStyles.containerRow}>
                 <Feather
                   name="eye"
                   size={15}
@@ -127,7 +142,7 @@ const ProjectCard = ({
                   {NOV}{' '}
                 </NativeUiText>
               </View>
-              <View style={[DefaultStyles.conainerRow, styles.secondIconViea]}>
+              <View style={[DefaultStyles.containerRow, styles.secondIconViea]}>
                 <Feather
                   name="message-square"
                   size={15}

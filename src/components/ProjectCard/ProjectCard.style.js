@@ -107,6 +107,10 @@ const style = StyleSheet.create({
   NativeUiTextContainer: {
     marginLeft: 7,
   },
+
+  space: {
+    marginTop: 22,
+  },
 });
 
 export default style;

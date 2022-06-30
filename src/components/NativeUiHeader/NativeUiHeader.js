@@ -8,7 +8,7 @@ import DefaultStyles from '../../constants/DefaultStyles.style';
 
 const NativeUiHeader = () => {
   return (
-    <View style={[styles.headerContainer, DefaultStyles.conainerSpaced]}>
+    <View style={[styles.headerContainer, DefaultStyles.containerSpaced]}>
       <View style={styles.imgConainer}>
         <Image style={styles.img} source={require('@asset/logo.png')} />
       </View>

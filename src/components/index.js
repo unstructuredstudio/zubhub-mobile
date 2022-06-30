@@ -5,6 +5,7 @@ import NativeKeyboardAvoidingView from './NativeKeyboardAvoidingView/NativeKeybo
 import NativeUiHeader from './NativeUiHeader/NativeUiHeader';
 import Avater from './Avater/Avater';
 import ProjectCard from './ProjectCard/ProjectCard';
+import NativeUiActionSheet from './NativeUiActionSheet/NativeUiActionSheet';
 
 export {
   NativeUiText,
@@ -14,4 +15,5 @@ export {
   NativeUiInput,
   Avater,
   ProjectCard,
+  NativeUiActionSheet,
 };

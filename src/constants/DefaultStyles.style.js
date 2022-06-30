@@ -4,19 +4,18 @@ const DefaultStyles = StyleSheet.create({
   container: {
     flex: 1,
   },
+
   containerCenter: {
     justifyContent: 'center',
     alignItems: 'center',
   },
-  logoContainer: {
-    marginTop: 41,
-  },
 
-  conainerRow: {
+  containerRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  conainerSpaced: {
+
+  containerSpaced: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
