@@ -1,9 +1,9 @@
 import { StyleSheet, Dimensions } from 'react-native';
-// import Layout from '../../constants/layout';
+import Layout from '../../constants/layout';
 
 const styles = StyleSheet.create({
   container: {
-    // width: Layout.window.width,
+    width: Layout.window.width,
     flex: 1,
   },
 });
