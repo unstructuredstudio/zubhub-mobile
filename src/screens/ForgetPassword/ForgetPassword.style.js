@@ -32,16 +32,11 @@ const styles = StyleSheet.create({
 
   bottomContainer: {
     marginHorizontal: 15,
-    marginBottom: 12,
+    paddingBottom: 24,
   },
 
   wizard: {
     marginBottom: 10,
-  },
-
-  forgetPwd: {
-    alignItems: 'flex-end',
-    marginRight: 21,
   },
 });
 

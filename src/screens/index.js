@@ -4,5 +4,6 @@ import Login from './Login/Login';
 import Search from './Search/Search';
 import Projects from './Projects/Projects';
 import Profile from './Profile/Profile';
+import ForgetPassword from './ForgetPassword/ForgetPassword';
 
-export { Home, Register, Login, Search, Projects, Profile };
+export { Home, Register, Login, Search, Projects, Profile, ForgetPassword };

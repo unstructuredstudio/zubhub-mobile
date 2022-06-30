@@ -7,14 +7,14 @@ import {
   NativeUiButton,
 } from '@components/';
 import * as THEME from '../../constants/theme';
-import styles from './Login.style';
+import styles from './ForgetPassword.style';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import layout from '../../constants/layout';
 import Entypo from 'react-native-vector-icons/Entypo';
 import RNBounceable from '@freakycoder/react-native-bounceable';
 import { useNavigation } from '@react-navigation/native';
 
-const Login = () => {
+const ForgetPassword = () => {
   const navigation = useNavigation();
 
   const ref = useRef(null);
@@ -23,19 +23,19 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
-      <NativeUiHeader subScreen={true} sectionTitle={'Login'} />
+      <NativeUiHeader subScreen={true} sectionTitle={'Forget Password'} />
 
       <View style={styles.topContainer}>
         <View style={[styles.introContainer]}>
           <NativeUiText fontSize={THEME.FONT_SIZE.LARGE} textType={'medium'}>
-            Lets get started
+            Password Reset
           </NativeUiText>
           <NativeUiText
             style={styles.createAccount}
             textColor={THEME.COLORS.SECONDARY_TEXT}
             textType={'medium'}
           >
-            Lets create an account first!!
+            Enter your email so we can send you a pass word reset link
           </NativeUiText>
         </View>
       </View>
@@ -43,45 +43,16 @@ const Login = () => {
       <View style={styles.container}>
         <View style={[styles.introContainer, styles.topContainer]}>
           <View style={styles.input}>
-            <NativeUiInput
-              label={'Enter your email or phone number'}
-              placeholder={'Email or phone number'}
-            />
-          </View>
-          <View style={styles.input}>
-            <NativeUiInput
-              label={'Enter your password'}
-              placeholder={'Password'}
-            />
+            <NativeUiInput label={'Enter your email'} placeholder={' Email'} />
           </View>
         </View>
-        <Pressable
-          onPress={() => navigation.navigate('ForgetPassword')}
-          style={styles.forgetPwd}
-        >
-          <NativeUiText textType="medium" textColor={THEME.COLORS.PRIMARY_TEAL}>
-            Forget Password?
-          </NativeUiText>
-        </Pressable>
       </View>
 
       <View style={styles.bottomContainer}>
-        <NativeUiButton label={'Login'} />
-        <Pressable onPress={() => navigation.navigate('Register')}>
-          <NativeUiText textType="medium" style={styles.member}>
-            Don’t have an account yet?
-            <NativeUiText
-              textColor={THEME.COLORS.PRIMARY_TEAL}
-              textType={'medium'}
-            >
-              {' '}
-              Register
-            </NativeUiText>
-          </NativeUiText>
-        </Pressable>
+        <NativeUiButton label={'Send reset link'} />
       </View>
     </View>
   );
 };
 
-export default Login;
+export default ForgetPassword;
