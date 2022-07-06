@@ -48,3 +48,22 @@ export const CARD_DATA_SET = [
     messages: 42,
   },
 ];
+
+export const USER_DETAILS = [
+  {
+    value: 7,
+    title: 'Projects',
+  },
+  {
+    value: 2,
+    title: 'Bookamrks',
+  },
+  {
+    value: 24,
+    title: 'Followers',
+  },
+  {
+    value: 12,
+    title: 'Following',
+  },
+];

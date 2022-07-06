@@ -9,7 +9,6 @@ import {
 import * as THEME from '../../constants/theme';
 import styles from './Login.style';
 import DefaultStyles from '../../constants/DefaultStyles.style';
-import layout from '../../constants/layout';
 import Entypo from 'react-native-vector-icons/Entypo';
 import RNBounceable from '@freakycoder/react-native-bounceable';
 import { useNavigation } from '@react-navigation/native';
@@ -66,7 +65,10 @@ const Login = () => {
       </View>
 
       <View style={styles.bottomContainer}>
-        <NativeUiButton label={'Login'} />
+        <NativeUiButton
+          label={'Login'}
+          onPress={() => navigation.navigate('BottomNavigator')}
+        />
         <Pressable onPress={() => navigation.navigate('Register')}>
           <NativeUiText textType="medium" style={styles.member}>
             Don’t have an account yet?
