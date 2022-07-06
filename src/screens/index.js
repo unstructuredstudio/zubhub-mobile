@@ -7,6 +7,7 @@ import Profile from './Profile/Profile';
 import ForgetPassword from './ForgetPassword/ForgetPassword';
 import About from './About/About';
 import Comments from './Comments/Comments';
+import Setting from './Setting/Setting';
 
 export {
   Home,
@@ -18,4 +19,5 @@ export {
   ForgetPassword,
   About,
   Comments,
+  Setting,
 };

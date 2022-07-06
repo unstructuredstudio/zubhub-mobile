@@ -67,3 +67,21 @@ export const USER_DETAILS = [
     title: 'Following',
   },
 ];
+
+export const SETTINGS_DATA = [
+  {
+    iconName: '',
+    title: 'Change Language',
+    subTitle: 'English',
+  },
+  {
+    iconName: '',
+    title: 'Toggle Theme',
+    subTitle: 'Light',
+  },
+  {
+    iconName: '',
+    title: 'Logout',
+    subTitle: 'Sign out from your account',
+  },
+];
