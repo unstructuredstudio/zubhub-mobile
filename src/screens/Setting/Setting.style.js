@@ -19,6 +19,30 @@ const styles = StyleSheet.create({
   card: {
     marginTop: 27,
   },
+
+  circle: {
+    width: 15,
+    height: 15,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: THEME.COLORS.PRIMARY_TEXT,
+  },
+
+  itemElement: {
+    marginTop: 12,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: THEME.COLORS.SECONDARY_GREY,
+    paddingVertical: 12,
+  },
+
+  itemElement1: {
+    // marginTop: 12,
+    borderBottomWidth: 1,
+    borderColor: THEME.COLORS.SECONDARY_GREY,
+    marginBottom: 21,
+    paddingVertical: 12,
+  },
 });
 
 export default styles;
