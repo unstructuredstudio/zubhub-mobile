@@ -70,17 +70,17 @@ export const USER_DETAILS = [
 
 export const SETTINGS_DATA = [
   {
-    iconName: '',
+    iconName: 'language',
     title: 'Change Language',
     subTitle: 'English',
   },
   {
-    iconName: '',
+    iconName: 'lightbulb-o',
     title: 'Toggle Theme',
     subTitle: 'Light',
   },
   {
-    iconName: '',
+    iconName: 'logout',
     title: 'Logout',
     subTitle: 'Sign out from your account',
   },

@@ -59,7 +59,6 @@ const About = () => {
           About Me
         </NativeUiText>
         <NativeUiText
-          fontSize={THEME.FONT_SIZE.SMALL}
           style={styles.aboutText}
           textColor={THEME.COLORS.SECONDARY_TEXT}
         >

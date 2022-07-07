@@ -11,6 +11,8 @@ import DefaultStyles from '../../constants/DefaultStyles.style';
 import * as THEME from '../../constants/theme';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { SheetManager } from 'react-native-actions-sheet';
+import { FontAwesome } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const Setting = () => {
   return (
@@ -55,7 +57,19 @@ const Setting = () => {
         >
           <View style={DefaultStyles.containerRow}>
             <View style={[styles.iconContainer, DefaultStyles.containerCenter]}>
-              <NativeUiText>{item.iconName} </NativeUiText>
+              {item.iconName === 'logout' ? (
+                <MaterialCommunityIcons
+                  name="logout"
+                  size={24}
+                  color={THEME.COLORS.PRIMARY_TEAL}
+                />
+              ) : (
+                <FontAwesome
+                  name={item.iconName}
+                  size={24}
+                  color={THEME.COLORS.PRIMARY_TEAL}
+                />
+              )}
             </View>
             <View style={styles.info}>
               <NativeUiText

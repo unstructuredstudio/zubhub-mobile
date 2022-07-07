@@ -1,5 +1,14 @@
 import React from 'react';
 import { Text } from 'react-native';
+import {
+  useFonts,
+  Raleway_300Light,
+  Raleway_400Regular,
+  Raleway_500Medium,
+  Raleway_600SemiBold,
+  Raleway_700Bold,
+} from '@expo-google-fonts/raleway';
+import AppLoading from 'expo-app-loading';
 
 const NativeUiText = ({
   children,
@@ -8,6 +17,17 @@ const NativeUiText = ({
   textColor,
   fontSize,
 }) => {
+  let [fontsLoaded] = useFonts({
+    Raleway_300Light,
+    Raleway_400Regular,
+    Raleway_500Medium,
+    Raleway_600SemiBold,
+    Raleway_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
   return (
     <Text
       style={[
@@ -15,16 +35,16 @@ const NativeUiText = ({
         {
           fontSize: fontSize && fontSize,
           color: textColor && textColor,
-          fontWeight:
+          fontFamily:
             textType === 'light'
-              ? '100'
+              ? 'Raleway_300Light'
               : textType === 'regular'
-              ? 'normal'
+              ? 'Raleway_400Regular'
               : textType === 'medium'
-              ? '500'
+              ? 'Raleway_500Medium'
               : textType === 'semiBold'
-              ? '700'
-              : textType === 'bold' && 'bold',
+              ? 'Raleway_600SemiBold'
+              : textType === 'bold' && 'Raleway_700Bold',
         },
       ]}
     >
