@@ -312,7 +312,7 @@ const LayoutTwo = () => {
               <View>
                 <View style={[DefaultStyles.containerRow, styles.addMore]}>
                   <Entypo
-                    name="folder-images"
+                    name="plus"
                     size={24}
                     color={THEME.COLORS.PRIMARY_TEAL}
                   />
