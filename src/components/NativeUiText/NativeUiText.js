@@ -6,7 +6,7 @@ const NativeUiText = ({
   textType = 'regular',
   style,
   textColor,
-  fontSize,
+  fontSize = 14,
 }) => {
   return (
     <Text
