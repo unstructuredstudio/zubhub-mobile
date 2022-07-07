@@ -5,6 +5,7 @@ import {
   NativeUiText,
   NativeUiInput,
   NativeUiButton,
+  NativeUiSelect,
 } from '@components/';
 import * as THEME from '../../constants/theme';
 import styles from './Projects.style';
@@ -55,19 +56,19 @@ const Projects = () => {
 
   return (
     <View style={styles.container}>
-      <NativeUiHeader subScreen={true} sectionTitle={'Register'} />
+      <NativeUiHeader subScreen={true} sectionTitle={'Create Project'} />
 
       <View style={styles.topContainer}>
         <View style={[styles.introContainer]}>
           <NativeUiText fontSize={THEME.FONT_SIZE.LARGE} textType={'medium'}>
-            Lets get started
+            Create project
           </NativeUiText>
           <NativeUiText
             style={styles.createAccount}
             textColor={THEME.COLORS.SECONDARY_TEXT}
             textType={'medium'}
           >
-            Lets create an account first!!
+            Tell us about your project!
           </NativeUiText>
         </View>
 
@@ -341,6 +342,12 @@ const LayoutThree = () => {
             <NativeUiInput
               label={'What tag best describe your project'}
               placeholder={'Add a tag...'}
+            />
+          </View>
+          <View style={styles.input}>
+            <NativeUiInput
+              label={'What publish option do you want to set for this project'}
+              placeholder={'Public'}
             />
           </View>
         </View>
