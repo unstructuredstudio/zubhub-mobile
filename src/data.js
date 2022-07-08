@@ -85,3 +85,15 @@ export const SETTINGS_DATA = [
     subTitle: 'Sign out from your account',
   },
 ];
+
+export const TAB_DATA_SET = [
+  {
+    title: 'About',
+  },
+  {
+    title: 'Comments',
+  },
+  {
+    title: 'Settings',
+  },
+];

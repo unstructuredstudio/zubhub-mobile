@@ -12,6 +12,19 @@ const styles = StyleSheet.create({
     paddingTop: 17,
     flex: 1,
   },
+
+  card: {
+    backgroundColor: THEME.COLORS.BLACK,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 34,
+    borderRadius: 41,
+    paddingHorizontal: 20,
+  },
+
+  cardContainer: {
+    marginBottom: 22,
+  },
 });
 
 export default styles;

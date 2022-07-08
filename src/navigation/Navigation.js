@@ -11,7 +11,7 @@ import * as THEME from '../constants/theme';
 const Stack = createStackNavigator();
 
 export default function Navigation() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   return (
     <View style={styles.container}>
