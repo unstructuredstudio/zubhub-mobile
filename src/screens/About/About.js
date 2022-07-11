@@ -6,7 +6,17 @@ import { USER_DETAILS } from '../../data';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import * as THEME from '../../constants/theme';
 
-const About = () => {
+const About = ({ aboutData }) => {
+  const {
+    authorsName,
+    authorsEmail,
+    authorsNumber,
+    authorsTag,
+    NoP,
+    NoF,
+    following,
+    bio,
+  } = aboutData;
   return (
     <ScrollView style={styles.container}>
       <View style={DefaultStyles.containerRow}>
@@ -18,21 +28,21 @@ const About = () => {
         />
         <View style={styles.userDetails}>
           <NativeUiText fontSize={THEME.FONT_SIZE.SMALL} textType={'medium'}>
-            Alice Ndeh
+            {authorsName}
           </NativeUiText>
           <NativeUiText
             style={styles.txt}
             fontSize={12}
             textColor={THEME.COLORS.SECONDARY_TEXT}
           >
-            alicendeh16@gmail.com
+            {authorsEmail}
           </NativeUiText>
           <NativeUiText
             style={styles.txt}
             fontSize={12}
             textColor={THEME.COLORS.SECONDARY_TEXT}
           >
-            +233675979594
+            {authorsNumber}
           </NativeUiText>
           <NativeUiText
             style={styles.txt}
@@ -40,14 +50,17 @@ const About = () => {
             textColor={THEME.COLORS.PRIMARY_TEAL}
             textType={'medium'}
           >
-            CREATOR
+            {authorsTag}
           </NativeUiText>
         </View>
       </View>
 
       <View style={styles.cardContainer}>
-        {USER_DETAILS.map((item) => (
-          <View style={[styles.card, DefaultStyles.containerCenter]}>
+        {USER_DETAILS.map((item, index) => (
+          <View
+            key={index}
+            style={[styles.card, DefaultStyles.containerCenter]}
+          >
             <NativeUiText textType="medium">{item.value} </NativeUiText>
             <NativeUiText textType="bold">{item.title} </NativeUiText>
           </View>
@@ -62,9 +75,7 @@ const About = () => {
           style={styles.aboutText}
           textColor={THEME.COLORS.SECONDARY_TEXT}
         >
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-          semper nisl sed rhoncus rutrum. In vulputate sem at elit cursus
-          venenatis. Vestibulum eget molestie massa. Nunc
+          {bio}
         </NativeUiText>
       </View>
     </ScrollView>

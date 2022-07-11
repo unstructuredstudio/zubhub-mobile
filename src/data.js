@@ -56,7 +56,7 @@ export const USER_DETAILS = [
   },
   {
     value: 2,
-    title: 'Bookamrks',
+    title: 'Bookamarks',
   },
   {
     value: 24,
@@ -74,11 +74,7 @@ export const SETTINGS_DATA = [
     title: 'Change Language',
     subTitle: 'English',
   },
-  {
-    iconName: 'lightbulb-o',
-    title: 'Toggle Theme',
-    subTitle: 'Light',
-  },
+
   {
     iconName: 'logout',
     title: 'Logout',

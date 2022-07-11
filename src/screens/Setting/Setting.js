@@ -38,17 +38,15 @@ const Setting = () => {
           </TouchableOpacity>
         </View>
         <NativeUiButton
-          onPress={async () => {
-            // navigation.navigate('Register');
-            // await SheetManager.hide('authenticationSheet');
-          }}
+          onPress={async () => {}}
           label={'Toggle'}
           style={styles.space}
         />
       </NativeUiActionSheet>
 
-      {SETTINGS_DATA.map((item) => (
+      {SETTINGS_DATA.map((item, index) => (
         <TouchableOpacity
+          key={index}
           onPress={() =>
             item.title == 'Change Language' &&
             SheetManager.show('languageSheet')

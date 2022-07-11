@@ -6,26 +6,26 @@ import * as THEME from '../../constants/theme';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import styles from './CommentCard.style';
 
-const CommentCard = () => {
+const CommentCard = ({ authorName, commentTime, commentBody }) => {
   return (
     <View style={styles.container}>
       <View style={DefaultStyles.containerRow}>
         <Avater width={40} height={40} uri={require('@asset/avater.jpg')} />
         <View style={styles.authorsDretails}>
-          <NativeUiText textType="medium">Alice Ndeh</NativeUiText>
+          <NativeUiText textType="medium"> {authorName} </NativeUiText>
           <NativeUiText
             style={styles.txt}
             textColor={THEME.COLORS.SECONDARY_TEXT}
             fontSize={THEME.FONT_SIZE.SMALL}
           >
-            13 minutes ago
+            {commentTime}
           </NativeUiText>
         </View>
       </View>
 
       <View>
         <NativeUiText style={styles.txt} fontSize={13}>
-          Lorem ipsum dolor sit amet,conse Lorem ipsum dolor sit amet,conse
+          {commentBody}
         </NativeUiText>
       </View>
 

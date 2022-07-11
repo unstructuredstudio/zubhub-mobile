@@ -28,13 +28,31 @@ const Comments = () => {
         </View>
       </View>
       <View style={styles.commentCard}>
-        <CommentCard />
+        <CommentCard
+          authorName={'Alice Ndeh'}
+          commentTime={'13 minutes ago'}
+          commentBody={
+            ' Lorem ipsum dolor sit amet,conse Lorem ipsum dolor sit amet,conse'
+          }
+        />
       </View>
       <View style={styles.commentCard}>
-        <CommentCard />
+        <CommentCard
+          authorName={'Alice Ndeh'}
+          commentTime={'13 minutes ago'}
+          commentBody={
+            ' Lorem ipsum dolor sit amet,conse Lorem ipsum dolor sit amet,conse'
+          }
+        />
       </View>
       <View style={styles.commentCard}>
-        <CommentCard />
+        <CommentCard
+          authorName={'Alice Ndeh'}
+          commentTime={'13 minutes ago'}
+          commentBody={
+            ' Lorem ipsum dolor sit amet,conse Lorem ipsum dolor sit amet,conse'
+          }
+        />
       </View>
     </ScrollView>
   );

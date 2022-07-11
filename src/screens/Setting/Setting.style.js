@@ -37,7 +37,6 @@ const styles = StyleSheet.create({
   },
 
   itemElement1: {
-    // marginTop: 12,
     borderBottomWidth: 1,
     borderColor: THEME.COLORS.SECONDARY_GREY,
     marginBottom: 21,
