@@ -51,7 +51,6 @@ const NativeUiInput = ({
           }}
         >
           <TextInput
-            // {...props}
             keyboardType={inputType}
             onChangeText={onChangeText}
             autoCapitalize={'none'}

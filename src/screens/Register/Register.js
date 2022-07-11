@@ -45,7 +45,6 @@ const Register = () => {
   };
 
   const goToPrevSlide = (index) => {
-    // const prevSlideIndex = currentElemIndex - 1;
     if (index != componentsArray.length) {
       const offset = index * layout.window.width;
       ref?.current?.scrollToOffset({ offset });

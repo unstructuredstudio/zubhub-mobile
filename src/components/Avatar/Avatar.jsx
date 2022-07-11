@@ -1,7 +1,7 @@
 import { View, Text, Image } from 'react-native';
 import React from 'react';
 
-const Avater = ({ uri, width, height, radius }) => {
+const Avatar = ({ uri, width, height, radius }) => {
   return (
     <View
       style={{
@@ -21,4 +21,4 @@ const Avater = ({ uri, width, height, radius }) => {
   );
 };
 
-export default Avater;
+export default Avatar;

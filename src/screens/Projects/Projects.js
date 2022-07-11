@@ -46,7 +46,6 @@ const Projects = () => {
   };
 
   const goToPrevSlide = (index) => {
-    // const prevSlideIndex = currentElemIndex - 1;
     if (index != componentsArray.length) {
       const offset = index * layout.window.width;
       ref?.current?.scrollToOffset({ offset });
@@ -271,7 +270,7 @@ const LayoutTwo = () => {
                   textColor={THEME.COLORS.SECONDARY_TEXT}
                   style={styles.details}
                 >
-                  Its ok if you dont have a videa, you can add images
+                  Its ok if you dont have a video, you can add images
                 </NativeUiText>
 
                 <View

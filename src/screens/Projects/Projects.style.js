@@ -4,7 +4,6 @@ import * as THEME from '../../constants/theme';
 
 const styles = StyleSheet.create({
   container: {
-    // paddingEnd: 15,
     flex: 1,
     backgroundColor: THEME.COLORS.WHITE,
   },
@@ -69,7 +68,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingVertical: 8,
     borderRadius: 10,
-    borderColor: '#BEBEBE',
+    borderColor: THEME.COLORS.PRIMARY_GREY,
     marginTop: 8,
   },
 
@@ -82,7 +81,6 @@ const styles = StyleSheet.create({
   },
   materialsText: {
     marginBottom: 7,
-    // backgroundColor: 'red',
   },
 
   materialInput: {

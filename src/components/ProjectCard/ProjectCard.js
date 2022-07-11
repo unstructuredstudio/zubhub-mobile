@@ -30,12 +30,10 @@ const ProjectCard = ({
   const [shouldUpdateVal, setShouldUpdateVal] = useState(0);
 
   const toggleBookmark = () => {
-    // setBookmark(!bookmark);
     SheetManager.show('authenticationSheet');
   };
 
   const toggleClap = (val) => {
-    // setclapVal(!clapVal);
     SheetManager.show('authenticationSheet');
   };
   useEffect(() => {
