@@ -5,5 +5,15 @@ import Search from './Search/Search';
 import Projects from './Projects/Projects';
 import Profile from './Profile/Profile';
 import ForgetPassword from './ForgetPassword/ForgetPassword';
+import ProjectDetail from './ProjectDetail/ProjectDetail';
 
-export { Home, Register, Login, Search, Projects, Profile, ForgetPassword };
+export {
+  Home,
+  Register,
+  Login,
+  Search,
+  Projects,
+  Profile,
+  ForgetPassword,
+  ProjectDetail,
+};

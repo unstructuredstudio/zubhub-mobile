@@ -1,32 +1,34 @@
 import { FlatList, SafeAreaView } from 'react-native';
 import { NativeUiHeader, ProjectCard } from '@components/';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Home.style';
 import { CARD_DATA_SET } from '../../data';
 import DefaultStyles from '../../constants/DefaultStyles.style';
+import { getAllProjects } from '../../redux/actions/projectsAction';
+import { useSelector, useDispatch } from 'react-redux';
 
 const Home = () => {
+  const dispatch = useDispatch();
+
+  const projects = useSelector((state) => state.projects);
+  useEffect(() => {
+    fetchAllProjects();
+  }, []);
+
+  console.log(projects, 'porodl;');
+
+  const fetchAllProjects = () => {
+    dispatch(getAllProjects());
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <NativeUiHeader />
       <FlatList
         contentContainerStyle={[styles.list, DefaultStyles.containerCenter]}
-        data={CARD_DATA_SET}
+        data={projects?.allProjects}
         keyExtractor={(_, index) => index}
-        renderItem={({ item }) => (
-          <ProjectCard
-            image={item.image}
-            title={item.title}
-            desc={item.desc}
-            AuthorName={item.AuthorName}
-            role={item.role}
-            avater={item.avater}
-            timeline={item.timeline}
-            NOV={item.NOV}
-            clap={item.clap}
-            messages={item.messages}
-          />
-        )}
+        renderItem={({ item }) => <ProjectCard item={item} />}
       />
     </SafeAreaView>
   );

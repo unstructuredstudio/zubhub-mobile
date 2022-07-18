@@ -1,4 +1,9 @@
-import { View, Image, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Image,
+  TouchableOpacity,
+  useWindowDimensions,
+} from 'react-native';
 import React, { useState, useEffect } from 'react';
 import styles from './ProjectCard.style';
 import { Feather } from '@expo/vector-icons';
@@ -10,20 +15,24 @@ import DefaultStyles from '../../constants/DefaultStyles.style';
 import { NativeUiText, NativeUiActionSheet, NativeUiButton } from '..';
 import { SheetManager } from 'react-native-actions-sheet';
 import { useNavigation } from '@react-navigation/native';
+import { dFormatter, buildVideoThumbnailURL } from '../../utils/script';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import RenderHtml from 'react-native-render-html';
 
-const ProjectCard = ({
-  image,
-  title,
-  desc,
-  AuthorName,
-  role,
-  avater,
-  timeline,
-  NOV,
-  messages,
-  clap,
-}) => {
+const ProjectCard = ({ item }) => {
   const navigation = useNavigation();
+
+  const {
+    description,
+    images,
+    title,
+    creator,
+    created_on,
+    views_count,
+    clap,
+    comments_count,
+    video,
+  } = item;
 
   const [bookmark, setBookmark] = useState(false);
   const [clapVal, setclapVal] = useState(false);
@@ -44,8 +53,14 @@ const ProjectCard = ({
     }
   }, [clapVal]);
 
+  const { width } = useWindowDimensions();
+
   return (
-    <RNBounceable bounceEffect={0.95} style={styles.mainCard}>
+    <RNBounceable
+      bounceEffect={0.95}
+      style={styles.mainCard}
+      onPress={() => navigation.navigate('ProjectDetail', { item })}
+    >
       <NativeUiActionSheet id="authenticationSheet" sheetTitle="Create Account">
         <NativeUiText style={styles.space}>
           Lets create an account for you first! so you can bookmark this project
@@ -61,7 +76,30 @@ const ProjectCard = ({
       </NativeUiActionSheet>
 
       <View style={styles.imageContainer}>
-        <Image source={image} style={styles.image} />
+        {images.length > 0 ? (
+          <Image
+            source={{
+              uri: images[0].image_url,
+            }}
+            style={styles.image}
+          />
+        ) : (
+          <>
+            <Image
+              source={{
+                uri: buildVideoThumbnailURL(video),
+              }}
+              style={styles.image}
+            />
+            <View style={[styles.videoIcon, DefaultStyles.containerCenter]}>
+              <AntDesign
+                name="youtube"
+                size={102}
+                color={THEME.COLORS.PRIMARY_TEAL}
+              />
+            </View>
+          </>
+        )}
       </View>
 
       <View style={styles.cardCOntainer}>
@@ -111,23 +149,24 @@ const ProjectCard = ({
           numberOfLines={1}
           style={styles.desc}
         >
-          {desc}
+          {description}
         </NativeUiText>
 
         <View style={DefaultStyles.containerRow}>
           <View style={styles.avaterContainer}>
-            <Image source={avater} style={styles.avater} />
+            <Image source={{ uri: creator.avatar }} style={styles.avater} />
           </View>
           <View style={styles.NativeUiTextContainer}>
             <NativeUiText style={styles.creatorsName}>
-              {AuthorName}
+              {creator.username}
             </NativeUiText>
             <NativeUiText
               textColor={THEME.COLORS.PRIMARY_TEAL}
               textType={'medium'}
               fontSize={THEME.FONT_SIZE.SMALL}
+              style={styles.role}
             >
-              {role}
+              {creator.tags[0]}
             </NativeUiText>
           </View>
         </View>
@@ -147,7 +186,7 @@ const ProjectCard = ({
                   textColor={THEME.COLORS.SECONDARY_TEXT}
                   style={styles.txt}
                 >
-                  {NOV}{' '}
+                  {views_count}
                 </NativeUiText>
               </View>
               <View style={[DefaultStyles.containerRow, styles.secondIconViea]}>
@@ -160,7 +199,7 @@ const ProjectCard = ({
                   textColor={THEME.COLORS.SECONDARY_TEXT}
                   style={styles.txt}
                 >
-                  {messages}{' '}
+                  {comments_count}{' '}
                 </NativeUiText>
               </View>
             </View>
@@ -171,7 +210,9 @@ const ProjectCard = ({
                 fontSize={THEME.FONT_SIZE.SMALL}
                 textType={'medium'}
               >
-                {timeline}{' '}
+                {`${dFormatter(created_on).value}  ${
+                  dFormatter(created_on).key
+                } ago`}
               </NativeUiText>
             </View>
           </View>

@@ -1,5 +1,5 @@
-import { View, ScrollView, FlatList, Pressable } from 'react-native';
-import React, { useRef, useState, useEffect } from 'react';
+import { View, Pressable } from 'react-native';
+import React, { useRef } from 'react';
 import {
   NativeUiHeader,
   NativeUiText,
@@ -8,18 +8,12 @@ import {
 } from '@components/';
 import * as THEME from '../../constants/theme';
 import styles from './Login.style';
-import DefaultStyles from '../../constants/DefaultStyles.style';
-import layout from '../../constants/layout';
-import Entypo from 'react-native-vector-icons/Entypo';
-import RNBounceable from '@freakycoder/react-native-bounceable';
 import { useNavigation } from '@react-navigation/native';
 
 const Login = () => {
   const navigation = useNavigation();
 
   const ref = useRef(null);
-  const [currentElemIndex, setCurrentElemIndex] = useState(0);
-  const [componentsArray, setComponentsArray] = useState([]);
 
   return (
     <View style={styles.container}>
