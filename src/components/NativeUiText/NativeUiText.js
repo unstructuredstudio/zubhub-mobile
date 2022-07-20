@@ -6,10 +6,12 @@ const NativeUiText = ({
   textType = 'regular',
   style,
   textColor,
-  fontSize,
+  fontSize = 14,
+  numberOfLines,
 }) => {
   return (
     <Text
+      numberOfLines={numberOfLines}
       style={[
         style,
         {

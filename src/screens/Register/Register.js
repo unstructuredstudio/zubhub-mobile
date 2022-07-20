@@ -34,7 +34,7 @@ const Register = () => {
   const goToNextSlide = () => {
     const nextSlideIndex = currentElemIndex + 1;
     if (currentElemIndex === componentsArray.length - 1) {
-      navigation.replace('Auth');
+      navigation.replace('BottomNavigator');
     } else {
       if (nextSlideIndex != componentsArray.length) {
         const offset = nextSlideIndex * layout.window.width;
@@ -45,7 +45,6 @@ const Register = () => {
   };
 
   const goToPrevSlide = (index) => {
-    // const prevSlideIndex = currentElemIndex - 1;
     if (index != componentsArray.length) {
       const offset = index * layout.window.width;
       ref?.current?.scrollToOffset({ offset });

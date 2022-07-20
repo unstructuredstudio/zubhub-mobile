@@ -26,6 +26,7 @@ const style = StyleSheet.create({
     width: '100%',
     borderTopRightRadius: 15,
     borderTopLeftRadius: 15,
+    height: 188,
   },
 
   redContainer: {
@@ -82,6 +83,7 @@ const style = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 50,
+    backgroundColor: THEME.COLORS.WHITE,
   },
 
   textContainer: {
@@ -110,6 +112,17 @@ const style = StyleSheet.create({
 
   space: {
     marginTop: 22,
+  },
+
+  role: {
+    textTransform: 'uppercase',
+  },
+
+  videoIcon: {
+    position: 'absolute',
+    top: 50,
+
+    alignSelf: 'center',
   },
 });
 
