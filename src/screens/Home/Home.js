@@ -15,8 +15,6 @@ const Home = () => {
     fetchAllProjects();
   }, []);
 
-  console.log(projects, 'porodl;');
-
   const fetchAllProjects = () => {
     dispatch(getAllProjects());
   };
