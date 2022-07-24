@@ -6,6 +6,9 @@ import Projects from './Projects/Projects';
 import Profile from './Profile/Profile';
 import ForgetPassword from './ForgetPassword/ForgetPassword';
 import ProjectDetail from './ProjectDetail/ProjectDetail';
+import About from './About/About';
+import Comments from './Comments/Comments';
+import Setting from './Setting/Setting';
 
 export {
   Home,
@@ -16,4 +19,7 @@ export {
   Profile,
   ForgetPassword,
   ProjectDetail,
+  About,
+  Comments,
+  Setting,
 };

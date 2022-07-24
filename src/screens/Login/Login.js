@@ -60,7 +60,10 @@ const Login = () => {
       </View>
 
       <View style={styles.bottomContainer}>
-        <NativeUiButton label={'Login'} />
+        <NativeUiButton
+          label={'Login'}
+          onPress={() => navigation.navigate('BottomNavigator')}
+        />
         <Pressable onPress={() => navigation.navigate('Register')}>
           <NativeUiText textType="medium" style={styles.member}>
             Don’t have an account yet?
