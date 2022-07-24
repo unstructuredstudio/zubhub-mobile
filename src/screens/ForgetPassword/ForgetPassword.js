@@ -9,7 +9,6 @@ import {
 import * as THEME from '../../constants/theme';
 import styles from './ForgetPassword.style';
 import DefaultStyles from '../../constants/DefaultStyles.style';
-import layout from '../../constants/layout';
 import Entypo from 'react-native-vector-icons/Entypo';
 import RNBounceable from '@freakycoder/react-native-bounceable';
 import { useNavigation } from '@react-navigation/native';

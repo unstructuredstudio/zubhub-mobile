@@ -1,10 +1,8 @@
 import { StyleSheet } from 'react-native';
-import layout from '../../constants/layout';
 import * as THEME from '../../constants/theme';
 
 const styles = StyleSheet.create({
   container: {
-    // paddingEnd: 15,
     flex: 1,
     backgroundColor: THEME.COLORS.WHITE,
   },
@@ -46,7 +44,7 @@ const styles = StyleSheet.create({
   },
 
   box: {
-    width: layout.window.width / 3,
+    width: THEME.WIDTH / 3,
     marginRight: 10,
   },
 

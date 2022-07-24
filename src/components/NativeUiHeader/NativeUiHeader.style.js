@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-import layout from '../../constants/layout';
 import * as THEME from '../../constants/theme';
 
 const styles = StyleSheet.create({
@@ -46,7 +45,7 @@ const styles = StyleSheet.create({
   },
 
   sectionTitleContainer: {
-    width: layout.window.width - 110,
+    width: THEME.WIDTH - 110,
   },
 });
 

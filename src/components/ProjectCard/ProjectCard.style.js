@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native';
 import * as THEME from '../../constants/theme';
-import layout from '../../constants/layout';
 
 const style = StyleSheet.create({
   mainContainer: {
@@ -18,7 +17,7 @@ const style = StyleSheet.create({
   },
 
   imageContainer: {
-    width: layout.window.width * 0.9,
+    width: THEME.WIDTH * 0.9,
     height: 188,
   },
 
@@ -58,13 +57,13 @@ const style = StyleSheet.create({
     backgroundColor: THEME.COLORS.PRIMARY_GREY,
     borderBottomRightRadius: 15,
     borderBottomLeftRadius: 14,
-    width: layout.window.width * 0.9,
+    width: THEME.WIDTH * 0.9,
     paddingHorizontal: 12,
   },
 
   desc: {
     color: THEME.COLORS.PRIMARY_TEXT,
-    width: layout.window.width * 0.8,
+    width: THEME.WIDTH * 0.8,
     marginVertical: 12,
   },
 

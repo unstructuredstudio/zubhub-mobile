@@ -6,6 +6,7 @@ import NativeUiHeader from './NativeUiHeader/NativeUiHeader';
 import Avater from './Avater/Avater';
 import ProjectCard from './ProjectCard/ProjectCard';
 import NativeUiActionSheet from './NativeUiActionSheet/NativeUiActionSheet';
+import CommentCard from './CommentCard/CommentCard';
 
 export {
   NativeUiText,
@@ -16,4 +17,5 @@ export {
   Avater,
   ProjectCard,
   NativeUiActionSheet,
+  CommentCard,
 };
