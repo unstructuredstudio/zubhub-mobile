@@ -17,6 +17,7 @@ const NativeUiInput = ({
   bottomText,
   children,
   width,
+  multiline,
 }) => {
   const inputType = email
     ? 'email-address'
@@ -29,11 +30,7 @@ const NativeUiInput = ({
     <View>
       <View>
         {label && (
-          <NativeUiText
-            style={styles(labelColor).labelItem}
-            textColor={THEME.PRIMARY_COLOR}
-            textType="medium"
-          >
+          <NativeUiText style={styles(labelColor).labelItem} textType="medium">
             {label}
           </NativeUiText>
         )}
@@ -44,6 +41,7 @@ const NativeUiInput = ({
           styles(labelColor).inputContainer,
           {
             width: width ?? '100%',
+            height: multiline ? 120 : 55,
           },
         ]}
       >
@@ -59,6 +57,7 @@ const NativeUiInput = ({
             placeholder={placeholder && placeholder}
             placeholderTextColor={placeholderTextColor && placeholderTextColor}
             style={[styles(labelColor).textInputStyle]}
+            multiline={multiline}
           />
         </View>
         <View>
@@ -68,7 +67,11 @@ const NativeUiInput = ({
         </View>
       </View>
       {bottomText && (
-        <NativeUiText style={styles(labelColor).smallTextStyle}>
+        <NativeUiText
+          fontSize={12}
+          textColor={THEME.COLORS.SECONDARY_TEXT}
+          style={styles(labelColor).smallTextStyle}
+        >
           {bottomText}
         </NativeUiText>
       )}

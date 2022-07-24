@@ -15,7 +15,6 @@ const styles = (textColor) =>
     textInputStyle: {
       flex: 1,
       paddingVertical: 3,
-      height: 55,
     },
     labelItem: {
       marginBottom: 8,
@@ -23,7 +22,6 @@ const styles = (textColor) =>
     inputContainer: {
       paddingHorizontal: 15,
       borderRadius: 10,
-      height: 55,
       backgroundColor: THEME.COLORS.WHITE,
       shadowColor: '#ccc',
       shadowOffset: {
