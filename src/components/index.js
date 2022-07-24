@@ -7,6 +7,7 @@ import Avater from './Avatar/Avatar';
 import ProjectCard from './ProjectCard/ProjectCard';
 import NativeUiActionSheet from './NativeUiActionSheet/NativeUiActionSheet';
 import NativeUiSelect from './NativeUiSelect/NativeUiSelect';
+import CommentCard from './CommentCard/CommentCard';
 
 export {
   NativeUiText,
@@ -18,4 +19,5 @@ export {
   ProjectCard,
   NativeUiActionSheet,
   NativeUiSelect,
+  CommentCard,
 };

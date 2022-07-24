@@ -9,7 +9,6 @@ import {
 import * as THEME from '../../constants/theme';
 import styles from './Register.style';
 import DefaultStyles from '../../constants/DefaultStyles.style';
-import layout from '../../constants/layout';
 import Entypo from 'react-native-vector-icons/Entypo';
 import RNBounceable from '@freakycoder/react-native-bounceable';
 import { useNavigation } from '@react-navigation/native';
@@ -27,7 +26,7 @@ const Register = () => {
 
   const updateCurrentSlideIndex = (e) => {
     const contentOffsetX = e.nativeEvent.contentOffset.x;
-    const currentIndex = Math.round(contentOffsetX / layout.window.width);
+    const currentIndex = Math.round(contentOffsetX / THEME.WIDTH);
     setCurrentElemIndex(currentIndex);
   };
 
@@ -37,7 +36,7 @@ const Register = () => {
       navigation.replace('Auth');
     } else {
       if (nextSlideIndex != componentsArray.length) {
-        const offset = nextSlideIndex * layout.window.width;
+        const offset = nextSlideIndex * THEME.WIDTH;
         ref?.current?.scrollToOffset({ offset });
         setCurrentElemIndex(nextSlideIndex);
       }
@@ -46,7 +45,7 @@ const Register = () => {
 
   const goToPrevSlide = (index) => {
     if (index != componentsArray.length) {
-      const offset = index * layout.window.width;
+      const offset = index * THEME.WIDTH;
       ref?.current?.scrollToOffset({ offset });
       setCurrentElemIndex(index);
     }
@@ -173,7 +172,7 @@ const Register = () => {
         renderItem={({ item }) => (
           <View
             style={{
-              width: layout.window.width * 1,
+              width: THEME.WIDTH * 1,
               paddingHorizontal: 12,
             }}
           >
@@ -188,7 +187,11 @@ const Register = () => {
               ? 'Create Account'
               : 'Next'
           }
-          onPress={() => goToNextSlide()}
+          onPress={() =>
+            currentElemIndex === componentsArray.length - 1
+              ? navigation.navigate('BottomNavigator')
+              : goToNextSlide()
+          }
         />
         <Pressable onPress={() => navigation.navigate('Login')}>
           <NativeUiText textType="medium" style={styles.member}>

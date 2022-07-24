@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-import layout from '../../constants/layout';
 import * as THEME from '../../constants/theme';
 
 const styles = StyleSheet.create({

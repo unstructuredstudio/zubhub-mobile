@@ -52,7 +52,7 @@ const NativeUiHeader = ({ subScreen, sectionTitle }) => {
               size={20}
               color={THEME.COLORS.WHITE}
             />
-            <Avater w={40} h={40} uri={require('@asset/avater.jpg')} />
+            <Avater uri={require('@asset/avater.jpg')} />
           </View>
         </View>
       )}
