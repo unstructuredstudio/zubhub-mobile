@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TextInput, Text, TextStyle, Dimensions } from 'react-native';
+import { View, TextInput } from 'react-native';
 import { NativeUiText } from '../../components';
 import styles from './NativeUiInput.style';
 import DefaultStyles from '../../constants/DefaultStyles.style';
@@ -18,6 +18,8 @@ const NativeUiInput = ({
   children,
   width,
   multiline,
+  error,
+  onBlur,
 }) => {
   const inputType = email
     ? 'email-address'
@@ -51,6 +53,7 @@ const NativeUiInput = ({
           }}
         >
           <TextInput
+            onBlur={onBlur}
             keyboardType={inputType}
             onChangeText={onChangeText}
             autoCapitalize={'none'}
@@ -73,6 +76,14 @@ const NativeUiInput = ({
           style={styles(labelColor).smallTextStyle}
         >
           {bottomText}
+        </NativeUiText>
+      )}
+      {error && (
+        <NativeUiText
+          textColor={THEME.COLORS.PRIMARY_RED}
+          style={styles(labelColor).errorText}
+        >
+          {error}
         </NativeUiText>
       )}
     </View>

@@ -38,5 +38,9 @@ const styles = (textColor) =>
       flexDirection: 'row',
       alignItems: 'center',
     },
+
+    errorText: {
+      marginTop: 9,
+    },
   });
 export default styles;
