@@ -7,7 +7,6 @@ import DefaultStyles from '../../constants/DefaultStyles.style';
 import * as THEME from '../../constants/theme';
 import styles from './NativeUiActionSheet.style';
 import Entypo from 'react-native-vector-icons/Entypo';
-import RNBounceable from '@freakycoder/react-native-bounceable';
 
 const NativeUiActionSheet = ({ children, id, sheetTitle }) => {
   return (
@@ -17,13 +16,13 @@ const NativeUiActionSheet = ({ children, id, sheetTitle }) => {
         <NativeUiText fontSize={THEME.FONT_SIZE.MEDIUM} textType="medium">
           {sheetTitle}
         </NativeUiText>
-        <RNBounceable onPress={async () => await SheetManager.hide(id)}>
+        <TouchableOpacity onPress={async () => await SheetManager.hide(id)}>
           <Entypo
             name="circle-with-cross"
             size={28}
             color={THEME.COLORS.PRIMARY_RED}
           />
-        </RNBounceable>
+        </TouchableOpacity>
       </View>
       <ScrollView style={styles.container}>{children}</ScrollView>
     </ActionSheet>

@@ -1,7 +1,9 @@
-export const showToastSuccess = () => {
+import Toast from 'react-native-toast-message';
+
+export const CustomToasts = ({ type, text, description }) => {
   Toast.show({
-    type: 'success',
-    text1: 'Hello',
-    text2: 'This is some something 👋',
+    type: type,
+    text1: text,
+    text2: description,
   });
 };

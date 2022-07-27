@@ -1,4 +1,10 @@
-import { View, ScrollView, FlatList, Pressable } from 'react-native';
+import {
+  View,
+  ScrollView,
+  FlatList,
+  Pressable,
+  TouchableOpacity,
+} from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
 import {
   NativeUiHeader,
@@ -12,7 +18,6 @@ import styles from './Projects.style';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import layout from '../../constants/layout';
 import Entypo from 'react-native-vector-icons/Entypo';
-import RNBounceable from '@freakycoder/react-native-bounceable';
 import { useNavigation } from '@react-navigation/native';
 
 const Projects = () => {
@@ -74,12 +79,12 @@ const Projects = () => {
         <View style={[DefaultStyles.containerSpaced, styles.wizard]}>
           <View style={[styles.box]}>
             <View style={[DefaultStyles.containerRow]}>
-              <RNBounceable
+              <TouchableOpacity
                 onPress={() => goToPrevSlide(0)}
                 style={[styles.circle, DefaultStyles.containerCenter]}
               >
                 <Entypo name="check" size={25} color={THEME.COLORS.WHITE} />
-              </RNBounceable>
+              </TouchableOpacity>
               <View style={styles.line} />
             </View>
             <NativeUiText style={styles.step}>Step 1</NativeUiText>
@@ -87,7 +92,7 @@ const Projects = () => {
 
           <View style={styles.box}>
             <View style={[DefaultStyles.containerRow]}>
-              <RNBounceable
+              <TouchableOpacity
                 onPress={() => goToPrevSlide(1)}
                 style={[
                   styles.circle,
@@ -103,7 +108,7 @@ const Projects = () => {
                 {(currentElemIndex === 1 || currentElemIndex === 2) && (
                   <Entypo name="check" size={25} color={THEME.COLORS.WHITE} />
                 )}
-              </RNBounceable>
+              </TouchableOpacity>
               <View
                 style={[
                   styles.line,
@@ -131,7 +136,7 @@ const Projects = () => {
 
           <View style={[styles.box]}>
             <View style={[DefaultStyles.containerRow]}>
-              <RNBounceable
+              <TouchableOpacity
                 onPress={() => goToPrevSlide(2)}
                 style={[
                   styles.circle,
@@ -147,7 +152,7 @@ const Projects = () => {
                 {currentElemIndex === 2 && (
                   <Entypo name="check" size={25} color={THEME.COLORS.WHITE} />
                 )}
-              </RNBounceable>
+              </TouchableOpacity>
             </View>
             <NativeUiText
               textColor={

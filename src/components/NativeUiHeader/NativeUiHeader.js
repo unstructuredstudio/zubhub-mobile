@@ -1,4 +1,4 @@
-import { View, Image } from 'react-native';
+import { View, Image, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { NativeUiText, Avater } from '@components/';
 import styles from './NativeUiHeader.style';
@@ -6,7 +6,6 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import * as THEME from '../../constants/theme';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import { useNavigation } from '@react-navigation/native';
-import RNBounceable from '@freakycoder/react-native-bounceable';
 
 const NativeUiHeader = ({ subScreen, sectionTitle }) => {
   const navigation = useNavigation();
@@ -14,7 +13,7 @@ const NativeUiHeader = ({ subScreen, sectionTitle }) => {
     <View style={styles.headerContainer}>
       {subScreen ? (
         <View style={DefaultStyles.containerRow}>
-          <RNBounceable
+          <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={[DefaultStyles.containerCenter, styles.header]}
           >
@@ -24,7 +23,7 @@ const NativeUiHeader = ({ subScreen, sectionTitle }) => {
               size={20}
               color={THEME.COLORS.WHITE}
             />
-          </RNBounceable>
+          </TouchableOpacity>
           <View style={styles.sectionTitleContainer}>
             <NativeUiText
               style={{

@@ -8,7 +8,6 @@ import React, { useState, useEffect } from 'react';
 import styles from './ProjectCard.style';
 import { Feather } from '@expo/vector-icons';
 import * as THEME from '../../constants/theme';
-import RNBounceable from '@freakycoder/react-native-bounceable';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DefaultStyles from '../../constants/DefaultStyles.style';
@@ -56,7 +55,7 @@ const ProjectCard = ({ item }) => {
   const { width } = useWindowDimensions();
 
   return (
-    <RNBounceable
+    <TouchableOpacity
       bounceEffect={0.95}
       style={styles.mainCard}
       onPress={() => navigation.navigate('ProjectDetail', { item })}
@@ -218,7 +217,7 @@ const ProjectCard = ({ item }) => {
           </View>
         </View>
       </View>
-    </RNBounceable>
+    </TouchableOpacity>
   );
 };
 

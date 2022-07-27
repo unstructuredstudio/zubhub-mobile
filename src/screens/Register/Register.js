@@ -1,38 +1,31 @@
-import {
-  View,
-  ScrollView,
-  FlatList,
-  Pressable,
-  TouchableOpacity,
-} from 'react-native';
+import { View, ScrollView, FlatList, Pressable, Button } from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
 import {
   NativeUiHeader,
   NativeUiText,
   NativeUiInput,
   NativeUiButton,
-  NativeUiSelect,
 } from '@components/';
 import * as THEME from '../../constants/theme';
 import styles from './Register.style';
 import DefaultStyles from '../../constants/DefaultStyles.style';
-import Entypo from 'react-native-vector-icons/Entypo';
-import RNBounceable from '@freakycoder/react-native-bounceable';
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import CountryPicker from 'react-native-country-picker-modal';
 import PhoneInput from 'react-native-phone-number-input';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { EvilIcons, Entypo } from '@expo/vector-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser } from '../../redux/actions/authAction';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { CustomToasts } from '../../components/CustomToasts/CustomToasts';
 
 const initialValues = {
   username: '',
-  location: '',
-  dob: '',
-  phone: '',
   email: '',
   password1: '',
   password2: '',
-  bio: '',
 };
 
 const validationSchema = Yup.object({
@@ -56,14 +49,27 @@ const validationSchema = Yup.object({
 
 const Register = () => {
   const navigation = useNavigation();
-
+  const dispatch = useDispatch();
+  const { user, error } = useSelector((state) => state.user);
+  console.log(error);
   const ref = useRef(null);
   const [currentElemIndex, setCurrentElemIndex] = useState(0);
-  const [componentsArray, setComponentsArray] = useState([]);
+  const [userData, setUserData] = useState({
+    username: '',
+    phone: '',
+    email: '',
+    password1: '',
+    password2: '',
+    bio: '',
+    dateOfBirth: '',
+    location: '',
+  });
 
-  useEffect(() => {
-    setComponentsArray([<LayoutOne />, <LayoutTwo />, <LayoutThree />]);
-  }, []);
+  const componentsArray = [
+    <LayoutOne userData={userData} setUserData={setUserData} />,
+    <LayoutTwo userData={userData} setUserData={setUserData} />,
+    <LayoutThree userData={userData} setUserData={setUserData} />,
+  ];
 
   const updateCurrentSlideIndex = (e) => {
     const contentOffsetX = e.nativeEvent.contentOffset.x;
@@ -92,6 +98,31 @@ const Register = () => {
     }
   };
 
+  useEffect(() => {
+    if (error !== null) {
+      CustomToasts({
+        type: 'error',
+        text: 'Failed to register',
+        description: error.response.data.detail,
+      });
+    }
+  }, [error]);
+
+  const onRegister = () => {
+    console.log(userData);
+    dispatch(registerUser(userData));
+  };
+
+  // useEffect(() => {
+  //   console.log(user);
+  // }, [user]);
+  const submit = () => {
+    if (currentElemIndex === componentsArray.length - 1) {
+      onRegister();
+    } else {
+      goToNextSlide();
+    }
+  };
   return (
     <View style={styles.container}>
       <NativeUiHeader subScreen={true} sectionTitle={'Register'} />
@@ -113,12 +144,12 @@ const Register = () => {
         <View style={[DefaultStyles.containerSpaced, styles.wizard]}>
           <View style={[styles.box]}>
             <View style={[DefaultStyles.containerRow]}>
-              <RNBounceable
+              <TouchableOpacity
                 onPress={() => goToPrevSlide(0)}
                 style={[styles.circle, DefaultStyles.containerCenter]}
               >
                 <Entypo name="check" size={25} color={THEME.COLORS.WHITE} />
-              </RNBounceable>
+              </TouchableOpacity>
               <View style={styles.line} />
             </View>
             <NativeUiText style={styles.step}>Step 1</NativeUiText>
@@ -126,7 +157,7 @@ const Register = () => {
 
           <View style={styles.box}>
             <View style={[DefaultStyles.containerRow]}>
-              <RNBounceable
+              <TouchableOpacity
                 onPress={() => goToPrevSlide(1)}
                 style={[
                   styles.circle,
@@ -142,7 +173,7 @@ const Register = () => {
                 {(currentElemIndex === 1 || currentElemIndex === 2) && (
                   <Entypo name="check" size={25} color={THEME.COLORS.WHITE} />
                 )}
-              </RNBounceable>
+              </TouchableOpacity>
               <View
                 style={[
                   styles.line,
@@ -170,7 +201,7 @@ const Register = () => {
 
           <View style={[styles.box]}>
             <View style={[DefaultStyles.containerRow]}>
-              <RNBounceable
+              <TouchableOpacity
                 onPress={() => goToPrevSlide(2)}
                 style={[
                   styles.circle,
@@ -186,7 +217,7 @@ const Register = () => {
                 {currentElemIndex === 2 && (
                   <Entypo name="check" size={25} color={THEME.COLORS.WHITE} />
                 )}
-              </RNBounceable>
+              </TouchableOpacity>
             </View>
             <NativeUiText
               textColor={
@@ -228,11 +259,7 @@ const Register = () => {
               ? 'Create Account'
               : 'Next'
           }
-          onPress={() =>
-            currentElemIndex === componentsArray.length - 1
-              ? navigation.navigate('BottomNavigator')
-              : goToNextSlide()
-          }
+          onPress={submit}
         />
         <Pressable onPress={() => navigation.navigate('Login')}>
           <NativeUiText textType="medium" style={styles.member}>
@@ -253,13 +280,43 @@ const Register = () => {
 
 export default Register;
 
-const LayoutOne = () => {
-  const [value, setValue] = useState('');
+const LayoutOne = ({ userData, setUserData }) => {
   const [formattedValue, setFormattedValue] = useState('');
   const [valid, setValid] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
+  const [value, setValue] = useState('');
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [dateOfBirth, setDateOfBirth] = useState('');
+
   const phoneInput = useRef(null);
 
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  useEffect(() => {
+    setUserData({
+      ...userData,
+      dateOfBirth: dateOfBirth,
+    });
+  }, [dateOfBirth]);
+
+  const handleConfirm = (date) => {
+    changeText(date.toLocaleDateString('sv-SE'), 'dateOfBirth');
+    setDateOfBirth(date.toLocaleDateString('sv-SE'));
+
+    hideDatePicker();
+  };
+
+  const changeText = (e, key) => {
+    const data = { ...userData };
+    data[key] = e;
+    setUserData(data);
+  };
   return (
     <>
       <ScrollView style={styles.container}>
@@ -267,16 +324,17 @@ const LayoutOne = () => {
           initialValues={initialValues}
           validationSchema={validationSchema}
         >
-          {({ values, handleChange, errors, touched, handleBlur }) => {
-            console.log(values);
-
+          {({ handleChange, errors, touched, handleBlur }) => {
             return (
               <View style={[styles.introContainer, styles.topContainer]}>
                 <View style={styles.input}>
                   <NativeUiInput
                     label={'Username'}
                     placeholder={'Username'}
-                    onChangeText={handleChange('username')}
+                    onChangeText={(e) => {
+                      handleChange('username');
+                      changeText(e, 'username');
+                    }}
                     onBlur={handleBlur('username')}
                     error={touched.username && errors.username}
                   />
@@ -299,14 +357,13 @@ const LayoutOne = () => {
                   <PhoneInput
                     containerStyle={[styles.inputContainer, styles.dropdown]}
                     ref={phoneInput}
-                    defaultValue={value}
-                    defaultCode="DM"
+                    // defaultValue={value}
+                    defaultCode="CM"
                     layout="first"
-                    onChangeText={(text) => {
-                      setValue(text);
-                    }}
+                    // onChangeText={(text) => setValue(text)}
                     onChangeFormattedText={(text) => {
-                      setFormattedValue(text);
+                      // setFormattedValue(text);
+                      changeText(text, 'phone');
                     }}
                     withShadow
                     autoFocus
@@ -327,9 +384,37 @@ const LayoutOne = () => {
                   <NativeUiInput
                     label={'Enter your email'}
                     placeholder={'Email'}
-                    onChangeText={handleChange('email')}
+                    onChangeText={(e) => {
+                      handleChange('email');
+                      changeText(e, 'email');
+                    }}
                     onBlur={handleBlur('email')}
                     error={touched.email && errors.email}
+                  />
+                </View>
+
+                <View style={styles.input}>
+                  <NativeUiText textType="medium" style={styles.location}>
+                    Date of Birth
+                  </NativeUiText>
+                  <View style={[styles.inputContainer]}>
+                    <View style={styles.container}>
+                      <NativeUiText>
+                        {dateOfBirth ? dateOfBirth : 'Select a date'}
+                      </NativeUiText>
+                    </View>
+                    <Pressable
+                      onPress={showDatePicker}
+                      style={[DefaultStyles.containerCenter, styles.arrow]}
+                    >
+                      <EvilIcons name="calendar" size={30} color="black" />
+                    </Pressable>
+                  </View>
+                  <DateTimePickerModal
+                    isVisible={isDatePickerVisible}
+                    mode="date"
+                    onConfirm={handleConfirm}
+                    onCancel={hideDatePicker}
                   />
                 </View>
 
@@ -337,7 +422,10 @@ const LayoutOne = () => {
                   <NativeUiInput
                     label={'Enter your password'}
                     placeholder={'Password'}
-                    onChangeText={handleChange('password1')}
+                    onChangeText={(e) => {
+                      handleChange(e, 'password1');
+                      changeText(e, 'password1');
+                    }}
                     onBlur={handleBlur('password1')}
                     error={touched.password1 && errors.password1}
                   />
@@ -346,7 +434,10 @@ const LayoutOne = () => {
                   <NativeUiInput
                     label={'Confirm your password'}
                     placeholder={'Password'}
-                    onChangeText={handleChange('password2')}
+                    onChangeText={(e) => {
+                      handleChange(e, 'password2');
+                      changeText(e, 'password2');
+                    }}
                     onBlur={handleBlur('password2')}
                     error={touched.password2 && errors.password2}
                   />
@@ -360,7 +451,7 @@ const LayoutOne = () => {
   );
 };
 
-const LayoutTwo = () => {
+const LayoutTwo = ({ userData, setUserData }) => {
   const [countryCode, setCountryCode] = useState('FR');
   const [country, setCountry] = useState(null);
   const [withCountryNameButton, setWithCountryNameButton] = useState(true);
@@ -373,7 +464,17 @@ const LayoutTwo = () => {
   const onSelect = (country) => {
     setCountryCode(country.cca2);
     setCountry(country);
+    setUserData({
+      ...userData,
+      location: country?.name,
+    });
   };
+  useEffect(() => {
+    // setUserData({
+    //   ...userData,
+    //   location: country?.name,
+    // });
+  }, [country]);
   return (
     <>
       <ScrollView style={styles.container}>
@@ -408,7 +509,7 @@ const LayoutTwo = () => {
   );
 };
 
-const LayoutThree = () => {
+const LayoutThree = ({ userData, setUserData, changeBio }) => {
   return (
     <>
       <ScrollView style={styles.container}>
@@ -418,6 +519,7 @@ const LayoutThree = () => {
               label={'Tell us about yourself'}
               placeholder={'Bio'}
               multiline
+              onChangeText={(txt) => setUserData({ ...userData, bio: txt })}
             />
           </View>
         </View>
