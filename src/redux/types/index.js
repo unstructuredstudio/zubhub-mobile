@@ -1,3 +1,4 @@
 export const GET_ALL_PROJECTS = 'GET_ALL_PROJECTS';
 export const REGISTER_USER = 'REGISTER_USER';
 export const REGISTER_USER_FAIL = 'REGISTER_USER_FAIL';
+export const SET_AUTH_USER = 'SET_AUTH_USER';

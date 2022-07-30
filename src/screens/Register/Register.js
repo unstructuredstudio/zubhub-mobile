@@ -109,7 +109,6 @@ const Register = () => {
   }, [error]);
 
   const onRegister = () => {
-    console.log(userData);
     dispatch(registerUser(userData));
   };
 

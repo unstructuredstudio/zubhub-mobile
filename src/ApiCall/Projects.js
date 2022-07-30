@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { api } from '../utils/api';
 
 export const _getAllProjects = async () => {
