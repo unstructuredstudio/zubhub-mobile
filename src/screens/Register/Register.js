@@ -106,7 +106,6 @@ const Register = () => {
     const server_errors = {};
     let err = [];
     Object.entries(userData).map((element) => {
-      console.log(element);
       if (
         element[1] === '' &&
         element[0] !== 'email' &&
