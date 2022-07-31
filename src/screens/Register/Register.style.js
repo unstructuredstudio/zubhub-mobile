@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#eee',
     fontWeight: 'bold',
-    color: THEME.BLACK,
+    color: THEME.COLORS.BLACK,
     flexDirection: 'row',
     alignItems: 'center',
     height: 55,

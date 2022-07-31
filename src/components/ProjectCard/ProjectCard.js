@@ -73,7 +73,6 @@ const ProjectCard = ({ item }) => {
           style={styles.space}
         />
       </NativeUiActionSheet>
-
       <View style={styles.imageContainer}>
         {images.length > 0 ? (
           <Image

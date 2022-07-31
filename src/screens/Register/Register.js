@@ -1,4 +1,4 @@
-import { View, ScrollView, FlatList, Pressable, Button } from 'react-native';
+import { View, ScrollView, FlatList, Pressable, Image } from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
 import {
   NativeUiHeader,
@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { registerUser } from '../../redux/actions/authAction';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { CustomToasts } from '../../components/CustomToasts/CustomToasts';
+import Modal from 'react-native-modal';
 
 const initialValues = {
   username: '',
@@ -50,9 +51,10 @@ const validationSchema = Yup.object({
 const Register = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { user, error } = useSelector((state) => state.user);
-  console.log(error);
+  const { user } = useSelector((state) => state.user);
+
   const ref = useRef(null);
+
   const [currentElemIndex, setCurrentElemIndex] = useState(0);
   const [userData, setUserData] = useState({
     username: '',
@@ -62,13 +64,15 @@ const Register = () => {
     password2: '',
     bio: '',
     dateOfBirth: '',
-    location: '',
+    location: 'France',
   });
+  const [visible, setVisible] = useState(false);
+  const [error, setError] = useState([]);
 
   const componentsArray = [
     <LayoutOne userData={userData} setUserData={setUserData} />,
     <LayoutTwo userData={userData} setUserData={setUserData} />,
-    <LayoutThree userData={userData} setUserData={setUserData} />,
+    <LayoutThree error={error} userData={userData} setUserData={setUserData} />,
   ];
 
   const updateCurrentSlideIndex = (e) => {
@@ -98,23 +102,43 @@ const Register = () => {
     }
   };
 
-  useEffect(() => {
-    if (error !== null) {
-      CustomToasts({
-        type: 'error',
-        text: 'Failed to register',
-        description: error.response.data.detail,
-      });
-    }
-  }, [error]);
-
   const onRegister = () => {
-    dispatch(registerUser(userData));
+    const server_errors = {};
+    let err = [];
+    Object.entries(userData).map((element) => {
+      console.log(element);
+      if (
+        element[1] === '' &&
+        element[0] !== 'email' &&
+        element[0] !== 'phone' &&
+        element[0] !== 'bio'
+      ) {
+        err.push(`We need your ${element[0]} to proceed`);
+      }
+    });
+
+    if (err.length > 0) {
+      return setError(err);
+    }
+
+    let result = dispatch(registerUser(userData, setVisible));
+    result.catch((error) => {
+      let messages = JSON.parse(error.message);
+
+      Object.keys(messages).forEach((key) => {
+        if (key === 'non_field_errors') {
+          server_errors['non_field_errors'] = messages[key][0];
+        } else if (key === 'location') {
+          server_errors['user_location'] = messages[key][0];
+        } else {
+          server_errors[key] = messages[key][0];
+        }
+      });
+
+      setError(Object.values(server_errors));
+    });
   };
 
-  // useEffect(() => {
-  //   console.log(user);
-  // }, [user]);
   const submit = () => {
     if (currentElemIndex === componentsArray.length - 1) {
       onRegister();
@@ -122,10 +146,15 @@ const Register = () => {
       goToNextSlide();
     }
   };
+
   return (
     <View style={styles.container}>
       <NativeUiHeader subScreen={true} sectionTitle={'Register'} />
-
+      <CutomModal
+        navigation={navigation}
+        visible={visible}
+        setVisible={setVisible}
+      />
       <View style={styles.topContainer}>
         <View style={[styles.introContainer]}>
           <NativeUiText fontSize={THEME.FONT_SIZE.LARGE} textType={'medium'}>
@@ -280,12 +309,12 @@ const Register = () => {
 export default Register;
 
 const LayoutOne = ({ userData, setUserData }) => {
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [value, setValue] = useState('');
   const [formattedValue, setFormattedValue] = useState('');
   const [valid, setValid] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
-  const [value, setValue] = useState('');
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [dateOfBirth, setDateOfBirth] = useState('');
 
   const phoneInput = useRef(null);
 
@@ -323,7 +352,13 @@ const LayoutOne = ({ userData, setUserData }) => {
           initialValues={initialValues}
           validationSchema={validationSchema}
         >
-          {({ handleChange, errors, touched, handleBlur }) => {
+          {({
+            errors,
+            touched,
+            handleBlur,
+            setFieldValue,
+            setFieldTouched,
+          }) => {
             return (
               <View style={[styles.introContainer, styles.topContainer]}>
                 <View style={styles.input}>
@@ -331,7 +366,8 @@ const LayoutOne = ({ userData, setUserData }) => {
                     label={'Username'}
                     placeholder={'Username'}
                     onChangeText={(e) => {
-                      handleChange('username');
+                      setFieldValue('username', e);
+                      setFieldTouched('username', true, false);
                       changeText(e, 'username');
                     }}
                     onBlur={handleBlur('username')}
@@ -356,35 +392,36 @@ const LayoutOne = ({ userData, setUserData }) => {
                   <PhoneInput
                     containerStyle={[styles.inputContainer, styles.dropdown]}
                     ref={phoneInput}
-                    // defaultValue={value}
                     defaultCode="CM"
                     layout="first"
-                    // onChangeText={(text) => setValue(text)}
+                    onChangeText={(text) => {
+                      setValue(text);
+                    }}
                     onChangeFormattedText={(text) => {
-                      // setFormattedValue(text);
                       changeText(text, 'phone');
                     }}
                     withShadow
                     autoFocus
                   />
-                  {/* <TouchableOpacity
+                  <TouchableOpacity
                     style={styles.button}
-                    onPress={() => {
-                      const checkValid =
-                        phoneInput.current?.isValidNumber(value);
-                      setShowMessage(true);
-                      setValid(checkValid ? checkValid : false);
-                    }}
+                    // onPress={() => {
+                    //   const checkValid =
+                    //     phoneInput.current?.isValidNumber(value);
+                    //   setShowMessage(true);
+                    //   setValid(checkValid ? checkValid : false);
+                    // }}
                   >
                     <NativeUiText>Check</NativeUiText>
-                  </TouchableOpacity> */}
+                  </TouchableOpacity>
                 </View>
                 <View style={styles.input}>
                   <NativeUiInput
                     label={'Enter your email'}
                     placeholder={'Email'}
                     onChangeText={(e) => {
-                      handleChange('email');
+                      setFieldValue('email', e);
+                      setFieldTouched('email', true, false);
                       changeText(e, 'email');
                     }}
                     onBlur={handleBlur('email')}
@@ -422,7 +459,8 @@ const LayoutOne = ({ userData, setUserData }) => {
                     label={'Enter your password'}
                     placeholder={'Password'}
                     onChangeText={(e) => {
-                      handleChange(e, 'password1');
+                      setFieldValue('password1', e);
+                      setFieldTouched('password1', true, false);
                       changeText(e, 'password1');
                     }}
                     onBlur={handleBlur('password1')}
@@ -434,7 +472,8 @@ const LayoutOne = ({ userData, setUserData }) => {
                     label={'Confirm your password'}
                     placeholder={'Password'}
                     onChangeText={(e) => {
-                      handleChange(e, 'password2');
+                      setFieldValue('password2', e);
+                      setFieldTouched('password2', true, false);
                       changeText(e, 'password2');
                     }}
                     onBlur={handleBlur('password2')}
@@ -508,10 +547,51 @@ const LayoutTwo = ({ userData, setUserData }) => {
   );
 };
 
-const LayoutThree = ({ userData, setUserData, changeBio }) => {
+const LayoutThree = ({ userData, setUserData, error }) => {
   return (
     <>
       <ScrollView style={styles.container}>
+        {error.length > 0 && (
+          <View
+            style={{
+              backgroundColor: 'rgba(250, 186, 186, 0.2)',
+              marginTop: 15,
+              borderRadius: 12,
+              paddingVertical: 21,
+              paddingHorizontal: 12,
+            }}
+          >
+            <NativeUiText
+              fontSize={16}
+              textType={'medium'}
+              textColor={THEME.COLORS.PRIMARY_RED}
+            >
+              What went wrong?
+            </NativeUiText>
+            {error.map((errorMessage) => (
+              <View
+                style={{
+                  marginTop: 12,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                <View
+                  style={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: 5,
+                    backgroundColor: THEME.COLORS.PRIMARY_RED,
+                    marginRight: 12,
+                  }}
+                ></View>
+                <NativeUiText textColor={THEME.COLORS.PRIMARY_RED}>
+                  {errorMessage}{' '}
+                </NativeUiText>
+              </View>
+            ))}
+          </View>
+        )}
         <View style={[styles.introContainer]}>
           <View style={styles.input}>
             <NativeUiInput
@@ -524,5 +604,83 @@ const LayoutThree = ({ userData, setUserData, changeBio }) => {
         </View>
       </ScrollView>
     </>
+  );
+};
+
+const CutomModal = ({ visible, setVisible, navigation }) => {
+  return (
+    <View>
+      <Modal onBackdropPress={() => setVisible(false)} isVisible={visible}>
+        <View style={{ backgroundColor: 'white', borderRadius: 21 }}>
+          <View
+            style={[
+              DefaultStyles.containerCenter,
+              {
+                marginTop: 21,
+              },
+            ]}
+          >
+            <View
+              style={{
+                width: 90,
+                height: 90,
+                borderRadius: 45,
+                backgroundColor: THEME.COLORS.PRIMARY_TEAL,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <View
+                style={{
+                  width: 60,
+                  height: 60,
+                }}
+              >
+                <Image
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                  }}
+                  source={require('../../../assets/good.png')}
+                />
+              </View>
+            </View>
+            <View
+              style={[
+                DefaultStyles.containerCenter,
+                {
+                  marginTop: 21,
+                },
+              ]}
+            >
+              <NativeUiText fontSize={18}>Congratulations!</NativeUiText>
+              <NativeUiText
+                textColor={THEME.COLORS.SECONDARY_TEXT}
+                style={{
+                  marginTop: 12,
+                  textAlign: 'center',
+                }}
+              >
+                Your account was successfully created. Welcome onboard!
+              </NativeUiText>
+            </View>
+          </View>
+          <View
+            style={{
+              marginVertical: 21,
+              marginHorizontal: 16,
+            }}
+          >
+            <NativeUiButton
+              onPress={() => {
+                setVisible(false);
+                navigation.replace('BottomNavigator');
+              }}
+              label={'Go to Home'}
+            />
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 };

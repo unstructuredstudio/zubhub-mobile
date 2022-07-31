@@ -27,9 +27,9 @@ export default function Navigation() {
       />
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="BottomNavigator" component={BottomNavigator} />
-          <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="BottomNavigator" component={BottomNavigator} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
           <Stack.Screen name="ProjectDetail" component={ProjectDetail} />
