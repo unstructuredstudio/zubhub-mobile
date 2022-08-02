@@ -8,6 +8,9 @@ import ProjectCard from './ProjectCard/ProjectCard';
 import NativeUiActionSheet from './NativeUiActionSheet/NativeUiActionSheet';
 import NativeUiSelect from './NativeUiSelect/NativeUiSelect';
 import CommentCard from './CommentCard/CommentCard';
+import NativeUiModal from './NativeUiModal/NativeUiModal';
+import ErrorCard from './ErrorCard/ErrorCard';
+import NativeUiActivityIndicator from './NativeUiActivityIndicator';
 
 export {
   NativeUiText,
@@ -20,4 +23,7 @@ export {
   NativeUiActionSheet,
   NativeUiSelect,
   CommentCard,
+  NativeUiModal,
+  ErrorCard,
+  NativeUiActivityIndicator,
 };

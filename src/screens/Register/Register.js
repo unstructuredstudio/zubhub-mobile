@@ -1,10 +1,13 @@
-import { View, ScrollView, FlatList, Pressable, Image } from 'react-native';
+import { View, ScrollView, FlatList, Pressable } from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
 import {
   NativeUiHeader,
   NativeUiText,
   NativeUiInput,
   NativeUiButton,
+  NativeUiModal,
+  ErrorCard,
+  NativeUiActivityIndicator,
 } from '@components/';
 import * as THEME from '../../constants/theme';
 import styles from './Register.style';
@@ -19,8 +22,6 @@ import { EvilIcons, Entypo } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser } from '../../redux/actions/authAction';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { CustomToasts } from '../../components/CustomToasts/CustomToasts';
-import Modal from 'react-native-modal';
 
 const initialValues = {
   username: '',
@@ -68,7 +69,7 @@ const Register = () => {
   });
   const [visible, setVisible] = useState(false);
   const [error, setError] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   const componentsArray = [
     <LayoutOne userData={userData} setUserData={setUserData} />,
     <LayoutTwo userData={userData} setUserData={setUserData} />,
@@ -103,6 +104,7 @@ const Register = () => {
   };
 
   const onRegister = () => {
+    setLoading(true);
     const server_errors = {};
     let err = [];
     Object.entries(userData).map((element) => {
@@ -117,11 +119,13 @@ const Register = () => {
     });
 
     if (err.length > 0) {
+      setLoading(false);
       return setError(err);
     }
 
-    let result = dispatch(registerUser(userData, setVisible));
+    let result = dispatch(registerUser(userData, setVisible, setLoading));
     result.catch((error) => {
+      setLoading(false);
       let messages = JSON.parse(error.message);
 
       Object.keys(messages).forEach((key) => {
@@ -149,7 +153,7 @@ const Register = () => {
   return (
     <View style={styles.container}>
       <NativeUiHeader subScreen={true} sectionTitle={'Register'} />
-      <CutomModal
+      <NativeUiModal
         navigation={navigation}
         visible={visible}
         setVisible={setVisible}
@@ -280,14 +284,18 @@ const Register = () => {
         )}
       />
       <View style={styles.bottomContainer}>
-        <NativeUiButton
-          label={
-            currentElemIndex === componentsArray.length - 1
-              ? 'Create Account'
-              : 'Next'
-          }
-          onPress={submit}
-        />
+        {!loading ? (
+          <NativeUiButton
+            label={
+              currentElemIndex === componentsArray.length - 1
+                ? 'Create Account'
+                : 'Next'
+            }
+            onPress={submit}
+          />
+        ) : (
+          <NativeUiActivityIndicator />
+        )}
         <Pressable onPress={() => navigation.navigate('Login')}>
           <NativeUiText textType="medium" style={styles.member}>
             Already a member ?
@@ -550,47 +558,7 @@ const LayoutThree = ({ userData, setUserData, error }) => {
   return (
     <>
       <ScrollView style={styles.container}>
-        {error.length > 0 && (
-          <View
-            style={{
-              backgroundColor: 'rgba(250, 186, 186, 0.2)',
-              marginTop: 15,
-              borderRadius: 12,
-              paddingVertical: 21,
-              paddingHorizontal: 12,
-            }}
-          >
-            <NativeUiText
-              fontSize={16}
-              textType={'medium'}
-              textColor={THEME.COLORS.PRIMARY_RED}
-            >
-              What went wrong?
-            </NativeUiText>
-            {error.map((errorMessage) => (
-              <View
-                style={{
-                  marginTop: 12,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-              >
-                <View
-                  style={{
-                    width: 7,
-                    height: 7,
-                    borderRadius: 5,
-                    backgroundColor: THEME.COLORS.PRIMARY_RED,
-                    marginRight: 12,
-                  }}
-                ></View>
-                <NativeUiText textColor={THEME.COLORS.PRIMARY_RED}>
-                  {errorMessage}{' '}
-                </NativeUiText>
-              </View>
-            ))}
-          </View>
-        )}
+        {error.length > 0 && <ErrorCard error={error} />}
         <View style={[styles.introContainer]}>
           <View style={styles.input}>
             <NativeUiInput
@@ -603,83 +571,5 @@ const LayoutThree = ({ userData, setUserData, error }) => {
         </View>
       </ScrollView>
     </>
-  );
-};
-
-const CutomModal = ({ visible, setVisible, navigation }) => {
-  return (
-    <View>
-      <Modal onBackdropPress={() => setVisible(false)} isVisible={visible}>
-        <View style={{ backgroundColor: 'white', borderRadius: 21 }}>
-          <View
-            style={[
-              DefaultStyles.containerCenter,
-              {
-                marginTop: 21,
-              },
-            ]}
-          >
-            <View
-              style={{
-                width: 90,
-                height: 90,
-                borderRadius: 45,
-                backgroundColor: THEME.COLORS.PRIMARY_TEAL,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <View
-                style={{
-                  width: 60,
-                  height: 60,
-                }}
-              >
-                <Image
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                  }}
-                  source={require('../../../assets/good.png')}
-                />
-              </View>
-            </View>
-            <View
-              style={[
-                DefaultStyles.containerCenter,
-                {
-                  marginTop: 21,
-                },
-              ]}
-            >
-              <NativeUiText fontSize={18}>Congratulations!</NativeUiText>
-              <NativeUiText
-                textColor={THEME.COLORS.SECONDARY_TEXT}
-                style={{
-                  marginTop: 12,
-                  textAlign: 'center',
-                }}
-              >
-                Your account was successfully created. Welcome onboard!
-              </NativeUiText>
-            </View>
-          </View>
-          <View
-            style={{
-              marginVertical: 21,
-              marginHorizontal: 16,
-            }}
-          >
-            <NativeUiButton
-              onPress={() => {
-                setVisible(false);
-                navigation.replace('BottomNavigator');
-              }}
-              label={'Go to Home'}
-            />
-          </View>
-        </View>
-      </Modal>
-    </View>
   );
 };
