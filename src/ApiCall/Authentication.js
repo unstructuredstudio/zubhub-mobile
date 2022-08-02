@@ -50,6 +50,7 @@ const request = ({
       }),
     });
   } else if (body) {
+    console.log(baseURL + url);
     return fetch(baseURL + url, {
       method,
       xsrfCookieName: 'csrftoken',
@@ -65,19 +66,30 @@ const request = ({
   }
 };
 
+/**
+ * @method login - login with email and password
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
 export const signup = (userData) => {
   const url = `/creators/register/`;
   const method = 'POST';
   const body = JSON.stringify({ ...userData, subscribe: false });
 
   return request({ url, method, body }).then((res) => res.json());
+};
 
-  // return request({ url, method, body })
-  //   .then((res) => {
-  //       // .then((res) => {
-  //   //   // console.log(res.json(), 'from request');
-  //   //   res.json().then((ele) => console.log(ele));
-  //   // })
-  //   })
-  //   .catch((err) => console.log(err));
+/**
+ * @method login - login with email and password
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const login = ({ username, password }) => {
+  const url = '/rest-auth/login/';
+  const method = 'POST';
+  const body = JSON.stringify({ username, password });
+
+  return request({ url, method, body }).then((res) => res.json());
 };

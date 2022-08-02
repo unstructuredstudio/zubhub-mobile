@@ -6,7 +6,7 @@ import { NativeUiText, NativeUiButton } from '..';
 import * as THEME from '../../constants/theme';
 import styles from './NativeUiModal.style';
 
-const NativeUiModal = ({ visible, setVisible, navigation }) => {
+const NativeUiModal = ({ visible, setVisible, navigation, description }) => {
   return (
     <View>
       <Modal onBackdropPress={() => setVisible(false)} isVisible={visible}>
@@ -26,7 +26,7 @@ const NativeUiModal = ({ visible, setVisible, navigation }) => {
                 textColor={THEME.COLORS.SECONDARY_TEXT}
                 style={styles.successText}
               >
-                Your account was successfully created. Welcome onboard!
+                {description}
               </NativeUiText>
             </View>
           </View>

@@ -52,7 +52,6 @@ const validationSchema = Yup.object({
 const Register = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.user);
 
   const ref = useRef(null);
 
@@ -157,6 +156,7 @@ const Register = () => {
         navigation={navigation}
         visible={visible}
         setVisible={setVisible}
+        description={' Your account was successfully created. Welcome onboard!'}
       />
       <View style={styles.topContainer}>
         <View style={[styles.introContainer]}>

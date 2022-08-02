@@ -8,6 +8,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 21,
     paddingHorizontal: 12,
+    marginVertical: 22,
   },
 
   errorBox: {
