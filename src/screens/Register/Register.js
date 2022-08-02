@@ -318,6 +318,7 @@ export default Register;
 const LayoutOne = ({ userData, setUserData }) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState('');
+  const [value, setValue] = useState('');
 
   const phoneInput = useRef(null);
 
