@@ -9,6 +9,7 @@ import ProjectDetail from './ProjectDetail/ProjectDetail';
 import About from './About/About';
 import Comments from './Comments/Comments';
 import Setting from './Setting/Setting';
+import Onboarding from './Onboardiing/Onboarding';
 
 export {
   Home,
@@ -22,4 +23,5 @@ export {
   About,
   Comments,
   Setting,
+  Onboarding,
 };

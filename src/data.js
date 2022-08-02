@@ -93,3 +93,21 @@ export const TAB_DATA_SET = [
     title: 'Settings',
   },
 ];
+
+export const ONBOARD_DATA = [
+  {
+    image: require('../assets/onboard1.png'),
+    title: 'Creative learning tools for children around the world!',
+    desc: 'A free web platform that expands access to low-cost creative learning and collaboration opportunities globally to children in underserved communities',
+  },
+  {
+    image: require('../assets/onboard2.png'),
+    title: 'Creative learning tools for children',
+    desc: 'A free web platform that expands access to low-cost creative learning and collaboration opportunities globally to children in underserved communities',
+  },
+  {
+    image: require('../assets/onboard3.png'),
+    title: 'Creative learning tools for children',
+    desc: 'A free web platform that expands access to low-cost creative learning and collaboration opportunities globally to children in underserved communities',
+  },
+];
