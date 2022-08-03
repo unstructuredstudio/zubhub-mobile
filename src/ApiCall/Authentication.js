@@ -93,3 +93,19 @@ export const login = ({ username, password }) => {
 
   return request({ url, method, body }).then((res) => res.json());
 };
+
+/**
+ * @method sendPasswordResetLink
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const sendPasswordResetLink = (email) => {
+  const url = '/rest-auth/password/reset/';
+  const method = 'POST';
+  const body = JSON.stringify({ email });
+
+  return request({ url, method, body }).then((res) =>
+    Promise.resolve(res.status === 200 ? { detail: 'ok' } : res.json())
+  );
+};

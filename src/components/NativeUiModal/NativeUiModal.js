@@ -6,7 +6,14 @@ import { NativeUiText, NativeUiButton } from '..';
 import * as THEME from '../../constants/theme';
 import styles from './NativeUiModal.style';
 
-const NativeUiModal = ({ visible, setVisible, navigation, description }) => {
+const NativeUiModal = ({
+  visible,
+  setVisible,
+  navigation,
+  description,
+  navigateTo,
+  label,
+}) => {
   return (
     <View>
       <Modal onBackdropPress={() => setVisible(false)} isVisible={visible}>
@@ -34,9 +41,9 @@ const NativeUiModal = ({ visible, setVisible, navigation, description }) => {
             <NativeUiButton
               onPress={() => {
                 setVisible(false);
-                navigation.replace('BottomNavigator');
+                navigation.replace(navigateTo);
               }}
-              label={'Go to Home'}
+              label={label}
             />
           </View>
         </View>

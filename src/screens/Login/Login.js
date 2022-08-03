@@ -53,7 +53,6 @@ const Login = () => {
     setLoading(true);
     const server_errors = {};
     let err = [];
-    console.log(userData, 'inkdcoskl');
     if (userData.username === '' && userData.password === '') {
       setLoading(false);
       err.push(`Ensure to fill all fields before proceeding`);
@@ -96,6 +95,8 @@ const Login = () => {
         visible={visible}
         setVisible={setVisible}
         description={' Your login was successful. Welcome onboard!'}
+        navigateTo={'BottomNavigator'}
+        label={'Go to Home'}
       />
 
       <View style={styles.topContainer}>

@@ -157,6 +157,8 @@ const Register = () => {
         visible={visible}
         setVisible={setVisible}
         description={' Your account was successfully created. Welcome onboard!'}
+        navigateTo={'BottomNavigator'}
+        label={'Go to Home'}
       />
       <View style={styles.topContainer}>
         <View style={[styles.introContainer]}>
