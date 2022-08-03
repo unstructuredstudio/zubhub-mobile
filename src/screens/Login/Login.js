@@ -143,6 +143,17 @@ const Login = () => {
                   onBlur={handleBlur('password')}
                   error={touched.password && errors.password}
                 />
+                <Pressable
+                  onPress={() => navigation.navigate('ForgetPassword')}
+                  style={styles.forgetPwd}
+                >
+                  <NativeUiText
+                    textColor={THEME.COLORS.PRIMARY_TEAL}
+                    textType={'medium'}
+                  >
+                    Forget Password?
+                  </NativeUiText>
+                </Pressable>
               </View>
             </View>
           );
