@@ -3,7 +3,7 @@ import * as THEME from '../../constants/theme';
 
 const styles = StyleSheet.create({
   main: {
-    backgroundColor: 'rgba(250, 186, 186, 0.2)',
+    backgroundColor: THEME.COLORS.PRIMARY_ERROR_CARD,
     marginTop: 15,
     borderRadius: 12,
     paddingVertical: 21,

@@ -1,5 +1,4 @@
 const baseURL = 'http://localhost:8000/api';
-import i18n from 'i18next';
 
 const request = ({
   url = '/',
@@ -71,13 +70,4 @@ export const signup = (userData) => {
   const body = JSON.stringify({ ...userData, subscribe: false });
 
   return request({ url, method, body }).then((res) => res.json());
-
-  // return request({ url, method, body })
-  //   .then((res) => {
-  //       // .then((res) => {
-  //   //   // console.log(res.json(), 'from request');
-  //   //   res.json().then((ele) => console.log(ele));
-  //   // })
-  //   })
-  //   .catch((err) => console.log(err));
 };

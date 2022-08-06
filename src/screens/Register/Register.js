@@ -73,7 +73,12 @@ const Register = () => {
   const componentsArray = [
     <LayoutOne userData={userData} setUserData={setUserData} />,
     <LayoutTwo userData={userData} setUserData={setUserData} />,
-    <LayoutThree error={error} userData={userData} setUserData={setUserData} />,
+    <LayoutThree
+      setError={setError}
+      error={error}
+      userData={userData}
+      setUserData={setUserData}
+    />,
   ];
 
   const updateCurrentSlideIndex = (e) => {
@@ -551,11 +556,12 @@ const LayoutTwo = ({ userData, setUserData }) => {
   );
 };
 
-const LayoutThree = ({ userData, setUserData, error }) => {
+const LayoutThree = ({ userData, setUserData, error, setError }) => {
   return (
     <>
       <ScrollView style={styles.container}>
-        {error.length > 0 && <ErrorCard error={error} />}
+        {error.length > 0 && <ErrorCard setError={setError} error={error} />}
+
         <View style={[styles.introContainer]}>
           <View style={styles.input}>
             <NativeUiInput

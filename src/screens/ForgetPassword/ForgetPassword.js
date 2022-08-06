@@ -1,5 +1,5 @@
-import { View, ScrollView, FlatList, Pressable } from 'react-native';
-import React, { useRef, useState, useEffect } from 'react';
+import { View } from 'react-native';
+import React from 'react';
 import {
   NativeUiHeader,
   NativeUiText,
@@ -8,15 +8,8 @@ import {
 } from '@components/';
 import * as THEME from '../../constants/theme';
 import styles from './ForgetPassword.style';
-import { useNavigation } from '@react-navigation/native';
 
 const ForgetPassword = () => {
-  const navigation = useNavigation();
-
-  const ref = useRef(null);
-  const [currentElemIndex, setCurrentElemIndex] = useState(0);
-  const [componentsArray, setComponentsArray] = useState([]);
-
   return (
     <View style={styles.container}>
       <NativeUiHeader subScreen={true} sectionTitle={'Forget Password'} />
