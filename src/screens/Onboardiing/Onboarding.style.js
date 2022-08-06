@@ -7,7 +7,7 @@ const style = StyleSheet.create({
   container: {
     flex: 1,
     paddingVertical: 22,
-    backgroundColor: THEME.COLORS.WHITE,
+    backgroundColor: THEME.COLORS.PRIMARY_RED,
   },
   skip: {
     alignItems: 'flex-end',
@@ -22,29 +22,34 @@ const style = StyleSheet.create({
   main: {
     width: WIDTH * 1,
     paddingHorizontal: 12,
-    // justifyContent: 'space-around',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   skipColor: {
     color: 'brown',
     fontWeight: 'bold',
   },
   heading: {
-    fontSize: 22,
     textAlign: 'center',
-    // paddingVertical: 7,
     marginTop: 30,
     lineHeight: 32,
   },
+
   body: {
     textAlign: 'center',
     lineHeight: 22,
     marginTop: 30,
   },
-  annimView: {
-    width: 360,
-    height: 360,
+
+  imgConainer: {
+    width: 111,
+    height: 21,
   },
+
+  img: {
+    width: '100%',
+  },
+
   iconView: {
     width: 40,
     height: 40,
@@ -56,9 +61,6 @@ const style = StyleSheet.create({
     borderColor: THEME.COLORS.PRIMARY_TEAL,
   },
   footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 14,
   },
 
@@ -97,11 +99,6 @@ const style = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 20,
     textAlign: 'center',
-  },
-
-  img: {
-    width: '100%',
-    height: '100%',
   },
 });
 

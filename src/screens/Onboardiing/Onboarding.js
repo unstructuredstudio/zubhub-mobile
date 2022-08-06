@@ -11,7 +11,7 @@ import {
 import styles from './Onboarding.style';
 import { ONBOARD_DATA } from '../../data';
 import { Feather } from '@expo/vector-icons';
-import { NativeUiText } from '@components/';
+import { NativeUiButton, NativeUiText } from '@components/';
 import * as THEME from '../../constants/theme';
 
 const WIDTH = Dimensions.get('screen').width;
@@ -39,40 +39,12 @@ const Onboarding = ({ navigation }) => {
     }
   };
 
-  const goToPrevSlide = () => {
-    const prevSlideIndex = currentElemIndex - 1;
-    if (prevSlideIndex != ONBOARD_DATA.length) {
-      const offset = prevSlideIndex * WIDTH;
-      ref?.current?.scrollToOffset({ offset });
-      setCurrentElemIndex(prevSlideIndex);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#fff" barStyle={'dark-content'} />
 
-      {currentElemIndex === ONBOARD_DATA.length - 1 && (
-        <TouchableOpacity
-          onPress={() => navigation.replace('Home')}
-          style={styles.skip}
-        >
-          <NativeUiText
-            textType="medium"
-            style={[
-              styles.skipColor,
-              currentElemIndex === ONBOARD_DATA.length - 1
-                ? styles.isLast
-                : styles.diff,
-            ]}
-          >
-            GET STARTED
-          </NativeUiText>
-        </TouchableOpacity>
-      )}
       <FlatList
         ref={ref}
-        contentContainerStyle={styles.cont}
         keyExtractor={(_, index) => index}
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -81,21 +53,22 @@ const Onboarding = ({ navigation }) => {
         data={ONBOARD_DATA}
         renderItem={({ item }) => (
           <View style={styles.main}>
-            <View style={styles.annimView}>
-              <Image style={styles.img} source={item.image} />
+            <View style={styles.imgConainer}>
+              <Image style={styles.img} source={require('@asset/logo.png')} />
             </View>
             <View>
               <NativeUiText
                 textType="medium"
-                fontSize={24}
+                fontSize={30}
                 style={styles.heading}
+                textColor={THEME.COLORS.WHITE}
               >
                 {item.title}{' '}
               </NativeUiText>
               <NativeUiText
-                textColor={THEME.COLORS.SECONDARY_TEXT}
+                textColor={THEME.COLORS.WHITE}
                 style={styles.body}
-                fontSize={16}
+                fontSize={18}
               >
                 {item.desc}
               </NativeUiText>
@@ -106,7 +79,6 @@ const Onboarding = ({ navigation }) => {
 
       <FooterComponent
         goToNextSlide={goToNextSlide}
-        goToPrevSlide={goToPrevSlide}
         currentElemIndex={currentElemIndex}
       />
     </View>
@@ -115,40 +87,15 @@ const Onboarding = ({ navigation }) => {
 
 export default Onboarding;
 
-const FooterComponent = ({
-  currentElemIndex,
-  goToNextSlide,
-  goToPrevSlide,
-}) => {
+const FooterComponent = ({ currentElemIndex, goToNextSlide }) => {
   return (
     <View style={styles.footer}>
-      <TouchableOpacity style={styles.iconView} onPress={goToPrevSlide}>
-        <Feather
-          name="arrow-left"
-          size={22}
-          color={THEME.COLORS.PRIMARY_TEAL}
-        />
-      </TouchableOpacity>
-      <View style={styles.indicatorView}>
-        {ONBOARD_DATA.map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.indicator,
-              currentElemIndex === index && {
-                backgroundColor: THEME.COLORS.PRIMARY_TEAL,
-                width: 40,
-              },
-            ]}
-          ></View>
-        ))}
-      </View>
-      <TouchableOpacity
+      <NativeUiButton
         onPress={goToNextSlide}
-        style={[styles.iconView, styles.rightIcon]}
-      >
-        <Feather name="arrow-right" size={22} color={THEME.COLORS.WHITE} />
-      </TouchableOpacity>
+        label={
+          currentElemIndex === ONBOARD_DATA.length - 1 ? 'Get Started' : 'Next'
+        }
+      />
     </View>
   );
 };
