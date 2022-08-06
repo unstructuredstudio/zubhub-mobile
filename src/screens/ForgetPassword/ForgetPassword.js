@@ -105,7 +105,7 @@ const ForgetPassword = () => {
             Enter your email so we can send you a pass word reset link
           </NativeUiText>
         </View>
-        {error.length > 0 && <ErrorCard error={error} />}
+        {error.length > 0 && <ErrorCard setError={setError} error={error} />}
       </View>
 
       <View style={styles.container}>

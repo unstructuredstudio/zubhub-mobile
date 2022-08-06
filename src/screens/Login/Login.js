@@ -112,7 +112,7 @@ const Login = () => {
             Lets create an account first!!
           </NativeUiText>
         </View>
-        {error.length > 0 && <ErrorCard error={error} />}
+        {error.length > 0 && <ErrorCard setError={setError} error={error} />}
       </View>
       <Formik initialValues={initialValues} validationSchema={validationSchema}>
         {({ errors, touched, handleBlur, setFieldValue, setFieldTouched }) => {
@@ -134,6 +134,7 @@ const Login = () => {
 
               <View style={styles.input}>
                 <NativeUiInput
+                  password
                   label={'Enter your password'}
                   placeholder={'Password'}
                   onChangeText={(e) => {

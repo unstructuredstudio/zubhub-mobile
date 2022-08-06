@@ -42,5 +42,11 @@ const styles = (textColor) =>
     errorText: {
       marginTop: 9,
     },
+
+    itemView: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
   });
 export default styles;

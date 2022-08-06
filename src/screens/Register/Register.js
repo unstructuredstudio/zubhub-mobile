@@ -72,7 +72,12 @@ const Register = () => {
   const componentsArray = [
     <LayoutOne userData={userData} setUserData={setUserData} />,
     <LayoutTwo userData={userData} setUserData={setUserData} />,
-    <LayoutThree error={error} userData={userData} setUserData={setUserData} />,
+    <LayoutThree
+      setError={setError}
+      error={error}
+      userData={userData}
+      setUserData={setUserData}
+    />,
   ];
 
   const updateCurrentSlideIndex = (e) => {
@@ -462,6 +467,7 @@ const LayoutOne = ({ userData, setUserData }) => {
 
                 <View style={styles.input}>
                   <NativeUiInput
+                    password
                     label={'Enter your password'}
                     placeholder={'Password'}
                     onChangeText={(e) => {
@@ -475,6 +481,7 @@ const LayoutOne = ({ userData, setUserData }) => {
                 </View>
                 <View style={styles.input}>
                   <NativeUiInput
+                    password
                     label={'Confirm your password'}
                     placeholder={'Password'}
                     onChangeText={(e) => {
@@ -553,11 +560,11 @@ const LayoutTwo = ({ userData, setUserData }) => {
   );
 };
 
-const LayoutThree = ({ userData, setUserData, error }) => {
+const LayoutThree = ({ userData, setUserData, error, setError }) => {
   return (
     <>
       <ScrollView style={styles.container}>
-        {error.length > 0 && <ErrorCard error={error} />}
+        {error.length > 0 && <ErrorCard error={error} setError={setError} />}
         <View style={[styles.introContainer]}>
           <View style={styles.input}>
             <NativeUiInput

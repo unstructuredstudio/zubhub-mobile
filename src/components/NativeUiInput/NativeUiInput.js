@@ -1,9 +1,10 @@
-import React from 'react';
-import { View, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, TouchableOpacity } from 'react-native';
 import { NativeUiText } from '../../components';
 import styles from './NativeUiInput.style';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import * as THEME from '../../constants/theme';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 const NativeUiInput = ({
   label,
@@ -20,6 +21,7 @@ const NativeUiInput = ({
   multiline,
   error,
   onBlur,
+  password,
 }) => {
   const inputType = email
     ? 'email-address'
@@ -28,6 +30,8 @@ const NativeUiInput = ({
     : phone
     ? 'phone-pad'
     : 'default';
+  const [showPassword, setShowPassword] = useState(true);
+
   return (
     <View>
       <View>
@@ -47,11 +51,7 @@ const NativeUiInput = ({
           },
         ]}
       >
-        <View
-          style={{
-            flex: 1,
-          }}
-        >
+        <View style={styles(labelColor).itemView}>
           <TextInput
             onBlur={onBlur}
             keyboardType={inputType}
@@ -61,7 +61,17 @@ const NativeUiInput = ({
             placeholderTextColor={placeholderTextColor && placeholderTextColor}
             style={[styles(labelColor).textInputStyle]}
             multiline={multiline}
+            secureTextEntry={password && showPassword && true}
           />
+          {password && (
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Entypo
+                name={showPassword ? 'eye' : 'eye-with-line'}
+                color={THEME.COLORS.SECONDARY_TEXT}
+                size={20}
+              />
+            </TouchableOpacity>
+          )}
         </View>
         <View>
           {children && (
