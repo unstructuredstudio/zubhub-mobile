@@ -3,30 +3,56 @@ import {
   NativeUiHeader,
   ProjectCard,
   NativeUiCardSkeleton,
+  NativeUiActivityIndicator,
 } from "@components/";
 import React, { useState, useEffect } from "react";
 import styles from "./Home.style";
 import DefaultStyles from "../../constants/DefaultStyles.style";
 import { getAllProjects } from "../../redux/actions/projectsAction";
 import { useSelector, useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const Home = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const numberOfPosts = new Array(22).fill(null);
   const projects = useSelector((state) => state.projects);
   const user = useSelector((state) => state.user);
-
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [allProjects, setAllProjects] = useState([]);
 
   useEffect(() => {
     fetchAllProjects();
-  }, []);
+  }, [currentPage]);
 
   const fetchAllProjects = () => {
-    setLoading(true);
-    dispatch(getAllProjects(setLoading, { page: 1, token: user?.token }));
+    if (allProjects.length < 1) {
+      setLoading(true);
+    }
+    dispatch(
+      getAllProjects(setLoading, {
+        page: currentPage,
+        token: user?.token,
+        t: t,
+      })
+    );
   };
 
+  //Sets list of projects to display
+  useEffect(() => {
+    if (Array.isArray(projects?.all_projects?.results)) {
+      setAllProjects([...allProjects, ...projects?.all_projects?.results]);
+    }
+  }, [projects?.all_projects]);
+
+  //Fetches next paginated set of projects
+  const onEndReached = () => {
+    if (projects?.all_projects?.next !== null) {
+      console.log(projects?.all_projects?.next, "page number");
+      return setCurrentPage(currentPage + 1);
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <NativeUiHeader />
@@ -39,9 +65,16 @@ const Home = () => {
       ) : (
         <FlatList
           contentContainerStyle={[styles.list, DefaultStyles.containerCenter]}
-          data={projects?.all_projects?.results}
+          data={allProjects}
           keyExtractor={(_, index) => index}
           renderItem={({ item }) => <ProjectCard item={item} />}
+          onEndReachedThreshold={0}
+          onEndReached={onEndReached}
+          ListFooterComponent={
+            projects?.all_projects?.next !== null && (
+              <NativeUiActivityIndicator />
+            )
+          }
         />
       )}
     </SafeAreaView>
@@ -49,67 +82,3 @@ const Home = () => {
 };
 
 export default Home;
-
-// import React from 'react';
-// import { StyleSheet, View, Dimensions, ViewStyle } from 'react-native';
-// import SkeletonLoader from 'expo-skeleton-loader';
-
-// const { width, height } = Dimensions.get('window');
-
-// const AvatarLayout = ({ size = 100, style }) => (
-//   <SkeletonLoader>
-//     <SkeletonLoader.Container
-//       style={[{ flex: 1, flexDirection: 'row' }, style]}
-//     >
-//       <SkeletonLoader.Item
-//         style={{
-//           width: size,
-//           height: size,
-//           borderRadius: size / 2,
-//           marginRight: 20,
-//         }}
-//       />
-//       <SkeletonLoader.Container style={{ paddingVertical: 10 }}>
-//         <SkeletonLoader.Item
-//           style={{ width: 220, height: 20, marginBottom: 5 }}
-//         />
-//         <SkeletonLoader.Item style={{ width: 150, height: 20 }} />
-//       </SkeletonLoader.Container>
-//     </SkeletonLoader.Container>
-//   </SkeletonLoader>
-// );
-
-// const PostLayout = () => (
-//   <SkeletonLoader style={{ marginVertical: 10 }}>
-//     <AvatarLayout style={{ marginBottom: 10 }} />
-
-//     <SkeletonLoader.Item
-//       style={{
-//         width,
-//         height: height / 4.5,
-//         marginVertical: 10,
-//         backgroundColor: 'red',
-//       }}
-//     />
-//   </SkeletonLoader>
-// );
-
-// const numberOfPosts = new Array(2).fill(null);
-
-// export default function App() {
-//   return (
-//     <View style={styles.container}>
-//       {numberOfPosts.map((_, i) => (
-//         <PostLayout key={i} />
-//       ))}
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: 'white',
-//     padding: 10,
-//   },
-// });

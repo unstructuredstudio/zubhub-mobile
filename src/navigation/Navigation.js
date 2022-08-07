@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -13,11 +13,22 @@ import {
 } from "../screens";
 import BottomNavigator from "./BottomNavigator";
 import * as THEME from "../constants/theme";
+import { TOKEN } from "../utils/storageKeys";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createStackNavigator();
 
 export default function Navigation() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    getToken();
+  }, []);
+
+  const getToken = async () => {
+    let userToken = await AsyncStorage.getItem(TOKEN);
+    setToken(userToken);
+  };
 
   return (
     <View style={styles.container}>
@@ -27,10 +38,14 @@ export default function Navigation() {
       />
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Login" component={Login} />
+          {token === null && (
+            <>
+              <Stack.Screen name="Login" component={Login} />
+              <Stack.Screen name="Register" component={Register} />
+              <Stack.Screen name="Home" component={Home} />
+            </>
+          )}
           <Stack.Screen name="BottomNavigator" component={BottomNavigator} />
-          <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
           <Stack.Screen name="ProjectDetail" component={ProjectDetail} />
         </Stack.Navigator>

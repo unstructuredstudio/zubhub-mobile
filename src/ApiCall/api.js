@@ -117,6 +117,17 @@ export const sendPasswordResetLink = (email) => {
  * @todo - describe method's signature
  */
 export const getProjects = ({ token, page }) => {
-  const url = page ? `/projects/?${page}` : `projects/`;
+  const url = page ? `/projects/?page=${page}` : `projects/`;
   return request({ token, url }).then((res) => res.json());
+};
+
+/**
+ * @method getProjects
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const getAProjectsDetail = (id) => {
+  const url = `/projects/${id}`;
+  return request({ url }).then((res) => res.json());
 };

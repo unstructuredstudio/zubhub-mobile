@@ -1,17 +1,17 @@
-import { View, Image, TouchableOpacity } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import styles from './ProjectCard.style';
-import { Feather } from '@expo/vector-icons';
-import * as THEME from '../../constants/theme';
-import Fontisto from 'react-native-vector-icons/Fontisto';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import DefaultStyles from '../../constants/DefaultStyles.style';
-import { NativeUiText, NativeUiActionSheet, NativeUiButton } from '..';
-import { SheetManager } from 'react-native-actions-sheet';
-import { useNavigation } from '@react-navigation/native';
-import { dFormatter, buildVideoThumbnailURL } from '../../utils/script';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import RenderHtml from 'react-native-render-html';
+import { View, Image, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import styles from "./ProjectCard.style";
+import { Feather } from "@expo/vector-icons";
+import * as THEME from "../../constants/theme";
+import Fontisto from "react-native-vector-icons/Fontisto";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import DefaultStyles from "../../constants/DefaultStyles.style";
+import { NativeUiText, NativeUiActionSheet, NativeUiButton } from "..";
+import { SheetManager } from "react-native-actions-sheet";
+import { useNavigation } from "@react-navigation/native";
+import { dFormatter, buildVideoThumbnailURL } from "../../utils/script";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import RenderHtml from "react-native-render-html";
 
 const ProjectCard = ({ item }) => {
   const navigation = useNavigation();
@@ -33,11 +33,11 @@ const ProjectCard = ({ item }) => {
   const [shouldUpdateVal, setShouldUpdateVal] = useState(0);
 
   const toggleBookmark = () => {
-    SheetManager.show('authenticationSheet');
+    SheetManager.show("authenticationSheet");
   };
 
   const toggleClap = (val) => {
-    SheetManager.show('authenticationSheet');
+    SheetManager.show("authenticationSheet");
   };
   useEffect(() => {
     if (clapVal === true) {
@@ -50,7 +50,7 @@ const ProjectCard = ({ item }) => {
   return (
     <TouchableOpacity
       style={styles.mainCard}
-      onPress={() => navigation.navigate('ProjectDetail', { item })}
+      onPress={() => navigation.navigate("ProjectDetail", { item })}
     >
       <NativeUiActionSheet id="authenticationSheet" sheetTitle="Create Account">
         <NativeUiText style={styles.space}>
@@ -58,13 +58,14 @@ const ProjectCard = ({ item }) => {
         </NativeUiText>
         <NativeUiButton
           onPress={async () => {
-            navigation.navigate('Register');
-            await SheetManager.hide('authenticationSheet');
+            navigation.navigate("Register");
+            await SheetManager.hide("authenticationSheet");
           }}
-          label={'Create Account'}
+          label={"Create Account"}
           style={styles.space}
         />
       </NativeUiActionSheet>
+
       <View style={styles.imageContainer}>
         {images.length > 0 ? (
           <Image
@@ -130,7 +131,7 @@ const ProjectCard = ({ item }) => {
           </TouchableOpacity>
         </View>
 
-        <NativeUiText fontSize={THEME.FONT_SIZE.MEDIUM} textType={'bold'}>
+        <NativeUiText fontSize={THEME.FONT_SIZE.MEDIUM} textType={"bold"}>
           {title}
         </NativeUiText>
 
@@ -152,7 +153,7 @@ const ProjectCard = ({ item }) => {
             </NativeUiText>
             <NativeUiText
               textColor={THEME.COLORS.PRIMARY_TEAL}
-              textType={'medium'}
+              textType={"medium"}
               fontSize={THEME.FONT_SIZE.SMALL}
               style={styles.role}
             >
@@ -189,7 +190,7 @@ const ProjectCard = ({ item }) => {
                   textColor={THEME.COLORS.SECONDARY_TEXT}
                   style={styles.txt}
                 >
-                  {comments_count}{' '}
+                  {comments_count}{" "}
                 </NativeUiText>
               </View>
             </View>
@@ -198,7 +199,7 @@ const ProjectCard = ({ item }) => {
                 textColor={THEME.COLORS.SECONDARY_TEXT}
                 style={styles.txt}
                 fontSize={THEME.FONT_SIZE.SMALL}
-                textType={'medium'}
+                textType={"medium"}
               >
                 {`${dFormatter(created_on).value}  ${
                   dFormatter(created_on).key

@@ -1,5 +1,7 @@
-import { REGISTER_USER, REGISTER_USER_FAIL, SET_AUTH_USER } from "../types";
+import { SET_AUTH_USER } from "../types";
 import { signup, login, sendPasswordResetLink } from "../../ApiCall/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { TOKEN } from "../../utils/storageKeys";
 
 /**
  * @function register
@@ -10,10 +12,12 @@ import { signup, login, sendPasswordResetLink } from "../../ApiCall/api";
 export const registerUser =
   (userData, setVisible, setLoading) => (dispatch) => {
     let response = signup(userData)
-      .then((res) => {
+      .then(async (res) => {
         if (!res.key) {
           throw new Error(JSON.stringify(res));
         }
+
+        await AsyncStorage.setItem(TOKEN, res.key);
         setLoading(false);
         dispatch({
           type: SET_AUTH_USER,
@@ -32,10 +36,11 @@ export const registerUser =
  */
 export const loginUser = (userData, setVisible, setLoading) => (dispatch) => {
   let response = login(userData)
-    .then((res) => {
+    .then(async (res) => {
       if (!res.key) {
         throw new Error(JSON.stringify(res));
       }
+      await AsyncStorage.setItem(TOKEN, res.key);
       setLoading(false);
       dispatch({
         type: SET_AUTH_USER,

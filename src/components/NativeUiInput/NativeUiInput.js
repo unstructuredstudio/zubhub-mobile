@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity } from 'react-native';
-import { NativeUiText } from '../../components';
-import styles from './NativeUiInput.style';
-import DefaultStyles from '../../constants/DefaultStyles.style';
-import * as THEME from '../../constants/theme';
-import Entypo from 'react-native-vector-icons/Entypo';
+import React, { useState } from "react";
+import { View, TextInput, TouchableOpacity } from "react-native";
+import { NativeUiText } from "../../components";
+import styles from "./NativeUiInput.style";
+import DefaultStyles from "../../constants/DefaultStyles.style";
+import * as THEME from "../../constants/theme";
+import Entypo from "react-native-vector-icons/Entypo";
 
 const NativeUiInput = ({
   label,
-  labelColor = '#ccc',
+  labelColor = "#ccc",
   placeholder,
-  placeholderTextColor = '#A8A8A8',
+  placeholderTextColor = "#A8A8A8",
   onChangeText,
   number,
   phone,
@@ -24,12 +24,12 @@ const NativeUiInput = ({
   password,
 }) => {
   const inputType = email
-    ? 'email-address'
+    ? "email-address"
     : number
-    ? 'numeric'
+    ? "numeric"
     : phone
-    ? 'phone-pad'
-    : 'default';
+    ? "phone-pad"
+    : "default";
   const [showPassword, setShowPassword] = useState(true);
 
   return (
@@ -46,7 +46,7 @@ const NativeUiInput = ({
         style={[
           styles(labelColor).inputContainer,
           {
-            width: width ?? '100%',
+            width: width ?? "100%",
             height: multiline ? 120 : 55,
           },
         ]}
@@ -56,7 +56,7 @@ const NativeUiInput = ({
             onBlur={onBlur}
             keyboardType={inputType}
             onChangeText={onChangeText}
-            autoCapitalize={'none'}
+            autoCapitalize={"none"}
             placeholder={placeholder && placeholder}
             placeholderTextColor={placeholderTextColor && placeholderTextColor}
             style={[styles(labelColor).textInputStyle]}
@@ -66,7 +66,7 @@ const NativeUiInput = ({
           {password && (
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Entypo
-                name={showPassword ? 'eye' : 'eye-with-line'}
+                name={showPassword ? "eye-with-line" : "eye"}
                 color={THEME.COLORS.SECONDARY_TEXT}
                 size={20}
               />

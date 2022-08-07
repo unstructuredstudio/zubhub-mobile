@@ -1,5 +1,741 @@
 {
-  "home": {
-    "greet": "bonjour"
+  "date": {
+    "years": "years",
+    "year": "year",
+    "months": "months",
+    "month": "month",
+    "days": "days",
+    "day": "day",
+    "hours": "hours",
+    "hour": "hour",
+    "minutes": "minutes",
+    "minute": "minute",
+    "seconds": "seconds",
+    "second": "second",
+    "ago": "ago"
+  },
+
+  "pageWrapper": {
+    "navbar": {
+      "login": "Login",
+      "signup": "Sign Up",
+      "createProject": "Create Project",
+      "profile": "My Profile",
+      "projects": "My Projects",
+      "followers": "Followers",
+      "following": "Following",
+      "savedProjects": "Bookmarks",
+      "logout": "Logout"
+    },
+
+    "footer": {
+      "privacy": "Privacy",
+      "guidelines": "Privacy Policy",
+      "termsOfUse": "Terms of Use",
+      "about": "About",
+      "zubhub": "ZubHub",
+      "unstructuredStudio": "Unstructured Studio",
+      "help": "Help",
+      "resources": "Tinkering Resources",
+      "faqs": "FAQs",
+      "contactUs": "Contact Us"
+    },
+    "inputs": {
+      "search": {
+        "label": "Search"
+      }
+    },
+    "errors": {
+      "unexpected": "Uh oh! Seems like we could not get your profile. Maybe try again?",
+      "logoutFailed": "Hmm..seems like an occured while signing you out. Please try again"
+    }
+  },
+
+  "signup": {
+    "welcomeMsg": {
+      "primary": "Welcome to Zubhub",
+      "secondary": "Lets create an account first!"
+    },
+    "inputs": {
+      "username": {
+        "label": "Username",
+        "errors": {
+          "required": "We need your username to proceed"
+        }
+      },
+      "email": {
+        "label": "Email",
+        "errors": {
+          "phoneOrEmail": "You must enter either your email or phone number",
+          "invalid": "The email seems to be invalid 🤔"
+        }
+      },
+      "phone": {
+        "label": "Phone",
+        "errors": {
+          "phoneOrEmail": "You must enter either your email or phone number",
+          "invalid": "I'm having trouble understanding this number. Make sure it's in this format: '+911234567890'. Upto 15 digits are allowed."
+        }
+      },
+      "dateOfBirth": {
+        "label": "Date of Birth",
+        "errors": {
+          "max": "Your date of birth can't be greater than today",
+          "required": "Looks like you forgot to enter this!"
+        }
+      },
+      "location": {
+        "label": "Location",
+        "errors": {
+          "min": "Your location seems a bit short",
+          "required": "Looks like you forgot this! Where you are from?"
+        }
+      },
+      "password1": {
+        "label": "Password",
+        "errors": {
+          "min": "Your password seems too short",
+          "required": "Provide a strong password here!"
+        }
+      },
+      "password2": {
+        "label": "Type Password Again",
+        "errors": {
+          "noMatch": "Seems like passwords don't match",
+          "required": "Seems like you forgot this!"
+        }
+      },
+      "bio": {
+        "label": "Bio",
+        "helpText": "Tell us something interesting about you! You can share what care about, your hobbies, things you have been working on recently, etc.",
+        "errors": {
+          "tooLong": "Oh, you have a lot to say :) Sadly, bio can't more than 255 characters for now!"
+        }
+      },
+      "submit": "Signup"
+    },
+    "unsubscribe": "I don't want to receive updates on new tinkering projects and ideas via WhatsApp/SMS or e-mail",
+    "alreadyAMember": "Already a Member ?",
+    "login": "Login",
+    "errors": {
+      "unexpected": "Uh oh! We couldn't log you in. Maybe try again later?",
+      "invalidFormFields": "Looks like there are a few errors in the registration form. Review it before clicking Signup!"
+    },
+    "ariaLabels": {
+      "togglePasswordVisibility": "Toggle password visibility"
+    },
+    "tooltips": {
+      "noRealName": "It's always best not use your real name here! Give yourself a fun and unique name!"
+    }
+  },
+
+  "login": {
+    "welcomeMsg": {
+      "primary": "Welcome to Zubhub",
+      "secondary": "Login to get started!"
+    },
+    "inputs": {
+      "username": {
+        "label": "Username Or Email",
+        "errors": {
+          "required": "Seems like you forgot this"
+        }
+      },
+      "password": {
+        "label": "Password",
+        "errors": {
+          "min": "Hmm..your password seems too short!",
+          "required": "Seems like you forgot this"
+        }
+      },
+      "submit": "Login"
+    },
+    "notAMember": "Not a member yet?",
+    "signup": "Sign Up",
+    "forgotPassword": "Forgot Password?",
+    "errors": {
+      "unexpected": "Uh oh, seems like we hit a snag :( Maybe try again later?"
+    }
+  },
+
+  "passwordReset": {
+    "welcomeMsg": {
+      "primary": "Password Reset",
+      "secondary": "Enter your email so we can send you a password reset link"
+    },
+    "inputs": {
+      "email": {
+        "label": "Email",
+        "errors": {
+          "invalid": "Umm..the email seems to be invalid 🤔",
+          "required": "We need your mail to send you a reset link"
+        }
+      },
+      "submit": "Send Reset Link"
+    },
+    "toastSuccess": "We just sent a password reset link to your email! Check your mail!",
+    "errors": {
+      "unexpected": "Oh no! Seems like we hit a snag :( Maybe try again later?"
+    }
+  },
+
+  "passwordResetConfirm": {
+    "welcomeMsg": {
+      "primary": "Password Reset Confirmation"
+    },
+    "inputs": {
+      "newPassword1": {
+        "label": "New Password",
+        "errors": {
+          "min": "Hmm..your password seems too short",
+          "required": "Seems like you forgot this one"
+        }
+      },
+      "newPassword2": {
+        "label": "Confirm Password",
+        "errors": {
+          "noMatch": "Looks like the passwords don't match",
+          "required": "I think you forgot this one"
+        }
+      },
+      "submit": "Reset Password"
+    },
+    "toastSuccess": "Congratulations! Your password was successfully reset! Let me redirected you to login",
+    "errors": {
+      "unexpected": "Oh no! Seems like we hit a snag :( Maybe try again later?"
+    }
+  },
+
+  "emailConfirm": {
+    "welcomeMsg": {
+      "primary": "Email Confirmation",
+      "secondary": " Please Confirm that you are <> and that the email belongs to you:"
+    },
+    "inputs": {
+      "submit": "Confirm"
+    },
+    "toastSuccess": "Congratulations!, your email has been confirmed!",
+    "errors": {
+      "unexpected": "Oh no! Seems like we hit a snag :( Maybe try again later?"
+    }
+  },
+
+  "phoneConfirm": {
+    "welcomeMsg": {
+      "primary": "Phone Confirmation",
+      "secondary": " Please confirm that you are <> and that the phone number you provided belongs to you:"
+    },
+    "inputs": {
+      "submit": "Confirm"
+    },
+    "toastSuccess": "Congratulations!, your phone number has been confirmed!",
+    "errors": {
+      "unexpected": "Oh no! Seems like we hit a snag :( Maybe try again later?"
+    }
+  },
+
+  "projects": {
+    "shareProject": "Share a project",
+    "exploreIdeas": "Explore Ideas",
+    "activityOfTheMonth": "Activity of the Month",
+    "allProjects": "All Projects",
+    "prev": "Prev",
+    "next": "Next",
+    "createProject": "Create a project",
+    "welcome": "Welcome",
+    "ariaLabels": {
+      "prevNxtButtons": "Previous and next page buttons"
+    },
+    "errors": {
+      "unexpected": "Uh oh! Seems like we hit a snag :( Maybe try again later?",
+      "noProject": "Seems like you have arrived at a new and fresh ZubHub! There are no projects at this moment. Maybe try creating one?"
+    }
+  },
+
+  "project": {
+    "publish": {
+      "draft": "Draft",
+      "preview": "Preview",
+      "authenticated_creators": "Authenticated Creators",
+      "public": "Public"
+    },
+    "errors": {
+      "videoPlayerError": "An error occured while trying to play this video"
+    }
+  },
+
+  "staffPicks": {
+    "viewAll": "View all >>"
+  },
+
+  "staffPickDetails": {
+    "prev": "Prev",
+    "next": "Next",
+    "ariaLabels": {
+      "prevNxtButtons": "Previous and next page buttons"
+    },
+    "errors": {
+      "noStaffPick": "This staff pick doesn't exist",
+      "unexpected": "Uh oh! Seems like we hit a snag :( Maybe try again later?"
+    }
+  },
+
+  "createProject": {
+    "welcomeMsg": {
+      "primary": "Create Project",
+      "secondary": "Tell us about your project!"
+    },
+    "inputs": {
+      "title": {
+        "label": "Name your project",
+        "errors": {
+          "max": "Your project title shouldn't be more than 100 characters",
+          "required": "Seems like you missed this one"
+        }
+      },
+      "description": {
+        "label": "Describe what it is",
+        "helperText": "Tell us something interesting about the project! You can share what it is about, what inspired you to make it, your making process, fun and challenging moments you experienced, etc.",
+        "placeholder": "Describe your project ...",
+        "errors": {
+          "max": "your description shouldn't be more than 10,000 characters",
+          "required": "This field is required"
+        }
+      },
+      "projectImages": {
+        "label": "Let's add some pictures",
+        "label2": "Add Images",
+        "topHelperText": "Don't have them? Add a video instead!",
+        "errors": {
+          "onlyImages": "Only images are allowed for now",
+          "imageOrVideo": "You must provide either image(s), video file, or video url to create your project!",
+          "imageSizeTooLarge": "One or more of your images is larger than 10 MB in size! Upload smaller images",
+          "tooManyImages": "Too many images uploaded! We only support 10 images per project :("
+        }
+      },
+      "video": {
+        "label": "Let's add a video",
+        "label2": "Add Video",
+        "dialogURLFieldLabel": "Video URL",
+        "dialogURLToggle": "Link Video",
+        "dialogFileToggle": "Upload Video",
+        "dialogCancel": "Cancel",
+        "dialogDone": "Done",
+        "topHelperText": "It's ok if you don't have a video, you can add images instead!",
+        "bottomHelperText": "You can provide video URL (Youtube, vimeo and Google Drive are supported) or a video file",
+        "errors": {
+          "shouldBeURL": "Select a valid video URL from YouTube, Vimeo, and Google Drive",
+          "shouldBeVideoFile": "Select a valid video file",
+          "maxVideoFileSize": "video file is more than 60MB",
+          "maxVideoURLLength": "video URL is too long",
+          "imageOrVideo": "You must provide either image(s), video file, or video url to create your project!"
+        }
+      },
+      "materialsUsed": {
+        "label": "What materials did you use?",
+        "addMore": "Add More",
+        "errors": {
+          "max": "Looks like you used too many materials! It's ok to leave some out",
+          "required": "Maybe you forgot to fill this one?"
+        }
+      },
+      "category": {
+        "label": "What is the category of your project?",
+        "topHelperText": "Choose None if you are unsure about the category",
+        "errors": {
+          "min": "Category is too short"
+        }
+      },
+      "tags": {
+        "label": "What tags best describe your project?",
+        "topHelperText": "For example, if you made flower from cardboard, you can write: cardboard, flowers, colors. You can leave this blank if you are unsure",
+        "addTag": "Add a tag",
+        "errors": {
+          "limitReached": "Too many tags added! Maybe remove some and try again?",
+          "unsupported": "Tags support only letters, numbers, spaces, and dashes. Did you add something else?"
+        }
+      },
+      "publish": {
+        "label": "What publish option do you want to set for this project?",
+        "topHelperText": "Think about your target audience. Should this project be visible to all creators?, authenticated creators?, or do you want to provide the usernames of creators this project should be visible to?",
+        "visibleTo": "Visible To",
+        "addUsernames": "Add Usernames",
+        "errors": {
+          "visible_to_required": "You must provide the usernames of creators your post should be visible to in preview mode",
+          "visible_to_unsupported": "One of the usernames provided is not a valid username"
+        }
+      },
+      "submit": "Create Project",
+      "edit": "Edit Project",
+      "image": "Image added",
+      "images": "Images added",
+      "videoFile": "Video file added",
+      "videoURL": "Video URL added"
+    },
+    "createToastSuccess": "Your project was created successfully!",
+    "updateToastSuccess": "Your project was updated successfully!",
+    "errors": {
+      "notLoggedIn": "You are not logged in. Click on the signin button to get started",
+      "unexpected": "Well, this is embarrasing! Seems like we could not create your project :( Maybe try again later?"
+    }
+  },
+
+  "searchResults": {
+    "projects": "Projects",
+    "creators": "Creators",
+    "resultFound": "Result for",
+    "resultsFound": "Results for",
+    "prev": "Prev",
+    "next": "Next",
+    "ariaLabels": {
+      "prevNxtButtons": "Previous and next page buttons"
+    },
+    "following": {
+      "follow": "Follow",
+      "unfollow": "Unfollow"
+    },
+    "errors": {
+      "unexpected": "Uh oh! Seems like we hit a snag :( Maybe try again later?",
+      "noResult": "We could not find anything for your search term! Maybe try to search something else?"
+    }
+  },
+
+  "savedProjects": {
+    "title": "Your saved projects",
+    "prev": "Prev",
+    "next": "Next",
+    "ariaLabels": {
+      "prevNxtButtons": "previous and next page buttons"
+    },
+    "errors": {
+      "noSavedProjects": "You don't have any saved projects yet! Maybe add some bookmarks?",
+      "unexpected": "Uh oh! Seems like we hit a snag :( Maybe try again later?"
+    }
+  },
+
+  "projectDetails": {
+    "project": {
+      "creator": {
+        "follow": "Follow",
+        "unfollow": "Unfollow"
+      },
+      "description": "Description",
+      "materials": "Materials Used",
+      "category": "Category",
+      "tags": "Tags",
+      "none": "None",
+      "edit": "Edit",
+      "delete": {
+        "label": "Delete",
+        "dialog": {
+          "primary": "Delete Project",
+          "secondary": "Are you sure you want to delete this project? You can't undo this action!!",
+          "cancel": "Cancel",
+          "proceed": "Proceed"
+        }
+      },
+      "publish": {
+        "draft": "Draft",
+        "preview": "Preview",
+        "authenticated_creators": "Authenticated Creators",
+        "public": "Public"
+      }
+    },
+    "comment": {
+      "delete": {
+        "dialog": {
+          "primary": "Delete Comment",
+          "secondary": "Are you sure you want to delete this comment? you can't undo this action!!",
+          "cancel": "Cancel",
+          "proceed": "Proceed"
+        }
+      }
+    },
+    "ariaLabels": {
+      "likeButton": {
+        "label": "like button",
+        "like": "like",
+        "unlike": "unlike"
+      },
+      "saveButton": {
+        "label": "save button",
+        "save": "save",
+        "unsave": "unsave"
+      },
+      "imageDialog": "enlarged image dialog",
+      "deleteProject": "delete project dialog",
+      "deleteComment": "delete comment dialog"
+    },
+    "deleteProjectToastSuccess": "Your project was deleted successfully!",
+    "socialShare": {
+      "fbwa": "Check out this project on ZubHub! ",
+      "copySuccess": "Link successfully copied to clipboard!",
+      "copyFail": "Hmmm... something went wrong trying to copy that link :("
+    },
+    "errors": {
+      "unexpected": "Hmmm..seems like we could not delete the project :( Maybe try again later?",
+      "noBrowserSupport": "Your browser does not support the video tag"
+    }
+  },
+
+  "comments": {
+    "label": "Comments",
+    "write": "Write a comment",
+    "reply": "Reply",
+    "showReplies": "Show Replies",
+    "hideReplies": "Hide Replies",
+    "action": "Comment",
+    "unpublish": "Unpublish",
+    "delete": "Delete",
+    "deleteCommentToastSuccess": "Comment was deleted successfully",
+    "unpublishCommentToastSuccess": "Comment was unpublished successfully",
+    "errors": {
+      "unexpected": "Sorry, looks like we hit a snag :( Please try again later!"
+    }
+  },
+
+  "accountStatus": {
+    "contactAdmin": "If you think this is an error, your should contact the admin(s) for help.",
+    "backToHome": "Back To Home"
+  },
+
+  "profile": {
+    "edit": "Edit",
+    "delete": {
+      "label": "Delete Account",
+      "dialog": {
+        "primary": "Delete Account",
+        "secondary": "Are you sure you want to delete your account? You can't undo this action!! If you still want procceed, type your username into the field below and click PROCEED",
+        "inputs": {
+          "username": "Your Username"
+        },
+        "cancel": "Cancel",
+        "procceed": "Procceed"
+      },
+      "ariaLabels": {
+        "deleteAccount": "delete account"
+      },
+      "toastSuccess": "We are sad to see you go :( Your account have been deleted now!",
+      "errors": {
+        "incorrectUsername": "The username you submitted is incorrect",
+        "unexpected": "An error occured while performing this action. Please try again later"
+      }
+    },
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "projectsCount": "Projects",
+    "followersCount": "Followers",
+    "followingCount": "Following",
+    "membersCount": "members",
+    "about": {
+      "label1": "About Me",
+      "label2": "Description",
+      "placeholder1": "Tell us more about you by clicking on the edit button at the top of the page 😀!",
+      "placeholder2": "Tell us more about your group by clicking on the edit button at the top of the page 😀!"
+    },
+    "projects": {
+      "label": "Latest projects",
+      "viewAll": "View all >>"
+    },
+    "tooltips": {
+      "shareProfile": "Share your profile with friends!"
+    },
+    "ariaLabels": {
+      "shareProfile": "share profile url",
+      "editProfile": "edit user profile"
+    },
+    "toastSuccess": "Your profile url has been successfully copied to your clipboard!",
+    "errors": {
+      "profileFetchError": "Oh no! Seems like we could not fetch your profile :( Please try again later?",
+      "profileUpdateError": "Oh no! Seems like we could not update your profile :( Please try again later",
+      "unexpected": "Uh oh! Seems like we could not fetch your profile :( Maybe try again later?"
+    }
+  },
+
+  "editProfile": {
+    "welcomeMsg": {
+      "primary": "Edit Profile",
+      "secondary": "Do you want to make some changes to your profile? Go ahead!"
+    },
+    "inputs": {
+      "username": {
+        "label": "Username",
+        "errors": {
+          "required": "Seems like you missed this one"
+        }
+      },
+      "location": {
+        "label": "Location",
+        "errors": {
+          "min": "Your location is too short",
+          "required": "Looks like your missed this one"
+        }
+      },
+      "email": {
+        "label": "Email",
+        "disabledHelperText": "To edit this field, send a mail to admin@unstructured.studio",
+        "errors": {
+          "invalid": "Your email seems invalid. Is the email address correct?"
+        }
+      },
+      "phone": {
+        "label": "Phone",
+        "disabledHelperText": "To edit this field, send a mail to admin@unstructured.studio",
+        "errors": {
+          "invalid": "I'm having trouble understanding this number. Make sure it's in this format: '+911234567890'. Upto 15 digits are allowed."
+        }
+      },
+      "bio": {
+        "label": "Bio",
+        "helpText": "Tell us something interesting about you! You can share what care about, your hobbies, things you have been working on recently, etc.",
+        "errors": {
+          "tooLong": "Looks like you have a lot to say! But we don't support more than 255 characters for now :("
+        }
+      },
+      "submit": "Edit Profile"
+    },
+    "or": "OR",
+    "backToProfile": "Back To Profile",
+    "toastSuccess": "Your profile was updated successfully!!",
+    "errors": {
+      "unexpected": "Oh no! Seems like we hit a snag :( Maybe try again later?"
+    },
+    "tooltips": {
+      "noRealName": "It's always best not use your real name here! Give yourself a fun and unique name!"
+    }
+  },
+
+  "userProjects": {
+    "title": "projects",
+    "prev": "Prev",
+    "next": "Next",
+    "ariaLabels": {
+      "prevNxtButtons": "previous and next page buttons"
+    },
+    "errors": {
+      "noUserProjects": "User has not created any projects yet. Check back later!"
+    }
+  },
+
+  "groupMembers": {
+    "title": "Group Members",
+    "prev": "Prev",
+    "next": "Next",
+    "remove": "Remove",
+    "newMembers": "New Members",
+    "ariaLabels": {
+      "prevNxtButtons": "previous and next page buttons"
+    },
+    "errors": {
+      "noGroupMembers": "This group does not have any members yet",
+      "unauthorized": "Only Groups have access to this page",
+      "unexpected": "An error occured while performing this action. Please try again later"
+    }
+  },
+
+  "addGroupMembers": {
+    "welcomeMsg": {
+      "primary": "Add Group Members",
+      "secondary": "To add group members, type in there usernames in the fields below, or upload a csv file containing the usernames"
+    },
+    "inputs": {
+      "groupMembers": {
+        "label": "Group Members",
+        "addMore": "Add More",
+        "bulkAdd": "Bulk Add",
+        "addCSV": "Drop your CSV file here",
+        "errors": {
+          "required": "this field is required"
+        }
+      },
+      "submit": "Submit"
+    },
+    "ariaLabels": {
+      "submitting": "submitting"
+    },
+    "createToastSuccess": "Success! Now you have to just wait for the Creators to accept your invitiation to join the group. Please do not try to repeat this again. Just wait for the creators to accept",
+    "errors": {
+      "notLoggedIn": "Look like you are not logged in. Click on the Login button to get started!",
+      "unauthorized": "Only Groups have access to this page",
+      "unexpected": "An error occured while performing this action. Please try again later"
+    }
+  },
+
+  "groupInviteConfirm": {
+    "welcomeMsg": {
+      "primary": "Group Invite Confirmation",
+      "secondary": " Please confirm your invitation to <> group"
+    },
+    "inputs": {
+      "submit": "Confirm"
+    },
+    "toastSuccess": "Congratulations!, you have confirmed your invitation!",
+    "errors": {
+      "unexpected": "Uh oh! Looks like we hit a snag :( Please try again later!"
+    }
+  },
+
+  "userFollowers": {
+    "title": "followers",
+    "follower": {
+      "follow": "Follow",
+      "unfollow": "Unfollow"
+    },
+    "prev": "Prev",
+    "next": "Next",
+    "ariaLabels": {
+      "prevNxtButtons": "previous and next page buttons"
+    },
+    "errors": {
+      "noFollowers": "This creator has no followers yet",
+      "unexpected": "Uh oh! Looks like we hit a snag :( Please try again later!"
+    }
+  },
+
+  "userFollowing": {
+    "title": "Creators <> is following",
+    "following": {
+      "follow": "Follow",
+      "unfollow": "Unfollow"
+    },
+    "prev": "Prev",
+    "next": "Next",
+    "ariaLabels": {
+      "prevNxtButtons": "previous and next page buttons"
+    },
+    "errors": {
+      "noFollowing": "Creator is not following anyone yet",
+      "unexpected": "An error occured while performing this action. Please try again later"
+    }
+  },
+
+  "guidelines": {
+    "title": "Privacy Policy",
+    "errors": {
+      "page_empty": "This page is empty"
+    }
+  },
+
+  "termsOfUse": {
+    "title": "Terms Of Use",
+    "errors": {
+      "page_empty": "This page is empty"
+    }
+  },
+
+  "about": {
+    "title": "About",
+    "errors": {
+      "page_empty": "This page is empty"
+    }
+  },
+
+  "faqs": {
+    "title": "Frequently Asked Questions",
+    "question": "Question",
+    "answer": "Answer",
+    "errors": {
+      "page_empty": "This page is empty"
+    }
   }
 }
