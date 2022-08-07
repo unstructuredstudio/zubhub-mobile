@@ -1,9 +1,4 @@
-import {
-  View,
-  Image,
-  TouchableOpacity,
-  useWindowDimensions,
-} from 'react-native';
+import { View, Image, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import styles from './ProjectCard.style';
 import { Feather } from '@expo/vector-icons';
@@ -52,11 +47,8 @@ const ProjectCard = ({ item }) => {
     }
   }, [clapVal]);
 
-  const { width } = useWindowDimensions();
-
   return (
     <TouchableOpacity
-      bounceEffect={0.95}
       style={styles.mainCard}
       onPress={() => navigation.navigate('ProjectDetail', { item })}
     >

@@ -11,6 +11,7 @@ import CommentCard from './CommentCard/CommentCard';
 import NativeUiModal from './NativeUiModal/NativeUiModal';
 import ErrorCard from './ErrorCard/ErrorCard';
 import NativeUiActivityIndicator from './NativeUiActivityIndicator';
+import NativeUiCardSkeleton from './NativeUiCardSkeleton/NativeUiCardSkeleton';
 
 export {
   NativeUiText,
@@ -26,4 +27,5 @@ export {
   NativeUiModal,
   ErrorCard,
   NativeUiActivityIndicator,
+  NativeUiCardSkeleton,
 };

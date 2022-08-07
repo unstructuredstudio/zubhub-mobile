@@ -1,34 +1,34 @@
-const baseURL = 'http://localhost:8000/api';
-import i18n from 'i18next';
+const baseURL = "http://localhost:8000/api";
+import i18n from "i18next";
 
 const request = ({
-  url = '/',
-  method = 'GET',
+  url = "/",
+  method = "GET",
   token,
   body,
-  content_type = 'application/json',
+  content_type = "application/json",
 }) => {
-  if (method === 'GET' && !token) {
+  if (method === "GET" && !token) {
     return fetch(baseURL + url, {
       method,
-      xsrfCookieName: 'csrftoken',
-      xsrfHeaderName: 'X-CSRFToken',
-      withCredentials: 'true',
+      xsrfCookieName: "csrftoken",
+      xsrfHeaderName: "X-CSRFToken",
+      withCredentials: "true",
       headers: new Headers({
-        'Content-Type': content_type,
+        "Content-Type": content_type,
         // 'Accept-Language': `${i18next.language},en;q=0.5`,
       }),
     });
   } else if (token && body) {
     return fetch(baseURL + url, {
       method,
-      xsrfCookieName: 'csrftoken',
-      xsrfHeaderName: 'X-CSRFToken',
-      withCredentials: 'true',
+      xsrfCookieName: "csrftoken",
+      xsrfHeaderName: "X-CSRFToken",
+      withCredentials: "true",
       headers: content_type
         ? new Headers({
             Authorization: `Token ${token}`,
-            'Content-Type': content_type,
+            "Content-Type": content_type,
             // 'Accept-Language': `${i18next.language},en;q=0.5`,
           })
         : new Headers({
@@ -40,12 +40,12 @@ const request = ({
   } else if (token) {
     return fetch(baseURL + url, {
       method,
-      xsrfCookieName: 'csrftoken',
-      xsrfHeaderName: 'X-CSRFToken',
-      withCredentials: 'true',
+      xsrfCookieName: "csrftoken",
+      xsrfHeaderName: "X-CSRFToken",
+      withCredentials: "true",
       headers: new Headers({
         Authorization: `Token ${token}`,
-        'Content-Type': content_type,
+        "Content-Type": content_type,
         // 'Accept-Language': `${i18next.language},en;q=0.5`,
       }),
     });
@@ -53,13 +53,13 @@ const request = ({
     console.log(baseURL + url);
     return fetch(baseURL + url, {
       method,
-      xsrfCookieName: 'csrftoken',
-      xsrfHeaderName: 'X-CSRFToken',
-      withCredentials: 'true',
+      xsrfCookieName: "csrftoken",
+      xsrfHeaderName: "X-CSRFToken",
+      withCredentials: "true",
       headers: new Headers({
-        'Content-Type': content_type,
+        "Content-Type": content_type,
 
-        'Accept-Language': `en`,
+        "Accept-Language": `en`,
       }),
       body,
     });
@@ -74,7 +74,7 @@ const request = ({
  */
 export const signup = (userData) => {
   const url = `/creators/register/`;
-  const method = 'POST';
+  const method = "POST";
   const body = JSON.stringify({ ...userData, subscribe: false });
 
   return request({ url, method, body }).then((res) => res.json());
@@ -87,8 +87,8 @@ export const signup = (userData) => {
  * @todo - describe method's signature
  */
 export const login = ({ username, password }) => {
-  const url = '/rest-auth/login/';
-  const method = 'POST';
+  const url = "/rest-auth/login/";
+  const method = "POST";
   const body = JSON.stringify({ username, password });
 
   return request({ url, method, body }).then((res) => res.json());
@@ -101,11 +101,22 @@ export const login = ({ username, password }) => {
  * @todo - describe method's signature
  */
 export const sendPasswordResetLink = (email) => {
-  const url = '/rest-auth/password/reset/';
-  const method = 'POST';
+  const url = "/rest-auth/password/reset/";
+  const method = "POST";
   const body = JSON.stringify({ email });
 
   return request({ url, method, body }).then((res) =>
-    Promise.resolve(res.status === 200 ? { detail: 'ok' } : res.json())
+    Promise.resolve(res.status === 200 ? { detail: "ok" } : res.json())
   );
+};
+
+/**
+ * @method getProjects
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const getProjects = ({ token, page }) => {
+  const url = page ? `/projects/?${page}` : `projects/`;
+  return request({ token, url }).then((res) => res.json());
 };

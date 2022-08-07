@@ -1,9 +1,5 @@
-import { REGISTER_USER, REGISTER_USER_FAIL, SET_AUTH_USER } from '../types';
-import {
-  signup,
-  login,
-  sendPasswordResetLink,
-} from '../../ApiCall/Authentication';
+import { REGISTER_USER, REGISTER_USER_FAIL, SET_AUTH_USER } from "../types";
+import { signup, login, sendPasswordResetLink } from "../../ApiCall/api";
 
 /**
  * @function register
@@ -59,7 +55,7 @@ export const loginUser = (userData, setVisible, setLoading) => (dispatch) => {
 export const resetPassordLink = (email, setVisible, setLoading) => {
   return () => {
     let response = sendPasswordResetLink(email).then((res) => {
-      if (res.detail !== 'ok') {
+      if (res.detail !== "ok") {
         throw new Error(JSON.stringify(res));
       } else {
         setLoading(false);
