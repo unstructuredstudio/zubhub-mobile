@@ -51,6 +51,13 @@ const styles = StyleSheet.create({
     borderRadius: 21,
   },
 
+  delete: {
+    backgroundColor: THEME.COLORS.PRIMARY_RED,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 21,
+  },
+
   mainImageContainer: {
     height: 188,
     marginTop: 22,

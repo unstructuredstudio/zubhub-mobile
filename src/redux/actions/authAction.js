@@ -1,7 +1,12 @@
 import { SET_AUTH_USER } from "../types";
-import { signup, login, sendPasswordResetLink } from "../../ApiCall/api";
+import {
+  signup,
+  login,
+  sendPasswordResetLink,
+  getAuthUser,
+} from "../../ApiCall/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TOKEN } from "../../utils/storageKeys";
+import { TOKEN, USER } from "../../utils/storageKeys";
 
 /**
  * @function register
@@ -40,14 +45,35 @@ export const loginUser = (userData, setVisible, setLoading) => (dispatch) => {
       if (!res.key) {
         throw new Error(JSON.stringify(res));
       }
-      await AsyncStorage.setItem(TOKEN, res.key);
-      setLoading(false);
-      dispatch({
-        type: SET_AUTH_USER,
-        payload: { token: res.key },
+
+      let result = dispatch(loadUser(res.key));
+
+      result.then(async (user) => {
+        if (user) {
+          await AsyncStorage.setItem(TOKEN, res.key);
+          await AsyncStorage.setItem(USER, JSON.stringify(user));
+          setLoading(false);
+        }
       });
     })
     .then(() => setVisible(true));
+  return response;
+};
+
+/**
+ * @function getAuthUser
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe function's signature
+ */
+export const loadUser = (token) => (dispatch) => {
+  let response = getAuthUser(token).then((user) => {
+    dispatch({
+      type: SET_AUTH_USER,
+      payload: { user: user, token: token },
+    });
+    return true;
+  });
   return response;
 };
 

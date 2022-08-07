@@ -11,6 +11,9 @@ import DefaultStyles from "../../constants/DefaultStyles.style";
 import { getAllProjects } from "../../redux/actions/projectsAction";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { loadUser } from "../../redux/actions/authAction";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { TOKEN } from "../../utils/storageKeys";
 
 const Home = () => {
   const { t } = useTranslation();
@@ -23,8 +26,13 @@ const Home = () => {
   const [allProjects, setAllProjects] = useState([]);
 
   useEffect(() => {
+    loadUserData();
     fetchAllProjects();
   }, [currentPage]);
+
+  const loadUserData = async () => {
+    dispatch(loadUser(await AsyncStorage.getItem(TOKEN)));
+  };
 
   const fetchAllProjects = () => {
     if (allProjects.length < 1) {

@@ -95,6 +95,18 @@ export const login = ({ username, password }) => {
 };
 
 /**
+ * @method getAuthUser - make api request to this endpoint providing a valid user token to
+ *         get the user profile of the user with the provided token
+ * @author Raymond Ndibe <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const getAuthUser = (token) => {
+  const url = "/creators/auth-user/";
+  return request({ url, token }).then((res) => res.json());
+};
+
+/**
  * @method sendPasswordResetLink
  * @author Alice Ndeh <alicendeh16@gmail.com>
  *

@@ -25,6 +25,8 @@ import { getProjectDetails } from "../../redux/actions/projectsAction";
 
 const ProjectDetail = ({ route }) => {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+
   const videoRef = React.useRef(null);
   const [selectedImage, setSelectedImage] = useState({
     imageUri: "",
@@ -34,6 +36,7 @@ const ProjectDetail = ({ route }) => {
   const [projectDetails, setprojectDetails] = useState({});
 
   const { item } = route.params;
+  console.log(user);
 
   useEffect(() => {
     setLoading(true);
@@ -93,7 +96,7 @@ const ProjectDetail = ({ route }) => {
 
   useEffect(() => {
     if (projectDetails?.materials_used) {
-      console.log(projectDetails?.materials_used.split(","));
+      console.log(projectDetails);
     }
   }, [projectDetails]);
   return (
@@ -143,13 +146,55 @@ const ProjectDetail = ({ route }) => {
               <NativeUiText style={styles.authorDetails} fontSize={16}>
                 {projectDetails?.creator?.username}
               </NativeUiText>
-              <View style={[styles.follow, styles.authorDetails]}>
-                <NativeUiText
-                  textColor={THEME.COLORS.WHITE}
-                  textType={"medium"}
-                >
-                  FOLLOW
-                </NativeUiText>
+              <View
+                style={[
+                  DefaultStyles.containerCenter,
+                  DefaultStyles.containerRow,
+                ]}
+              >
+                {user?.user?.id === projectDetails?.creator?.id ? (
+                  <View
+                    style={[
+                      DefaultStyles.containerCenter,
+                      DefaultStyles.containerRow,
+                    ]}
+                  >
+                    <View>
+                      <NativeUiText
+                        textColor={THEME.COLORS.WHITE}
+                        textType={"medium"}
+                        style={[styles.follow, styles.authorDetails]}
+                      >
+                        Edit
+                      </NativeUiText>
+                    </View>
+                    <View>
+                      <NativeUiText
+                        textColor={THEME.COLORS.WHITE}
+                        textType={"medium"}
+                        style={[styles.delete, styles.authorDetails]}
+                      >
+                        Delete
+                      </NativeUiText>
+                    </View>
+                  </View>
+                ) : (
+                  <View
+                    style={[
+                      DefaultStyles.containerCenter,
+                      DefaultStyles.containerRow,
+                    ]}
+                  >
+                    <View style={[styles.follow, styles.authorDetails]}>
+                      <NativeUiText
+                        textColor={THEME.COLORS.WHITE}
+                        textType={"medium"}
+                      >
+                        FOLLOW
+                      </NativeUiText>
+                    </View>
+                  </View>
+                )}
               </View>
             </View>
 

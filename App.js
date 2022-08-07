@@ -1,11 +1,11 @@
-import React from 'react';
-import { View, StyleSheet, StatusBar } from 'react-native';
-import Navigation from './src/navigation/Navigation';
-import * as THEME from './src/constants/theme';
-import Constants from 'expo-constants';
-import store from './src/redux/store';
-import { Provider } from 'react-redux';
-import Toast from 'react-native-toast-message';
+import React from "react";
+import { View, StyleSheet, StatusBar } from "react-native";
+import Navigation from "./src/navigation/Navigation";
+import * as THEME from "./src/constants/theme";
+import Constants from "expo-constants";
+import store from "./src/redux/store";
+import { Provider } from "react-redux";
+import Toast from "react-native-toast-message";
 
 const App = () => {
   return (
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: THEME.COLORS.PRIMARY_RED,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingTop: Constants.statusBarHeight,
   },
 });
