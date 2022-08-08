@@ -143,3 +143,27 @@ export const getAProjectsDetail = (id) => {
   const url = `/projects/${id}`;
   return request({ url }).then((res) => res.json());
 };
+
+/**
+ * @method toggleLike
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const toggleLike = ({ id, token }) => {
+  const url = `/projects/${id}/toggle-like/`;
+
+  return request({ url, token }).then((res) => res.json());
+};
+
+/**
+ * @method toggleSave
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const toggleSave = ({ id, token }) => {
+  const url = `/projects/${id}/toggle-save/`;
+
+  return request({ url, token }).then((res) => res.json());
+};

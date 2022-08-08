@@ -40,8 +40,8 @@ export default function Navigation() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {token === null && (
             <>
-              <Stack.Screen name="Home" component={Home} />
               <Stack.Screen name="Login" component={Login} />
+              <Stack.Screen name="Home" component={Home} />
               <Stack.Screen name="Register" component={Register} />
             </>
           )}

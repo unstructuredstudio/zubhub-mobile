@@ -1,7 +1,13 @@
-import { getProjects, getAProjectsDetail } from "../../ApiCall/api";
+import {
+  getProjects,
+  getAProjectsDetail,
+  toggleLike,
+  toggleSave,
+} from "../../ApiCall/api";
 import { SET_PROJECTS } from "../types";
 import { CustomToasts } from "../../components/CustomToasts/CustomToasts";
 
+//Get all projects
 export const getAllProjects = (setLoading, args) => (dispatch) => {
   let response = getProjects(args)
     .then((res) => {
@@ -36,6 +42,7 @@ export const getAllProjects = (setLoading, args) => (dispatch) => {
   return response;
 };
 
+//Get project details
 export const getProjectDetails = (id, setLoading) => (dispatch) => {
   let response = getAProjectsDetail(id)
     .then((res) => {
@@ -61,4 +68,73 @@ export const getProjectDetails = (id, setLoading) => (dispatch) => {
     });
 
   return response;
+};
+
+/**
+ * @function toggleLike
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe function's signature
+ */
+export const toggleLikeOnProject = (args) => {
+  return () => {
+    return toggleLike(args)
+      .then((res) => {
+        console.log(res, "response ogg");
+        if (res.title) {
+          return { project: res };
+        } else {
+          res = Object.keys(res)
+            .map((key) => res[key])
+            .join("\n");
+          throw new Error(res);
+        }
+      })
+      .catch((error) => {
+        if (error.message.startsWith("Unexpected")) {
+          console.log("error in toggling lin=ke on project");
+          // toast.warning(args.t("projectDetails.errors.unexpected"));
+        } else {
+          console.log("error in toggling lin=ke on project");
+
+          // toast.warning(error.message);
+        }
+
+        return { loading: false };
+      });
+  };
+};
+
+/**
+ * @function toggleSave
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe function's signature
+ */
+export const toggleSaveOnProject = (args) => {
+  return () => {
+    return toggleSave(args)
+      .then((res) => {
+        if (res.title) {
+          return { project: res };
+        } else {
+          res = Object.keys(res)
+            .map((key) => res[key])
+            .join("\n");
+          throw new Error(res);
+        }
+      })
+      .catch((error) => {
+        if (error.message.startsWith("Unexpected")) {
+          console.log("error in saving project");
+
+          // toast.warning(args.t("projects.errors.unexpected"));
+        } else {
+          console.log("error in saving project");
+
+          // toast.warning(error.message);
+        }
+        return { loading: false };
+      });
+  };
 };
