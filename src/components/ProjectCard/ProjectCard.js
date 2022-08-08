@@ -1,5 +1,5 @@
 import { View, Image, TouchableOpacity } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styles from "./ProjectCard.style";
 import { Feather } from "@expo/vector-icons";
 import * as THEME from "../../constants/theme";
@@ -11,9 +11,11 @@ import { SheetManager } from "react-native-actions-sheet";
 import { useNavigation } from "@react-navigation/native";
 import { dFormatter, buildVideoThumbnailURL } from "../../utils/script";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import RenderHtml from "react-native-render-html";
+import { useSelector } from "react-redux";
 
-const ProjectCard = ({ item }) => {
+const ProjectCard = ({ item, token }) => {
+  const user = useSelector((state) => state.user);
+
   const navigation = useNavigation();
 
   const {
@@ -26,12 +28,10 @@ const ProjectCard = ({ item }) => {
     clap,
     comments_count,
     video,
+    likes,
+    saved_by,
   } = item;
-
-  const [bookmark, setBookmark] = useState(false);
-  const [clapVal, setclapVal] = useState(false);
-  const [shouldUpdateVal, setShouldUpdateVal] = useState(0);
-
+  console.log(item);
   const toggleBookmark = () => {
     SheetManager.show("authenticationSheet");
   };
@@ -39,13 +39,9 @@ const ProjectCard = ({ item }) => {
   const toggleClap = (val) => {
     SheetManager.show("authenticationSheet");
   };
-  useEffect(() => {
-    if (clapVal === true) {
-      setShouldUpdateVal(1);
-    } else {
-      setShouldUpdateVal(0);
-    }
-  }, [clapVal]);
+  const onClap = () => {
+    console.log("onclap trigger");
+  };
 
   return (
     <TouchableOpacity
@@ -54,7 +50,7 @@ const ProjectCard = ({ item }) => {
     >
       <NativeUiActionSheet id="authenticationSheet" sheetTitle="Create Account">
         <NativeUiText style={styles.space}>
-          Lets create an account for you first! so you can bookmark this project
+          Lets create an account for you first! so you can perform this action
         </NativeUiText>
         <NativeUiButton
           onPress={async () => {
@@ -96,38 +92,43 @@ const ProjectCard = ({ item }) => {
       <View style={styles.cardCOntainer}>
         <View style={styles.iconContainer}>
           <TouchableOpacity
-            onPress={() => toggleClap(clap)}
+            onPress={() => (!token ? toggleClap() : onClap(clap))}
             style={[styles.firstIcon]}
           >
-            <MaterialCommunityIcons
+            {/* <MaterialCommunityIcons
               name="hand-clap"
               size={20}
               color={THEME.COLORS.PRIMARY_YELLOW}
+            /> */}
+            <Image
+              source={
+                user?.user?.id !== null
+                  ? likes.includes(user?.user?.id)
+                    ? require("@asset/clap.png")
+                    : require("@asset/clapOutline.png")
+                  : require("@asset/clapOutline.png")
+              }
+              style={styles.clap}
             />
-            <NativeUiText
-              textColor={THEME.COLORS.PRIMARY_YELLOW}
-              style={styles.numberOfClaps}
-            >
-              {shouldUpdateVal ? shouldUpdateVal : clap}
+            <NativeUiText textColor={THEME.COLORS.PRIMARY_YELLOW}>
+              {likes.length}
             </NativeUiText>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={toggleBookmark}
             style={styles.redContainer}
           >
-            {bookmark ? (
-              <Fontisto
-                name="bookmark-alt"
-                size={20}
-                color={THEME.COLORS.PRIMARY_YELLOW}
-              />
-            ) : (
-              <Fontisto
-                name="bookmark"
-                size={20}
-                color={THEME.COLORS.PRIMARY_YELLOW}
-              />
-            )}
+            <Fontisto
+              name={
+                user?.user?.id !== null
+                  ? saved_by.includes(user?.user?.id)
+                    ? "bookmark-alt"
+                    : "bookmark"
+                  : "bookmark"
+              }
+              size={20}
+              color={THEME.COLORS.PRIMARY_YELLOW}
+            />
           </TouchableOpacity>
         </View>
 

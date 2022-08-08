@@ -24,25 +24,27 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [allProjects, setAllProjects] = useState([]);
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
     loadUserData();
+  }, []);
+  useEffect(() => {
     fetchAllProjects();
   }, [currentPage]);
 
   const loadUserData = async () => {
+    // await AsyncStorage.removeItem(TOKEN);
+    setToken(await AsyncStorage.getItem(TOKEN));
     dispatch(loadUser(await AsyncStorage.getItem(TOKEN)));
   };
 
   const fetchAllProjects = () => {
-    if (allProjects.length < 1) {
-      setLoading(true);
-    }
+    // setLoading(true);
     dispatch(
       getAllProjects(setLoading, {
         page: currentPage,
         token: user?.token,
-        t: t,
       })
     );
   };
@@ -75,7 +77,7 @@ const Home = () => {
           contentContainerStyle={[styles.list, DefaultStyles.containerCenter]}
           data={allProjects}
           keyExtractor={(_, index) => index}
-          renderItem={({ item }) => <ProjectCard item={item} />}
+          renderItem={({ item }) => <ProjectCard item={item} token={token} />}
           onEndReachedThreshold={0}
           onEndReached={onEndReached}
           ListFooterComponent={

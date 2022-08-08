@@ -23,7 +23,7 @@ export const getAllProjects = (setLoading, args) => (dispatch) => {
       if (error.message.startsWith("Unexpected")) {
         CustomToasts({
           type: error,
-          description: args.t("projects.errors.unexpected"),
+          description: "oops error occured",
         });
       } else {
         CustomToasts({
@@ -47,15 +47,15 @@ export const getProjectDetails = (id, setLoading) => (dispatch) => {
     .catch((error) => {
       console.log(error, "error in getting all projects");
       if (error.message.startsWith("Unexpected")) {
-        CustomToasts({
-          type: error,
-          description: args.t("projects.errors.unexpected"),
-        });
+        // CustomToasts({
+        //   type: error,
+        //   description: args.t("projects.errors.unexpected"),
+        // });
       } else {
-        CustomToasts({
-          type: error,
-          description: error.message,
-        });
+        // CustomToasts({
+        //   type: error,
+        //   description: error.message,
+        // });
       }
       setLoading(false);
     });

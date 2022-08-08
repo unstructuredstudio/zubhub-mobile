@@ -7,6 +7,7 @@ import {
 } from "../../ApiCall/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TOKEN, USER } from "../../utils/storageKeys";
+import { CustomToasts } from "../../components/CustomToasts/CustomToasts";
 
 /**
  * @function register
@@ -67,13 +68,20 @@ export const loginUser = (userData, setVisible, setLoading) => (dispatch) => {
  * @todo - describe function's signature
  */
 export const loadUser = (token) => (dispatch) => {
-  let response = getAuthUser(token).then((user) => {
-    dispatch({
-      type: SET_AUTH_USER,
-      payload: { user: user, token: token },
+  let response = getAuthUser(token)
+    .then((user) => {
+      dispatch({
+        type: SET_AUTH_USER,
+        payload: { user: user, token: token },
+      });
+      return true;
+    })
+    .catch((err) => {
+      // CustomToasts({
+      //   type: "error",
+      //   text: "Failed to load user",
+      // });
     });
-    return true;
-  });
   return response;
 };
 

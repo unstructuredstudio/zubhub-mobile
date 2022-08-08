@@ -21,6 +21,11 @@ const style = StyleSheet.create({
     height: 188,
   },
 
+  clap: {
+    width: 20,
+    height: 20,
+  },
+
   image: {
     width: "100%",
     borderTopRightRadius: 15,
@@ -44,9 +49,10 @@ const style = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: THEME.COLORS.PRIMARY_RED,
-    width: 40,
+    // width: 40,
     height: 30,
     borderRadius: 20,
+    paddingHorizontal: 7,
   },
 
   iconContainer: {

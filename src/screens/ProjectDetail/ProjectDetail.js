@@ -26,6 +26,7 @@ import { getProjectDetails } from "../../redux/actions/projectsAction";
 const ProjectDetail = ({ route }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  console.log(user, "user");
 
   const videoRef = React.useRef(null);
   const [selectedImage, setSelectedImage] = useState({
@@ -36,7 +37,6 @@ const ProjectDetail = ({ route }) => {
   const [projectDetails, setprojectDetails] = useState({});
 
   const { item } = route.params;
-  console.log(user);
 
   useEffect(() => {
     setLoading(true);
@@ -94,11 +94,8 @@ const ProjectDetail = ({ route }) => {
   };
   const { width } = useWindowDimensions();
 
-  useEffect(() => {
-    if (projectDetails?.materials_used) {
-      console.log(projectDetails);
-    }
-  }, [projectDetails]);
+  console.log(projectDetails);
+
   return (
     <SafeAreaView style={styles.container}>
       <NativeUiHeader subScreen={true} sectionTitle={"Project Details"} />
@@ -159,20 +156,19 @@ const ProjectDetail = ({ route }) => {
                       DefaultStyles.containerRow,
                     ]}
                   >
-                    <View>
+                    <View style={[styles.follow, styles.authorDetails]}>
                       <NativeUiText
                         textColor={THEME.COLORS.WHITE}
                         textType={"medium"}
-                        style={[styles.follow, styles.authorDetails]}
                       >
                         Edit
                       </NativeUiText>
                     </View>
-                    <View>
+                    <View style={[styles.delete, styles.authorDetails]}>
                       <NativeUiText
                         textColor={THEME.COLORS.WHITE}
                         textType={"medium"}
-                        style={[styles.delete, styles.authorDetails]}
+                        style={styles.authorDetails}
                       >
                         Delete
                       </NativeUiText>
@@ -215,9 +211,9 @@ const ProjectDetail = ({ route }) => {
                       horizontal
                       style={styles.imageSlide}
                     >
-                      {projectDetails?.images.map((image) => (
+                      {projectDetails?.images.map((image, index) => (
                         <Pressable
-                          key={image.public_id}
+                          key={index}
                           onPress={() => enlargeImage(image.image_url)}
                         >
                           <Image
@@ -307,16 +303,18 @@ const ProjectDetail = ({ route }) => {
 
               <View style={styles.materialPrimary}>
                 {projectDetails?.materials_used &&
-                  projectDetails?.materials_used.split(",").map((material) => (
-                    <View style={styles.materialContainer}>
-                      <NativeUiText
-                        textColor={THEME.COLORS.PRIMARY_TEAL}
-                        textType={"medium"}
-                      >
-                        {material}{" "}
-                      </NativeUiText>
-                    </View>
-                  ))}
+                  projectDetails?.materials_used
+                    .split(",")
+                    .map((material, index) => (
+                      <View key={index} style={styles.materialContainer}>
+                        <NativeUiText
+                          textColor={THEME.COLORS.PRIMARY_TEAL}
+                          textType={"medium"}
+                        >
+                          {material}{" "}
+                        </NativeUiText>
+                      </View>
+                    ))}
               </View>
             </View>
 
