@@ -49,25 +49,30 @@ const About = ({ user }) => {
       </View>
 
       <View style={styles.cardContainer}>
-        <View style={[styles.card, DefaultStyles.containerCenter]}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("UsersProjects")}
+          style={[styles.card, DefaultStyles.containerCenter]}
+        >
           <NativeUiText textType="medium">{user?.projects_count} </NativeUiText>
           <NativeUiText textType="bold">Projects </NativeUiText>
-        </View>
+        </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => navigation.navigate("Bookmark")}
           style={[styles.card, DefaultStyles.containerCenter]}
         >
-          <NativeUiText textType="medium">0 </NativeUiText>
           <NativeUiText textType="bold">Bookmarks </NativeUiText>
         </TouchableOpacity>
 
-        <View style={[styles.card, DefaultStyles.containerCenter]}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("UsersFollowers")}
+          style={[styles.card, DefaultStyles.containerCenter]}
+        >
           <NativeUiText textType="medium">
             {user?.followers?.length}
           </NativeUiText>
           <NativeUiText textType="bold">Followers </NativeUiText>
-        </View>
+        </TouchableOpacity>
 
         <View style={[styles.card, DefaultStyles.containerCenter]}>
           <NativeUiText textType="medium">

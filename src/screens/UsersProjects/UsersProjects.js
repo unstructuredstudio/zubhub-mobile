@@ -7,11 +7,11 @@ import {
   NativeUiActivityIndicator,
 } from "@components/";
 import { useSelector, useDispatch } from "react-redux";
-import { getSavedProjects } from "../../redux/actions/projectsAction";
-import styles from "./Bookmark.style";
+import { getAUsersProject } from "../../redux/actions/projectsAction";
+import styles from "./UsersProjects.style";
 import DefaultStyles from "../../constants/DefaultStyles.style";
 
-const Bookmark = () => {
+const UsersProjects = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const projects = useSelector((state) => state.projects);
@@ -24,26 +24,28 @@ const Bookmark = () => {
   }, [currentPage]);
 
   const fetchAllProjects = () => {
-    dispatch(getSavedProjects({ page: currentPage, token: user?.token }));
+    dispatch(
+      getAUsersProject({ page: currentPage, username: user?.user?.username })
+    );
   };
 
   useEffect(() => {
-    if (Array.isArray(projects?.bookmarks?.results)) {
-      setAllProjects([...allProjects, ...projects?.bookmarks?.results]);
+    if (Array.isArray(projects?.myProjects?.results)) {
+      setAllProjects([...allProjects, ...projects?.myProjects?.results]);
     }
-  }, [projects?.bookmarks]);
+  }, [projects?.myProjects]);
 
   const onEndReached = () => {
-    if (projects?.bookmarks?.next !== null) {
+    if (projects?.myProjects?.next !== null) {
       return setCurrentPage(currentPage + 1);
     }
   };
 
   return (
     <View>
-      <NativeUiHeader subScreen={true} sectionTitle={"Saved projects"} />
+      <NativeUiHeader subScreen={true} sectionTitle={"My projects"} />
       <NativeUiText textType="bold" style={styles.title} fontSize={27}>
-        Your saved projects
+        {user?.user?.username}'s projects
       </NativeUiText>
       <FlatList
         contentContainerStyle={[styles.list, DefaultStyles.containerCenter]}
@@ -55,11 +57,11 @@ const Bookmark = () => {
         onEndReachedThreshold={0.1}
         onEndReached={onEndReached}
         ListFooterComponent={
-          projects?.bookmarks?.next !== null && <NativeUiActivityIndicator />
+          projects?.myProjects?.next !== null && <NativeUiActivityIndicator />
         }
       />
     </View>
   );
 };
 
-export default Bookmark;
+export default UsersProjects;

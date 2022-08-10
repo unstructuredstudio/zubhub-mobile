@@ -176,8 +176,8 @@ export const toggleSave = ({ id, token }) => {
  */
 export const getFollowers = ({ page, username }) => {
   const url = page
-    ? `creators/${username}/followers/?${page}`
-    : `creators/${username}/followers/`;
+    ? `/creators/${username}/followers/?page=${page}`
+    : `/creators/${username}/followers/`;
 
   return request({ url }).then((res) => res.json());
 };
@@ -190,8 +190,8 @@ export const getFollowers = ({ page, username }) => {
  */
 export const getFollowing = ({ page, username }) => {
   const url = page
-    ? `creators/${username}/following/?${page}`
-    : `creators/${username}/following/`;
+    ? `/creators/${username}/following/?${page}`
+    : `/creators/${username}/following/`;
 
   return request({ url }).then((res) => res.json());
 };
@@ -243,4 +243,19 @@ export const deleteAccount = ({ token }) => {
   return request({ url, method, token }).then((res) =>
     Promise.resolve(res.status === 204 ? { detail: "ok" } : res.json())
   );
+};
+
+/**
+ * @method getUserProjects - get a paginated list of projects
+ *         created by the user with the provided username
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const getUserProjects = ({ username, page }) => {
+  const url = page
+    ? `/creators/${username}/projects/?page=${page}`
+    : `/creators/${username}/projects/`;
+
+  return request({ url }).then((res) => res.json());
 };

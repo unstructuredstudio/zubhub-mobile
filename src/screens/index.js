@@ -10,6 +10,8 @@ import About from "./About/About";
 import Comments from "./Comments/Comments";
 import Setting from "./Setting/Setting";
 import Bookmark from "./Bookmark/Bookmark";
+import UsersProjects from "./UsersProjects/UsersProjects";
+import UsersFollowers from "./UsersFollowers/UsersFollowers";
 
 export {
   Home,
@@ -24,4 +26,6 @@ export {
   Comments,
   Setting,
   Bookmark,
+  UsersProjects,
+  UsersFollowers,
 };

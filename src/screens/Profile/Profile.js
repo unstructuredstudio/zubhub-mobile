@@ -6,18 +6,12 @@ import { TAB_DATA_SET } from "../../data";
 import DefaultStyles from "../../constants/DefaultStyles.style";
 import { About, Comments, Setting } from "@screens/";
 import { useSelector, useDispatch } from "react-redux";
-import { getSavedProjects } from "../../redux/actions/projectsAction";
 
 const Profile = () => {
   const dispatch = useDispatch();
 
   const [activeTab, setActiveTab] = useState("About");
   const user = useSelector((state) => state.user);
-  // console.log(user);
-
-  useEffect(() => {
-    // dispatch(getSavedProjects({ page: 1, token: user?.token }));
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
