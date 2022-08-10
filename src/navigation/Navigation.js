@@ -10,6 +10,7 @@ import {
   Login,
   ForgetPassword,
   ProjectDetail,
+  Bookmark,
 } from "../screens";
 import BottomNavigator from "./BottomNavigator";
 import * as THEME from "../constants/theme";
@@ -48,6 +49,7 @@ export default function Navigation() {
           <Stack.Screen name="BottomNavigator" component={BottomNavigator} />
           <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
           <Stack.Screen name="ProjectDetail" component={ProjectDetail} />
+          <Stack.Screen name="Bookmark" component={Bookmark} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>

@@ -97,7 +97,7 @@ export const login = ({ username, password }) => {
 /**
  * @method getAuthUser - make api request to this endpoint providing a valid user token to
  *         get the user profile of the user with the provided token
- * @author Raymond Ndibe <alicendeh16@gmail.com>
+ * @author Alice Ndeh <alicendeh16@gmail.com>
  *
  * @todo - describe method's signature
  */
@@ -166,4 +166,81 @@ export const toggleSave = ({ id, token }) => {
   const url = `/projects/${id}/toggle-save/`;
 
   return request({ url, token }).then((res) => res.json());
+};
+
+/**
+ * @method getFollowers - get a list of users that a username is following
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const getFollowers = ({ page, username }) => {
+  const url = page
+    ? `creators/${username}/followers/?${page}`
+    : `creators/${username}/followers/`;
+
+  return request({ url }).then((res) => res.json());
+};
+
+/**
+ * @method getFollowing
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const getFollowing = ({ page, username }) => {
+  const url = page
+    ? `creators/${username}/following/?${page}`
+    : `creators/${username}/following/`;
+
+  return request({ url }).then((res) => res.json());
+};
+
+/**
+ * @method getSaved - get a list of projects bookmarked by the user with the given token
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const getSaved = ({ page, token }) => {
+  const url = page ? `/projects/saved/?page=${page}` : `projects/saved/`;
+
+  return request({ url, token }).then((res) => res.json());
+};
+
+/**
+ * @method editUserProfile
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const editUserProfile = (props) => {
+  const { token, username, email, phone, dateOfBirth, bio, user_location } =
+    props;
+
+  const url = "/creators/edit-creator/";
+  const method = "PUT";
+  const body = JSON.stringify({
+    username,
+    email,
+    phone,
+    dateOfBirth,
+    bio,
+    location: user_location,
+  });
+  return request({ url, method, token, body }).then((res) => res.json());
+};
+
+/**
+ * @method deleteAccount
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const deleteAccount = ({ token }) => {
+  const url = "/creators/delete/";
+  const method = "DELETE";
+  return request({ url, method, token }).then((res) =>
+    Promise.resolve(res.status === 204 ? { detail: "ok" } : res.json())
+  );
 };

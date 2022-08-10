@@ -3,6 +3,9 @@ import {
   getAProjectsDetail,
   toggleLike,
   toggleSave,
+  getSaved,
+  getFollowers,
+  getFollowing,
 } from "../../ApiCall/api";
 import { SET_PROJECTS } from "../types";
 import { CustomToasts } from "../../components/CustomToasts/CustomToasts";
@@ -27,15 +30,15 @@ export const getAllProjects = (setLoading, args) => (dispatch) => {
     })
     .catch((error) => {
       if (error.message.startsWith("Unexpected")) {
-        CustomToasts({
-          type: error,
-          description: "oops error occured",
-        });
+        // CustomToasts({
+        //   type: error,
+        //   description: "oops error occured",
+        // });
       } else {
-        CustomToasts({
-          type: error,
-          description: error.message,
-        });
+        // CustomToasts({
+        //   type: error,
+        //   description: error.message,
+        // });
       }
       setLoading(false);
     });
@@ -137,4 +140,41 @@ export const toggleSaveOnProject = (args) => {
         return { loading: false };
       });
   };
+};
+
+/**
+ * @function getSaved
+ * @author Alice Ndeh <aliceNdeh@gmail.com>
+ *
+ * @todo - describe function's signature
+ */
+export const getSavedProjects = (args) => (dispatch) => {
+  let response = getSaved(args)
+    .then((res) => {
+      if (Array.isArray(res.results)) {
+        // console.log(res);
+        dispatch({
+          type: SET_PROJECTS,
+          payload: { bookmarks: res },
+        });
+      } else {
+        res = Object.keys(res)
+          .map((key) => res[key])
+          .join("\n");
+        throw new Error(res);
+      }
+    })
+    .catch((error) => {
+      if (error.message.startsWith("Unexpected")) {
+        console.log("error in getting bookmarks");
+
+        // toast.warning(args.t("savedProjects.errors.unexpected"));
+      } else {
+        console.log(error, "error in getting bookmarks");
+
+        // toast.warning(error.message);
+      }
+      // return { loading: false };
+    });
+  return response;
 };

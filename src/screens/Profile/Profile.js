@@ -1,25 +1,23 @@
-import { SafeAreaView, View, TouchableOpacity } from 'react-native';
-import { NativeUiHeader, NativeUiText, ProjectCard } from '@components/';
-import React, { useState } from 'react';
-import styles from './Profile.style';
-import { TAB_DATA_SET } from '../../data';
-import DefaultStyles from '../../constants/DefaultStyles.style';
-import { About, Comments, Setting } from '@screens/';
+import { SafeAreaView, View, TouchableOpacity } from "react-native";
+import { NativeUiHeader, NativeUiText, ProjectCard } from "@components/";
+import React, { useState, useEffect } from "react";
+import styles from "./Profile.style";
+import { TAB_DATA_SET } from "../../data";
+import DefaultStyles from "../../constants/DefaultStyles.style";
+import { About, Comments, Setting } from "@screens/";
+import { useSelector, useDispatch } from "react-redux";
+import { getSavedProjects } from "../../redux/actions/projectsAction";
 
 const Profile = () => {
-  const [activeTab, setActiveTab] = useState('About');
+  const dispatch = useDispatch();
 
-  const aboutData = {
-    authorsName: 'Alice Ndeh',
-    authorsEmail: 'alicendeh16@gmail.com',
-    authorsNumber: '+237675979594',
-    authorsTag: 'CREATOR',
-    NoP: 7,
-    NoB: 2,
-    NoF: 24,
-    following: 12,
-    bio: '   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus semper nisl sed rhoncus rutrum. In vulputate sem at elit cursus  venenatis. Vestibulum eget molestie massa. Nunc',
-  };
+  const [activeTab, setActiveTab] = useState("About");
+  const user = useSelector((state) => state.user);
+  // console.log(user);
+
+  useEffect(() => {
+    // dispatch(getSavedProjects({ page: 1, token: user?.token }));
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -32,14 +30,14 @@ const Profile = () => {
               style={[
                 styles.card,
                 {
-                  backgroundColor: activeTab === item.title ? '#000' : '#fff',
+                  backgroundColor: activeTab === item.title ? "#000" : "#fff",
                 },
               ]}
               onPress={() => setActiveTab(item.title)}
             >
               <NativeUiText
                 textType="medium"
-                textColor={activeTab === item.title ? '#fff' : '#000'}
+                textColor={activeTab === item.title ? "#fff" : "#000"}
                 fontSize={16}
               >
                 {item.title}
@@ -48,9 +46,9 @@ const Profile = () => {
           ))}
         </View>
         <View style={styles.container}>
-          {activeTab === 'About' ? (
-            <About aboutData={aboutData} />
-          ) : activeTab === 'Comments' ? (
+          {activeTab === "About" ? (
+            <About user={user?.user} />
+          ) : activeTab === "Comments" ? (
             <Comments />
           ) : (
             <Setting />

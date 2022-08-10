@@ -49,15 +49,14 @@ const Home = () => {
     );
   };
 
-  //Sets list of projects to display
   useEffect(() => {
     if (Array.isArray(projects?.all_projects?.results)) {
       setAllProjects([...allProjects, ...projects?.all_projects?.results]);
     }
   }, [projects?.all_projects]);
 
-  //Fetches next paginated set of projects
   const onEndReached = () => {
+    console.log("is it same?");
     if (projects?.all_projects?.next !== null) {
       console.log(projects?.all_projects?.next, "page number");
       return setCurrentPage(currentPage + 1);
