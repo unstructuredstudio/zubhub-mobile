@@ -5,6 +5,7 @@ import {
   sendPasswordResetLink,
   getAuthUser,
   getFollowers,
+  getFollowing,
 } from "../../ApiCall/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TOKEN, USER } from "../../utils/storageKeys";
@@ -120,6 +121,43 @@ export const getAUsersFollowers = (args) => (dispatch) => {
         dispatch({
           type: SET_AUTH_USER,
           payload: { myFollowers: res },
+        });
+      } else {
+        res = Object.keys(res)
+          .map((key) => res[key])
+          .join("\n");
+        throw new Error(res);
+      }
+    })
+    .catch((error) => {
+      if (error.message.startsWith("Unexpected")) {
+        console.log("error in getting bookmarks");
+
+        // toast.warning(args.t("savedProjects.errors.unexpected"));
+      } else {
+        console.log(error, "error in getting bookmarks");
+
+        // toast.warning(error.message);
+      }
+      // return { loading: false };
+    });
+  return response;
+};
+
+/**
+ * @function getUserFollowers
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe function's signature
+ */
+export const getAUsersFollowingList = (args) => (dispatch) => {
+  let response = getFollowing(args)
+    .then((res) => {
+      console.log(res);
+      if (Array.isArray(res.results)) {
+        dispatch({
+          type: SET_AUTH_USER,
+          payload: { myFollowingList: res },
         });
       } else {
         res = Object.keys(res)

@@ -34,7 +34,6 @@ const Home = () => {
   }, [currentPage]);
 
   const loadUserData = async () => {
-    // await AsyncStorage.removeItem(TOKEN);
     setToken(await AsyncStorage.getItem(TOKEN));
     dispatch(loadUser(await AsyncStorage.getItem(TOKEN)));
   };

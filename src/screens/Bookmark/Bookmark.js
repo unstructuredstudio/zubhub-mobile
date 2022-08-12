@@ -16,6 +16,9 @@ const Bookmark = () => {
   const user = useSelector((state) => state.user);
   const projects = useSelector((state) => state.projects);
 
+  useEffect(() => {
+    console.log("did i remonunt");
+  }, []);
   const [currentPage, setCurrentPage] = useState(1);
   const [allProjects, setAllProjects] = useState([]);
 
@@ -35,10 +38,14 @@ const Bookmark = () => {
 
   const onEndReached = () => {
     if (projects?.bookmarks?.next !== null) {
+      console.log("am i still fetching?");
       return setCurrentPage(currentPage + 1);
     }
   };
 
+  useEffect(() => {
+    console.log(allProjects?.length);
+  }, [allProjects]);
   return (
     <View>
       <NativeUiHeader subScreen={true} sectionTitle={"Saved projects"} />

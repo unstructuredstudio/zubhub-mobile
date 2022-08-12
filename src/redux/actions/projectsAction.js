@@ -4,7 +4,7 @@ import {
   toggleLike,
   toggleSave,
   getSaved,
-  getFollowing,
+  toggleFollow,
   getUserProjects,
 } from "../../ApiCall/api";
 import { SET_PROJECTS } from "../types";
@@ -215,4 +215,39 @@ export const getAUsersProject = (args) => (dispatch) => {
       // return { loading: false };
     });
   return response;
+};
+
+/**
+ * @function toggleLike
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe function's signature
+ */
+export const toggleFollowOnProject = (args) => {
+  return () => {
+    return toggleFollow(args)
+      .then((res) => {
+        // console.log(res, "response ogg");
+        if (res.bio) {
+          return { creatorsInfo: res };
+        } else {
+          res = Object.keys(res)
+            .map((key) => res[key])
+            .join("\n");
+          throw new Error(res);
+        }
+      })
+      .catch((error) => {
+        if (error.message.startsWith("Unexpected")) {
+          console.log("error in toggling lin=ke on project");
+          // toast.warning(args.t("projectDetails.errors.unexpected"));
+        } else {
+          console.log("error in toggling lin=ke on project");
+
+          // toast.warning(error.message);
+        }
+
+        return { loading: false };
+      });
+  };
 };

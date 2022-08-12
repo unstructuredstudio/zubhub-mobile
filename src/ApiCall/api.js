@@ -259,3 +259,15 @@ export const getUserProjects = ({ username, page }) => {
 
   return request({ url }).then((res) => res.json());
 };
+
+/**
+ * @method toggleFollow
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const toggleFollow = ({ id, token }) => {
+  const url = `/creators/${id}/toggle-follow/`;
+
+  return request({ url, token }).then((res) => res.json());
+};

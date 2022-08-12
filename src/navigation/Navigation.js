@@ -13,6 +13,7 @@ import {
   Bookmark,
   UsersProjects,
   UsersFollowers,
+  UsersFollowing,
 } from "../screens";
 import BottomNavigator from "./BottomNavigator";
 import * as THEME from "../constants/theme";
@@ -54,6 +55,7 @@ export default function Navigation() {
           <Stack.Screen name="Bookmark" component={Bookmark} />
           <Stack.Screen name="UsersProjects" component={UsersProjects} />
           <Stack.Screen name="UsersFollowers" component={UsersFollowers} />
+          <Stack.Screen name="UsersFollowing" component={UsersFollowing} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>

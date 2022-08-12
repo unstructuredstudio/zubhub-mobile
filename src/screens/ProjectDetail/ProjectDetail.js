@@ -5,6 +5,7 @@ import {
   Image,
   Pressable,
   useWindowDimensions,
+  TouchableOpacity,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import {
@@ -22,11 +23,12 @@ import { isCloudinaryVideo, isGdriveORVimeoORYoutube } from "./ProjectScript";
 import RenderHtml from "react-native-render-html";
 import { useSelector, useDispatch } from "react-redux";
 import { getProjectDetails } from "../../redux/actions/projectsAction";
+import { toggleFollowOnProject } from "../../redux/actions/projectsAction";
+import { loadUser } from "../../redux/actions/authAction";
 
 const ProjectDetail = ({ route }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  console.log(user, "user");
 
   const videoRef = React.useRef(null);
   const [selectedImage, setSelectedImage] = useState({
@@ -35,6 +37,7 @@ const ProjectDetail = ({ route }) => {
   });
   const [loading, setLoading] = useState(false);
   const [projectDetails, setprojectDetails] = useState({});
+  const [followState, setFollowState] = useState(null);
 
   const { item } = route.params;
 
@@ -75,13 +78,13 @@ const ProjectDetail = ({ route }) => {
     {
       text: "Whatsapp",
       icon: require("../images/whatsapp.png"),
-      name: "bt_videocam",
+      name: "bt_videocam1",
       position: 5,
     },
     {
       text: "URL",
       icon: require("../images/link.png"),
-      name: "bt_videocam",
+      name: "bt_videocam2",
       position: 6,
     },
   ];
@@ -95,6 +98,20 @@ const ProjectDetail = ({ route }) => {
   const { width } = useWindowDimensions();
 
   console.log(projectDetails);
+  // console.log(res.projectDetails.id);
+
+  const toggleFollow = () => {
+    let result = dispatch(
+      toggleFollowOnProject({
+        id: projectDetails?.creator?.id,
+        token: user?.token,
+      })
+    );
+    result.then((res) => {
+      dispatch(loadUser(user?.token));
+      setFollowState(res.creatorsInfo);
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -181,14 +198,33 @@ const ProjectDetail = ({ route }) => {
                       DefaultStyles.containerRow,
                     ]}
                   >
-                    <View style={[styles.follow, styles.authorDetails]}>
+                    <TouchableOpacity
+                      onPress={toggleFollow}
+                      style={[styles.follow, styles.authorDetails]}
+                    >
                       <NativeUiText
                         textColor={THEME.COLORS.WHITE}
                         textType={"medium"}
                       >
-                        FOLLOW
+                        {/* {followState !== null
+                          ? followState?.followers?.length > 0
+                            ? "UNFOLLOW"
+                            : "FOLLOW"
+                          : projectDetails?.creator?.followers?.length > 0
+                          ? "UNFOLLOW"
+                          : "FOLLOW"} */}
+
+                        {followState !== null
+                          ? followState?.followers?.includes(user?.user?.id)
+                            ? "UNFOLLOW"
+                            : "FOLLOW"
+                          : projectDetails?.creator?.followers?.includes(
+                              user?.user?.id
+                            )
+                          ? "UNFOLLOW"
+                          : "FOLLOW"}
                       </NativeUiText>
-                    </View>
+                    </TouchableOpacity>
                   </View>
                 )}
               </View>

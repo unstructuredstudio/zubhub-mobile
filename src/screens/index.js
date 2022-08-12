@@ -12,6 +12,7 @@ import Setting from "./Setting/Setting";
 import Bookmark from "./Bookmark/Bookmark";
 import UsersProjects from "./UsersProjects/UsersProjects";
 import UsersFollowers from "./UsersFollowers/UsersFollowers";
+import UsersFollowing from "./UsersFollowing/UsersFollowing";
 
 export {
   Home,
@@ -28,4 +29,5 @@ export {
   Bookmark,
   UsersProjects,
   UsersFollowers,
+  UsersFollowing,
 };

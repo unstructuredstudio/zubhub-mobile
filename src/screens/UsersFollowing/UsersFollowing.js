@@ -1,4 +1,4 @@
-import { View, FlatList, Image } from "react-native";
+import { View, FlatList, Image, TouchableOpacity } from "react-native";
 import React, { useState, useEffect } from "react";
 import {
   NativeUiHeader,
@@ -6,17 +6,20 @@ import {
   NativeUiActivityIndicator,
 } from "@components/";
 import { useSelector, useDispatch } from "react-redux";
-import styles from "./UsersFollowers.style";
-import DefaultStyles from "../../constants/DefaultStyles.style";
-import { getAUsersFollowers } from "../../redux/actions/authAction";
+import styles from "./UsersFollowing.style";
+import {
+  getAUsersFollowingList,
+  loadUser,
+} from "../../redux/actions/authAction";
 import * as THEME from "../../constants/theme";
+import { toggleFollowOnProject } from "../../redux/actions/projectsAction";
 
-const UsersFollowers = () => {
+const UsersFollowing = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [allMyFollowers, setAllMyFollowers] = useState([]);
+  const [allFollowingList, setAllFollowingList] = useState([]);
 
   useEffect(() => {
     fetchAllFollowers();
@@ -24,44 +27,63 @@ const UsersFollowers = () => {
 
   const fetchAllFollowers = () => {
     dispatch(
-      getAUsersFollowers({ page: currentPage, username: user?.user?.username })
+      getAUsersFollowingList({
+        page: currentPage,
+        username: user?.user?.username,
+      })
     );
   };
 
+  console.log(user?.myFollowingList);
+
   useEffect(() => {
-    if (Array.isArray(user?.myFollowers?.results)) {
-      setAllMyFollowers([...allMyFollowers, ...user?.myFollowers?.results]);
+    if (Array.isArray(user?.myFollowingList?.results)) {
+      setAllFollowingList([
+        ...allFollowingList,
+        ...user?.myFollowingList?.results,
+      ]);
     }
-  }, [user?.myFollowers]);
+  }, [user?.myFollowingList]);
 
   const onEndReached = () => {
-    if (user?.myFollowers?.next !== null) {
+    if (user?.myFollowingList?.next !== null) {
       return setCurrentPage(currentPage + 1);
     }
   };
 
+  const unfollowCreator = (id) => {
+    let result = dispatch(
+      toggleFollowOnProject({
+        id: id,
+        token: user?.token,
+      })
+    );
+    result.then(() => {
+      dispatch(loadUser(user?.token));
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <NativeUiHeader subScreen={true} sectionTitle={"My Followers"} />
+      <NativeUiHeader subScreen={true} sectionTitle={"People I follow"} />
       <NativeUiText textType="bold" style={styles.title} fontSize={27}>
-        {user?.user?.username}'s followers
+        Creator {user?.user?.username} is following
       </NativeUiText>
       <FlatList
         contentContainerStyle={styles.list}
         numColumns={2}
-        data={allMyFollowers}
+        data={allFollowingList}
         keyExtractor={(_, index) => index}
         renderItem={({ item }) => (
           <View style={styles.listItems}>
             <View style={styles.imgContainer}>
               <Image style={styles.avater} source={{ uri: item.avatar }} />
             </View>
-            <View
-              style={{
-                alignItems: "center",
-              }}
-            >
-              <View style={styles.unfollowContainer}>
+            <View>
+              <TouchableOpacity
+                onPress={() => unfollowCreator(item.id)}
+                style={styles.unfollowContainer}
+              >
                 <NativeUiText
                   fontSize={12}
                   style={styles.unfollow}
@@ -69,8 +91,8 @@ const UsersFollowers = () => {
                 >
                   Unfollow
                 </NativeUiText>
-              </View>
-              <NativeUiText textType="bold" fontSize={18} style={styles.name}>
+              </TouchableOpacity>
+              <NativeUiText textType="bold" fontSize={14} style={styles.name}>
                 {item?.username}{" "}
               </NativeUiText>
             </View>
@@ -79,11 +101,11 @@ const UsersFollowers = () => {
         onEndReachedThreshold={0.1}
         onEndReached={onEndReached}
         ListFooterComponent={
-          user?.myFollowers?.next !== null && <NativeUiActivityIndicator />
+          user?.myFollowingList?.next !== null && <NativeUiActivityIndicator />
         }
       />
     </View>
   );
 };
 
-export default UsersFollowers;
+export default UsersFollowing;

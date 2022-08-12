@@ -74,12 +74,15 @@ const About = ({ user }) => {
           <NativeUiText textType="bold">Followers </NativeUiText>
         </TouchableOpacity>
 
-        <View style={[styles.card, DefaultStyles.containerCenter]}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("UsersFollowing")}
+          style={[styles.card, DefaultStyles.containerCenter]}
+        >
           <NativeUiText textType="medium">
             {user?.following_count}{" "}
           </NativeUiText>
           <NativeUiText textType="bold">Following </NativeUiText>
-        </View>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.aboutSection}>

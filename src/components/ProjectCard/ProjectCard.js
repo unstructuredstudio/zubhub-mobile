@@ -26,11 +26,7 @@ const ProjectCard = ({ item, token }) => {
     setCardItem(item);
   }, []);
 
-  const toggleBookmark = () => {
-    SheetManager.show("authenticationSheet");
-  };
-
-  const toggleClap = (val) => {
+  const toggleClap = () => {
     SheetManager.show("authenticationSheet");
   };
   const onClap = () => {
@@ -44,7 +40,9 @@ const ProjectCard = ({ item, token }) => {
     let result = dispatch(
       toggleSaveOnProject({ id: cardItem.id, token: user?.token })
     );
-    result.then((res) => setCardItem({ ...res.project }));
+    result.then((res) => {
+      setCardItem({ ...res.project });
+    });
   };
   return (
     <TouchableOpacity
