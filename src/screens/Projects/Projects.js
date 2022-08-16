@@ -1,3 +1,4 @@
+import { AssetsSelector } from 'expo-images-picker';
 import {
   View,
   ScrollView,
@@ -5,7 +6,7 @@ import {
   Pressable,
   TouchableOpacity,
 } from 'react-native';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import {
   NativeUiHeader,
   NativeUiText,
@@ -19,6 +20,24 @@ import DefaultStyles from '../../constants/DefaultStyles.style';
 import layout from '../../constants/layout';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { useNavigation } from '@react-navigation/native';
+// import * as ImagePicker from 'expo-image-picker';
+// import ImagePicker from 'react-native-image-crop-picker';
+// import { ImagePicker } from 'expo-image-multiple-picker';
+import { Ionicons } from '@expo/vector-icons';
+
+const initialValues = {
+  title: '',
+  description: '',
+  images: [
+    {
+      image_url: '',
+      public_id: '',
+    },
+  ],
+  video: '',
+  materials_used: '',
+  category: '',
+};
 
 const Projects = () => {
   const navigation = useNavigation();
@@ -28,8 +47,26 @@ const Projects = () => {
   const [componentsArray, setComponentsArray] = useState([]);
 
   useEffect(() => {
-    setComponentsArray([<LayoutOne />, <LayoutTwo />, <LayoutThree />]);
+    setComponentsArray([
+      <LayoutOne projectData={projectData} setProjectData={setProjectData} />,
+      <LayoutTwo projectData={projectData} setProjectData={setProjectData} />,
+      <LayoutThree projectData={projectData} setProjectData={setProjectData} />,
+    ]);
   }, []);
+
+  const [projectData, setProjectData] = useState({
+    title: '',
+    description: '',
+    images: [
+      {
+        image_url: '',
+        public_id: '',
+      },
+    ],
+    video: '',
+    materials_used: '',
+    category: '',
+  });
 
   const updateCurrentSlideIndex = (e) => {
     const contentOffsetX = e.nativeEvent.contentOffset.x;
@@ -203,7 +240,7 @@ const Projects = () => {
 
 export default Projects;
 
-const LayoutOne = () => {
+const LayoutOne = ({ projectData, setProjectData }) => {
   return (
     <>
       <ScrollView style={styles.container}>
@@ -212,6 +249,9 @@ const LayoutOne = () => {
             <NativeUiInput
               label={'Name your project'}
               placeholder={'Project name'}
+              onChangeText={(name) =>
+                setProjectData({ ...projectData, name: name })
+              }
             />
           </View>
           <View style={styles.input}>
@@ -222,6 +262,9 @@ const LayoutOne = () => {
               bottomText={
                 'Tell us something interesting about the project! You can share what it is about, what inspired you to make it, your making process, fun and challenging moments you experienced, etc.'
               }
+              onChangeText={(description) =>
+                setProjectData({ ...projectData, description: description })
+              }
             />
           </View>
         </View>
@@ -230,7 +273,114 @@ const LayoutOne = () => {
   );
 };
 
-const LayoutTwo = () => {
+const LayoutTwo = ({ projectData, setProjectData }) => {
+  const [image, setImage] = useState(null);
+
+  // const pickImage = () => {
+  //   ImagePicker.openPicker({
+  //     multiple: true,
+  //   }).then((images) => {
+  //     console.log(images);
+  //   });
+  // };
+  // const pickImage = async () => {
+  //   let result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.All,
+  //     allowsEditing: true,
+  //     aspect: [4, 3],
+  //     quality: 1,
+  //     allowsMultipleSelection: true,
+  //   });
+
+  //   console.log(result);
+
+  //   if (!result.cancelled) {
+  //     setImage(result.uri);
+  //   }
+  // };
+  const widgetSettings = useMemo(
+    () => ({
+      getImageMetaData: false,
+      initialLoad: 100,
+      // assetsType: [MediaType.photo, MediaType.video],
+      minSelection: 1,
+      maxSelection: 10,
+      portraitCols: 4,
+      landscapeCols: 4,
+    }),
+    []
+  );
+
+  const widgetErrors = useMemo(
+    () => ({
+      errorTextColor: 'polar_text_2',
+      errorMessages: {
+        hasErrorWithPermissions: 'translator(T.ERROR.HAS_PERMISSIONS_ERROR)',
+        hasErrorWithLoading: ' translator(T.ERROR.HAS_INTERNAL_ERROR)',
+        hasErrorWithResizing: ' translator(T.ERROR.HAS_INTERNAL_ERROR)',
+        hasNoAssets: ' translator(T.ERROR.HAS_NO_ASSETS)',
+      },
+    }),
+    []
+  );
+
+  const widgetNavigator = useMemo(
+    () => ({
+      Texts: {
+        finish: 'finish',
+        back: 'back',
+        selected: 'selected',
+      },
+      midTextColor: 'polar_text_2',
+      minSelection: 3,
+      // buttonTextStyle: _textStyle,
+      // buttonStyle: _buttonStyle,
+      onBack: () => navigation.goBack(),
+      onSuccess: () => onSuccess(data),
+    }),
+    []
+  );
+
+  const widgetResize = useMemo(
+    () => ({
+      width: 512,
+      compress: 0.7,
+      base64: false,
+      // saveTo: SaveType.JPG,
+    }),
+    []
+  );
+
+  const widgetStyles = useMemo(
+    () => ({
+      margin: 2,
+      // bgColor: bg,
+      // spinnerColor: main,
+      widgetWidth: 99,
+      screenStyle: {
+        borderRadius: 5,
+        overflow: 'hidden',
+      },
+      widgetStyle: {
+        margin: 10,
+      },
+      videoIcon: {
+        Component: Ionicons,
+        iconName: 'ios-videocam',
+        // color: polar_text_1,
+        size: 20,
+      },
+      selectedIcon: {
+        Component: Ionicons,
+        iconName: 'ios-checkmark-circle-outline',
+        color: 'white',
+        // bg: mainWithOpacity,
+        size: 26,
+      },
+    }),
+    []
+  );
+
   return (
     <>
       <ScrollView style={styles.container}>
@@ -249,7 +399,8 @@ const LayoutTwo = () => {
                   Dont have them? Add a video instead!
                 </NativeUiText>
 
-                <View
+                <TouchableOpacity
+                  onPress={() => setImage(true)}
                   style={[DefaultStyles.containerRow, styles.imageContainer]}
                 >
                   <Entypo
@@ -264,7 +415,25 @@ const LayoutTwo = () => {
                   >
                     ADD IMAGES
                   </NativeUiText>
-                </View>
+                </TouchableOpacity>
+                {image && (
+                  <AssetsSelector
+                    Settings={widgetSettings}
+                    Errors={widgetErrors}
+                    Styles={widgetStyles}
+                    Resize={widgetResize} // optional
+                    Navigator={widgetNavigator} // optional
+                    CustomNavigator={{
+                      // optional
+                      // Component: CustomNavigator,
+                      props: {
+                        backFunction: true,
+                        // onSuccess,
+                        // text: T.ACTIONS.SELECT,
+                      },
+                    }}
+                  />
+                )}
               </View>
             </View>
             <View style={styles.input}>

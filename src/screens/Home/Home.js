@@ -1,19 +1,19 @@
-import { FlatList, SafeAreaView, ScrollView } from "react-native";
+import { FlatList, SafeAreaView, ScrollView } from 'react-native';
 import {
   NativeUiHeader,
   ProjectCard,
   NativeUiCardSkeleton,
   NativeUiActivityIndicator,
-} from "@components/";
-import React, { useState, useEffect } from "react";
-import styles from "./Home.style";
-import DefaultStyles from "../../constants/DefaultStyles.style";
-import { getAllProjects } from "../../redux/actions/projectsAction";
-import { useSelector, useDispatch } from "react-redux";
-import { useTranslation } from "react-i18next";
-import { loadUser } from "../../redux/actions/authAction";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TOKEN } from "../../utils/storageKeys";
+} from '@components/';
+import React, { useState, useEffect } from 'react';
+import styles from './Home.style';
+import DefaultStyles from '../../constants/DefaultStyles.style';
+import { getAllProjects } from '../../redux/actions/projectsAction';
+import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { loadUser } from '../../redux/actions/authAction';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TOKEN } from '../../utils/storageKeys';
 
 const Home = () => {
   const { t } = useTranslation();
@@ -55,9 +55,9 @@ const Home = () => {
   }, [projects?.all_projects]);
 
   const onEndReached = () => {
-    console.log("is it same?");
+    console.log('is it same?');
     if (projects?.all_projects?.next !== null) {
-      console.log(projects?.all_projects?.next, "page number");
+      console.log(projects?.all_projects?.next, 'page number');
       return setCurrentPage(currentPage + 1);
     }
   };
