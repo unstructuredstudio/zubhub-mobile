@@ -5,6 +5,7 @@ import {
   FlatList,
   Pressable,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import {
@@ -20,10 +21,10 @@ import DefaultStyles from '../../constants/DefaultStyles.style';
 import layout from '../../constants/layout';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { useNavigation } from '@react-navigation/native';
-// import * as ImagePicker from 'expo-image-picker';
-// import ImagePicker from 'react-native-image-crop-picker';
-// import { ImagePicker } from 'expo-image-multiple-picker';
 import { Ionicons } from '@expo/vector-icons';
+import Modal from 'react-native-modal';
+import { UploadToLocal } from '../../redux/actions/projectsAction';
+import { useDispatch, useSelector } from 'react-redux';
 
 const initialValues = {
   title: '',
@@ -41,19 +42,13 @@ const initialValues = {
 
 const Projects = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
 
   const ref = useRef(null);
   const [currentElemIndex, setCurrentElemIndex] = useState(0);
   const [componentsArray, setComponentsArray] = useState([]);
-
-  useEffect(() => {
-    setComponentsArray([
-      <LayoutOne projectData={projectData} setProjectData={setProjectData} />,
-      <LayoutTwo projectData={projectData} setProjectData={setProjectData} />,
-      <LayoutThree projectData={projectData} setProjectData={setProjectData} />,
-    ]);
-  }, []);
-
+  const [imagesDataSet, setImagesDataSet] = useState([]);
   const [projectData, setProjectData] = useState({
     title: '',
     description: '',
@@ -67,6 +62,18 @@ const Projects = () => {
     materials_used: '',
     category: '',
   });
+
+  useEffect(() => {
+    setComponentsArray([
+      <LayoutOne projectData={projectData} setProjectData={setProjectData} />,
+      <LayoutTwo
+        projectData={projectData}
+        setImagesDataSet={setImagesDataSet}
+        setProjectData={setProjectData}
+      />,
+      <LayoutThree projectData={projectData} setProjectData={setProjectData} />,
+    ]);
+  }, []);
 
   const updateCurrentSlideIndex = (e) => {
     const contentOffsetX = e.nativeEvent.contentOffset.x;
@@ -93,6 +100,16 @@ const Projects = () => {
       ref?.current?.scrollToOffset({ offset });
       setCurrentElemIndex(index);
     }
+  };
+
+  const onCreateProject = () => {
+    console.log(imagesDataSet, 'img');
+    dispatch(
+      UploadToLocal({
+        t: [imagesDataSet[0].uri],
+        token: user?.token,
+      })
+    );
   };
 
   return (
@@ -231,7 +248,11 @@ const Projects = () => {
               ? 'Create Project'
               : 'Next'
           }
-          onPress={() => goToNextSlide()}
+          onPress={() =>
+            currentElemIndex === componentsArray.length - 1
+              ? onCreateProject()
+              : goToNextSlide()
+          }
         />
       </View>
     </View>
@@ -273,31 +294,21 @@ const LayoutOne = ({ projectData, setProjectData }) => {
   );
 };
 
-const LayoutTwo = ({ projectData, setProjectData }) => {
-  const [image, setImage] = useState(null);
+const LayoutTwo = ({ projectData, setProjectData, setImagesDataSet }) => {
+  const [visible, setVisible] = useState(false);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [materialUsedArray, setMaterialUsedArray] = useState([
+    {
+      value: '',
+    },
+    {
+      value: '',
+    },
+    {
+      value: '',
+    },
+  ]);
 
-  // const pickImage = () => {
-  //   ImagePicker.openPicker({
-  //     multiple: true,
-  //   }).then((images) => {
-  //     console.log(images);
-  //   });
-  // };
-  // const pickImage = async () => {
-  //   let result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.All,
-  //     allowsEditing: true,
-  //     aspect: [4, 3],
-  //     quality: 1,
-  //     allowsMultipleSelection: true,
-  //   });
-
-  //   console.log(result);
-
-  //   if (!result.cancelled) {
-  //     setImage(result.uri);
-  //   }
-  // };
   const widgetSettings = useMemo(
     () => ({
       getImageMetaData: false,
@@ -305,8 +316,8 @@ const LayoutTwo = ({ projectData, setProjectData }) => {
       // assetsType: [MediaType.photo, MediaType.video],
       minSelection: 1,
       maxSelection: 10,
-      portraitCols: 4,
-      landscapeCols: 4,
+      portraitCols: 3,
+      landscapeCols: 3,
     }),
     []
   );
@@ -317,7 +328,7 @@ const LayoutTwo = ({ projectData, setProjectData }) => {
       errorMessages: {
         hasErrorWithPermissions: 'translator(T.ERROR.HAS_PERMISSIONS_ERROR)',
         hasErrorWithLoading: ' translator(T.ERROR.HAS_INTERNAL_ERROR)',
-        hasErrorWithResizing: ' translator(T.ERROR.HAS_INTERNAL_ERROR)',
+        hasErrorWithResizing: ' eee translator(T.ERROR.HAS_INTERNAL_ERROR)',
         hasNoAssets: ' translator(T.ERROR.HAS_NO_ASSETS)',
       },
     }),
@@ -332,11 +343,12 @@ const LayoutTwo = ({ projectData, setProjectData }) => {
         selected: 'selected',
       },
       midTextColor: 'polar_text_2',
-      minSelection: 3,
-      // buttonTextStyle: _textStyle,
-      // buttonStyle: _buttonStyle,
-      onBack: () => navigation.goBack(),
-      onSuccess: () => onSuccess(data),
+      minSelection: 1,
+      onBack: () => setVisible(false),
+      onSuccess: (data) => {
+        setImagesDataSet(data);
+        setVisible(false);
+      },
     }),
     []
   );
@@ -346,7 +358,7 @@ const LayoutTwo = ({ projectData, setProjectData }) => {
       width: 512,
       compress: 0.7,
       base64: false,
-      // saveTo: SaveType.JPG,
+      saveTo: 'jpg',
     }),
     []
   );
@@ -354,8 +366,7 @@ const LayoutTwo = ({ projectData, setProjectData }) => {
   const widgetStyles = useMemo(
     () => ({
       margin: 2,
-      // bgColor: bg,
-      // spinnerColor: main,
+
       widgetWidth: 99,
       screenStyle: {
         borderRadius: 5,
@@ -381,6 +392,14 @@ const LayoutTwo = ({ projectData, setProjectData }) => {
     []
   );
 
+  const onChangeText = (index, txt) => {
+    let arr = materialUsedArray;
+    arr[index] = { value: txt };
+    setMaterialUsedArray(arr);
+    // console.log(materialUsedArray, 'ma');
+  };
+  // useEffect(() => {}, [materialUsedArray]);
+
   return (
     <>
       <ScrollView style={styles.container}>
@@ -400,7 +419,7 @@ const LayoutTwo = ({ projectData, setProjectData }) => {
                 </NativeUiText>
 
                 <TouchableOpacity
-                  onPress={() => setImage(true)}
+                  onPress={() => setVisible(true)}
                   style={[DefaultStyles.containerRow, styles.imageContainer]}
                 >
                   <Entypo
@@ -416,24 +435,33 @@ const LayoutTwo = ({ projectData, setProjectData }) => {
                     ADD IMAGES
                   </NativeUiText>
                 </TouchableOpacity>
-                {image && (
-                  <AssetsSelector
-                    Settings={widgetSettings}
-                    Errors={widgetErrors}
-                    Styles={widgetStyles}
-                    Resize={widgetResize} // optional
-                    Navigator={widgetNavigator} // optional
-                    CustomNavigator={{
-                      // optional
-                      // Component: CustomNavigator,
-                      props: {
-                        backFunction: true,
-                        // onSuccess,
-                        // text: T.ACTIONS.SELECT,
-                      },
+                <Modal
+                  onBackdropPress={() => setVisible(false)}
+                  isVisible={visible}
+                  backdropColor={'white'}
+                  backdropOpacity={1}
+                >
+                  <Pressable onPress={() => setVisible(false)}></Pressable>
+                  <View
+                    style={{
+                      flex: 1,
+                      marginTop: 23,
                     }}
-                  />
-                )}
+                  >
+                    <AssetsSelector
+                      Settings={widgetSettings}
+                      Errors={widgetErrors}
+                      Styles={widgetStyles}
+                      Resize={widgetResize}
+                      Navigator={widgetNavigator}
+                      CustomNavigator={{
+                        props: {
+                          backFunction: true,
+                        },
+                      }}
+                    />
+                  </View>
+                </Modal>
               </View>
             </View>
             <View style={styles.input}>
@@ -471,7 +499,15 @@ const LayoutTwo = ({ projectData, setProjectData }) => {
                 <NativeUiText textType="medium" style={styles.materialsText}>
                   What materials did you use
                 </NativeUiText>
-                <View style={styles.materialInput}>
+                {materialUsedArray.map((item, index) => (
+                  <View style={styles.materialInput}>
+                    <NativeUiInput
+                      onChangeText={(e) => onChangeText(index, e)}
+                      // value={item.value}
+                    />
+                  </View>
+                ))}
+                {/* <View style={styles.materialInput}>
                   <NativeUiInput />
                 </View>
                 <View style={styles.materialInput}>
@@ -479,11 +515,16 @@ const LayoutTwo = ({ projectData, setProjectData }) => {
                 </View>
                 <View style={styles.materialInput}>
                   <NativeUiInput />
-                </View>
+                </View> */}
               </View>
 
               <View>
-                <View style={[DefaultStyles.containerRow, styles.addMore]}>
+                <Pressable
+                  onPress={() =>
+                    setMaterialUsedArray([...materialUsedArray, { value: '' }])
+                  }
+                  style={[DefaultStyles.containerRow, styles.addMore]}
+                >
                   <Entypo
                     name="plus"
                     size={24}
@@ -496,7 +537,7 @@ const LayoutTwo = ({ projectData, setProjectData }) => {
                   >
                     ADD MORE
                   </NativeUiText>
-                </View>
+                </Pressable>
               </View>
             </View>
           </View>

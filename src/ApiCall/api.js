@@ -1,34 +1,34 @@
-const baseURL = "http://localhost:8000/api";
-import i18n from "i18next";
+const baseURL = 'http://localhost:8000/api';
+import i18n from 'i18next';
 
 const request = ({
-  url = "/",
-  method = "GET",
+  url = '/',
+  method = 'GET',
   token,
   body,
-  content_type = "application/json",
+  content_type = 'application/json',
 }) => {
-  if (method === "GET" && !token) {
+  if (method === 'GET' && !token) {
     return fetch(baseURL + url, {
       method,
-      xsrfCookieName: "csrftoken",
-      xsrfHeaderName: "X-CSRFToken",
-      withCredentials: "true",
+      xsrfCookieName: 'csrftoken',
+      xsrfHeaderName: 'X-CSRFToken',
+      withCredentials: 'true',
       headers: new Headers({
-        "Content-Type": content_type,
+        'Content-Type': content_type,
         // 'Accept-Language': `${i18next.language},en;q=0.5`,
       }),
     });
   } else if (token && body) {
     return fetch(baseURL + url, {
       method,
-      xsrfCookieName: "csrftoken",
-      xsrfHeaderName: "X-CSRFToken",
-      withCredentials: "true",
+      xsrfCookieName: 'csrftoken',
+      xsrfHeaderName: 'X-CSRFToken',
+      withCredentials: 'true',
       headers: content_type
         ? new Headers({
             Authorization: `Token ${token}`,
-            "Content-Type": content_type,
+            'Content-Type': content_type,
             // 'Accept-Language': `${i18next.language},en;q=0.5`,
           })
         : new Headers({
@@ -40,12 +40,12 @@ const request = ({
   } else if (token) {
     return fetch(baseURL + url, {
       method,
-      xsrfCookieName: "csrftoken",
-      xsrfHeaderName: "X-CSRFToken",
-      withCredentials: "true",
+      xsrfCookieName: 'csrftoken',
+      xsrfHeaderName: 'X-CSRFToken',
+      withCredentials: 'true',
       headers: new Headers({
         Authorization: `Token ${token}`,
-        "Content-Type": content_type,
+        'Content-Type': content_type,
         // 'Accept-Language': `${i18next.language},en;q=0.5`,
       }),
     });
@@ -53,13 +53,13 @@ const request = ({
     console.log(baseURL + url);
     return fetch(baseURL + url, {
       method,
-      xsrfCookieName: "csrftoken",
-      xsrfHeaderName: "X-CSRFToken",
-      withCredentials: "true",
+      xsrfCookieName: 'csrftoken',
+      xsrfHeaderName: 'X-CSRFToken',
+      withCredentials: 'true',
       headers: new Headers({
-        "Content-Type": content_type,
+        'Content-Type': content_type,
 
-        "Accept-Language": `en`,
+        'Accept-Language': `en`,
       }),
       body,
     });
@@ -74,7 +74,7 @@ const request = ({
  */
 export const signup = (userData) => {
   const url = `/creators/register/`;
-  const method = "POST";
+  const method = 'POST';
   const body = JSON.stringify({ ...userData, subscribe: false });
 
   return request({ url, method, body }).then((res) => res.json());
@@ -87,8 +87,8 @@ export const signup = (userData) => {
  * @todo - describe method's signature
  */
 export const login = ({ username, password }) => {
-  const url = "/rest-auth/login/";
-  const method = "POST";
+  const url = '/rest-auth/login/';
+  const method = 'POST';
   const body = JSON.stringify({ username, password });
 
   return request({ url, method, body }).then((res) => res.json());
@@ -102,7 +102,7 @@ export const login = ({ username, password }) => {
  * @todo - describe method's signature
  */
 export const getAuthUser = (token) => {
-  const url = "/creators/auth-user/";
+  const url = '/creators/auth-user/';
   return request({ url, token }).then((res) => res.json());
 };
 
@@ -113,12 +113,12 @@ export const getAuthUser = (token) => {
  * @todo - describe method's signature
  */
 export const sendPasswordResetLink = (email) => {
-  const url = "/rest-auth/password/reset/";
-  const method = "POST";
+  const url = '/rest-auth/password/reset/';
+  const method = 'POST';
   const body = JSON.stringify({ email });
 
   return request({ url, method, body }).then((res) =>
-    Promise.resolve(res.status === 200 ? { detail: "ok" } : res.json())
+    Promise.resolve(res.status === 200 ? { detail: 'ok' } : res.json())
   );
 };
 
@@ -218,8 +218,8 @@ export const editUserProfile = (props) => {
   const { token, username, email, phone, dateOfBirth, bio, user_location } =
     props;
 
-  const url = "/creators/edit-creator/";
-  const method = "PUT";
+  const url = '/creators/edit-creator/';
+  const method = 'PUT';
   const body = JSON.stringify({
     username,
     email,
@@ -238,10 +238,10 @@ export const editUserProfile = (props) => {
  * @todo - describe method's signature
  */
 export const deleteAccount = ({ token }) => {
-  const url = "/creators/delete/";
-  const method = "DELETE";
+  const url = '/creators/delete/';
+  const method = 'DELETE';
   return request({ url, method, token }).then((res) =>
-    Promise.resolve(res.status === 204 ? { detail: "ok" } : res.json())
+    Promise.resolve(res.status === 204 ? { detail: 'ok' } : res.json())
   );
 };
 
@@ -269,5 +269,16 @@ export const getUserProjects = ({ username, page }) => {
 export const toggleFollow = ({ id, token }) => {
   const url = `/creators/${id}/toggle-follow/`;
 
+  return request({ url, token }).then((res) => res.json());
+};
+
+/**
+ * @method shouldUploadToLocal
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const shouldUploadToLocal = ({ token }) => {
+  const url = '/upload-file-to-local/';
   return request({ url, token }).then((res) => res.json());
 };

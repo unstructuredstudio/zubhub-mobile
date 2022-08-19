@@ -6,15 +6,16 @@ import {
   getSaved,
   toggleFollow,
   getUserProjects,
-} from "../../ApiCall/api";
-import { SET_PROJECTS } from "../types";
-import { CustomToasts } from "../../components/CustomToasts/CustomToasts";
+  shouldUploadToLocal,
+} from '../../ApiCall/api';
+import { SET_PROJECTS } from '../types';
+import { CustomToasts } from '../../components/CustomToasts/CustomToasts';
 
 //Get all projects
 export const getAllProjects = (setLoading, args) => (dispatch) => {
   let response = getProjects(args)
     .then((res) => {
-      console.log(res, "my projects");
+      console.log(res, 'my projects');
       if (Array.isArray(res.results)) {
         dispatch({
           type: SET_PROJECTS,
@@ -25,12 +26,12 @@ export const getAllProjects = (setLoading, args) => (dispatch) => {
       } else {
         res = Object.keys(res)
           .map((key) => res[key])
-          .join("\n");
+          .join('\n');
         throw new Error(res);
       }
     })
     .catch((error) => {
-      if (error.message.startsWith("Unexpected")) {
+      if (error.message.startsWith('Unexpected')) {
         // CustomToasts({
         //   type: error,
         //   description: "oops error occured",
@@ -51,13 +52,13 @@ export const getProjectDetails = (id, setLoading) => (dispatch) => {
   let response = getAProjectsDetail(id)
     .then((res) => {
       setLoading(false);
-      if (res.hasOwnProperty("id")) {
+      if (res.hasOwnProperty('id')) {
         return res;
       }
     })
     .catch((error) => {
-      console.log(error, "error in getting all projects");
-      if (error.message.startsWith("Unexpected")) {
+      console.log(error, 'error in getting all projects');
+      if (error.message.startsWith('Unexpected')) {
         // CustomToasts({
         //   type: error,
         //   description: args.t("projects.errors.unexpected"),
@@ -84,22 +85,22 @@ export const toggleLikeOnProject = (args) => {
   return () => {
     return toggleLike(args)
       .then((res) => {
-        console.log(res, "response ogg");
+        console.log(res, 'response ogg');
         if (res.title) {
           return { project: res };
         } else {
           res = Object.keys(res)
             .map((key) => res[key])
-            .join("\n");
+            .join('\n');
           throw new Error(res);
         }
       })
       .catch((error) => {
-        if (error.message.startsWith("Unexpected")) {
-          console.log("error in toggling lin=ke on project");
+        if (error.message.startsWith('Unexpected')) {
+          console.log('error in toggling lin=ke on project');
           // toast.warning(args.t("projectDetails.errors.unexpected"));
         } else {
-          console.log("error in toggling lin=ke on project");
+          console.log('error in toggling lin=ke on project');
 
           // toast.warning(error.message);
         }
@@ -124,17 +125,17 @@ export const toggleSaveOnProject = (args) => {
         } else {
           res = Object.keys(res)
             .map((key) => res[key])
-            .join("\n");
+            .join('\n');
           throw new Error(res);
         }
       })
       .catch((error) => {
-        if (error.message.startsWith("Unexpected")) {
-          console.log("error in saving project");
+        if (error.message.startsWith('Unexpected')) {
+          console.log('error in saving project');
 
           // toast.warning(args.t("projects.errors.unexpected"));
         } else {
-          console.log("error in saving project");
+          console.log('error in saving project');
 
           // toast.warning(error.message);
         }
@@ -161,17 +162,17 @@ export const getSavedProjects = (args) => (dispatch) => {
       } else {
         res = Object.keys(res)
           .map((key) => res[key])
-          .join("\n");
+          .join('\n');
         throw new Error(res);
       }
     })
     .catch((error) => {
-      if (error.message.startsWith("Unexpected")) {
-        console.log("error in getting bookmarks");
+      if (error.message.startsWith('Unexpected')) {
+        console.log('error in getting bookmarks');
 
         // toast.warning(args.t("savedProjects.errors.unexpected"));
       } else {
-        console.log(error, "error in getting bookmarks");
+        console.log(error, 'error in getting bookmarks');
 
         // toast.warning(error.message);
       }
@@ -198,17 +199,17 @@ export const getAUsersProject = (args) => (dispatch) => {
       } else {
         res = Object.keys(res)
           .map((key) => res[key])
-          .join("\n");
+          .join('\n');
         throw new Error(res);
       }
     })
     .catch((error) => {
-      if (error.message.startsWith("Unexpected")) {
-        console.log("error in getting bookmarks");
+      if (error.message.startsWith('Unexpected')) {
+        console.log('error in getting bookmarks');
 
         // toast.warning(args.t("savedProjects.errors.unexpected"));
       } else {
-        console.log(error, "error in getting bookmarks");
+        console.log(error, 'error in getting bookmarks');
 
         // toast.warning(error.message);
       }
@@ -233,21 +234,46 @@ export const toggleFollowOnProject = (args) => {
         } else {
           res = Object.keys(res)
             .map((key) => res[key])
-            .join("\n");
+            .join('\n');
           throw new Error(res);
         }
       })
       .catch((error) => {
-        if (error.message.startsWith("Unexpected")) {
-          console.log("error in toggling lin=ke on project");
+        if (error.message.startsWith('Unexpected')) {
+          console.log('error in toggling lin=ke on project');
           // toast.warning(args.t("projectDetails.errors.unexpected"));
         } else {
-          console.log("error in toggling lin=ke on project");
+          console.log('error in toggling lin=ke on project');
 
           // toast.warning(error.message);
         }
 
         return { loading: false };
+      });
+  };
+};
+
+/**
+ * @function shouldUploadToLocal
+ * @author Alice Ndeh <ALICENDEH16@gmail.com>
+ *
+ * @todo - describe function's signature
+ */
+export const UploadToLocal = (args) => {
+  console.log(args, 'ARGS FOR UPLOAD');
+  return () => {
+    return shouldUploadToLocal(args)
+      .then((res) => {
+        console.log(res, 'after upload');
+        if (res.local === undefined) {
+          throw new Error();
+        } else {
+          return res;
+        }
+      })
+      .catch(() => {
+        console.log('ERROR IN UPLOADING TO LOCAL');
+        // toast.warning(args.t('createProject.errors.unexpected'));
       });
   };
 };
