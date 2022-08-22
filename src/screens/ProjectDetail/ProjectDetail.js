@@ -6,25 +6,26 @@ import {
   Pressable,
   useWindowDimensions,
   TouchableOpacity,
-} from "react-native";
-import React, { useState, useEffect } from "react";
+} from 'react-native';
+import React, { useState, useEffect } from 'react';
 import {
   NativeUiActivityIndicator,
   NativeUiHeader,
   NativeUiText,
-} from "@components/";
-import DefaultStyles from "../../constants/DefaultStyles.style";
-import styles from "./ProjectDetail.style";
-import * as THEME from "../../constants/theme";
-import { FloatingAction } from "react-native-floating-action";
-import Modal from "react-native-modal";
-import { WebView } from "react-native-webview";
-import { isCloudinaryVideo, isGdriveORVimeoORYoutube } from "./ProjectScript";
-import RenderHtml from "react-native-render-html";
-import { useSelector, useDispatch } from "react-redux";
-import { getProjectDetails } from "../../redux/actions/projectsAction";
-import { toggleFollowOnProject } from "../../redux/actions/projectsAction";
-import { loadUser } from "../../redux/actions/authAction";
+} from '@components/';
+import DefaultStyles from '../../constants/DefaultStyles.style';
+import styles from './ProjectDetail.style';
+import * as THEME from '../../constants/theme';
+import { FloatingAction } from 'react-native-floating-action';
+import Modal from 'react-native-modal';
+import { WebView } from 'react-native-webview';
+import { isCloudinaryVideo, isGdriveORVimeoORYoutube } from './ProjectScript';
+import RenderHtml from 'react-native-render-html';
+import { useSelector, useDispatch } from 'react-redux';
+import { getProjectDetails } from '../../redux/actions/projectsAction';
+import { toggleFollowOnProject } from '../../redux/actions/projectsAction';
+import { loadUser } from '../../redux/actions/authAction';
+import AutoHeightWebView from 'react-native-autoheight-webview';
 
 const ProjectDetail = ({ route }) => {
   const dispatch = useDispatch();
@@ -32,12 +33,13 @@ const ProjectDetail = ({ route }) => {
 
   const videoRef = React.useRef(null);
   const [selectedImage, setSelectedImage] = useState({
-    imageUri: "",
+    imageUri: '',
     showModal: false,
   });
   const [loading, setLoading] = useState(false);
   const [projectDetails, setprojectDetails] = useState({});
   const [followState, setFollowState] = useState(null);
+  const [webViewHeight, setWebViewHeight] = useState(null);
 
   const { item } = route.params;
 
@@ -51,40 +53,40 @@ const ProjectDetail = ({ route }) => {
 
   const actions = [
     {
-      text: "Claps: 0",
-      icon: require("../images/clap.png"),
-      name: "bt_language",
+      text: 'Claps: 0',
+      icon: require('../images/clap.png'),
+      name: 'bt_language',
       position: 1,
     },
     {
-      text: "Bookmark",
-      icon: require("../images/bookmark.png"),
-      name: "bt_accessibility",
+      text: 'Bookmark',
+      icon: require('../images/bookmark.png'),
+      name: 'bt_accessibility',
       position: 2,
     },
 
     {
-      text: "Views: 0",
-      icon: require("../images/eye.png"),
-      name: "bt_room",
+      text: 'Views: 0',
+      icon: require('../images/eye.png'),
+      name: 'bt_room',
       position: 3,
     },
     {
-      text: "Facebook",
-      icon: require("../images/facebook.png"),
-      name: "bt_videocam",
+      text: 'Facebook',
+      icon: require('../images/facebook.png'),
+      name: 'bt_videocam',
       position: 4,
     },
     {
-      text: "Whatsapp",
-      icon: require("../images/whatsapp.png"),
-      name: "bt_videocam1",
+      text: 'Whatsapp',
+      icon: require('../images/whatsapp.png'),
+      name: 'bt_videocam1',
       position: 5,
     },
     {
-      text: "URL",
-      icon: require("../images/link.png"),
-      name: "bt_videocam2",
+      text: 'URL',
+      icon: require('../images/link.png'),
+      name: 'bt_videocam2',
       position: 6,
     },
   ];
@@ -113,9 +115,13 @@ const ProjectDetail = ({ route }) => {
     });
   };
 
+  const onWebViewMessage = (event) => {
+    setWebViewHeight(Number(event.nativeEvent.data));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <NativeUiHeader subScreen={true} sectionTitle={"Project Details"} />
+      <NativeUiHeader subScreen={true} sectionTitle={'Project Details'} />
       <Modal
         isVisible={selectedImage.showModal}
         onBackdropPress={() => {
@@ -140,7 +146,7 @@ const ProjectDetail = ({ route }) => {
         <>
           <ScrollView style={styles.topContainer}>
             <View style={DefaultStyles.containerCenter}>
-              <NativeUiText fontSize={21} textType={"medium"}>
+              <NativeUiText fontSize={21} textType={'medium'}>
                 {projectDetails?.title}
               </NativeUiText>
             </View>
@@ -176,7 +182,7 @@ const ProjectDetail = ({ route }) => {
                     <View style={[styles.follow, styles.authorDetails]}>
                       <NativeUiText
                         textColor={THEME.COLORS.WHITE}
-                        textType={"medium"}
+                        textType={'medium'}
                       >
                         Edit
                       </NativeUiText>
@@ -184,7 +190,7 @@ const ProjectDetail = ({ route }) => {
                     <View style={[styles.delete, styles.authorDetails]}>
                       <NativeUiText
                         textColor={THEME.COLORS.WHITE}
-                        textType={"medium"}
+                        textType={'medium'}
                         style={styles.authorDetails}
                       >
                         Delete
@@ -204,7 +210,7 @@ const ProjectDetail = ({ route }) => {
                     >
                       <NativeUiText
                         textColor={THEME.COLORS.WHITE}
-                        textType={"medium"}
+                        textType={'medium'}
                       >
                         {/* {followState !== null
                           ? followState?.followers?.length > 0
@@ -216,13 +222,13 @@ const ProjectDetail = ({ route }) => {
 
                         {followState !== null
                           ? followState?.followers?.includes(user?.user?.id)
-                            ? "UNFOLLOW"
-                            : "FOLLOW"
+                            ? 'UNFOLLOW'
+                            : 'FOLLOW'
                           : projectDetails?.creator?.followers?.includes(
                               user?.user?.id
                             )
-                          ? "UNFOLLOW"
-                          : "FOLLOW"}
+                          ? 'UNFOLLOW'
+                          : 'FOLLOW'}
                       </NativeUiText>
                     </TouchableOpacity>
                   </View>
@@ -278,7 +284,7 @@ const ProjectDetail = ({ route }) => {
               <View style={styles.webView}>
                 {isGdriveORVimeoORYoutube(item.video) ? (
                   <WebView
-                    originWhitelist={["*"]}
+                    originWhitelist={['*']}
                     source={{
                       html: `
                   <iframe width="920" height="600"
@@ -290,7 +296,7 @@ const ProjectDetail = ({ route }) => {
                   />
                 ) : (
                   <WebView
-                    originWhitelist={["*"]}
+                    originWhitelist={['*']}
                     source={{
                       html: `
                   <video width="920" controls>
@@ -310,19 +316,35 @@ const ProjectDetail = ({ route }) => {
             <View style={styles.userProfile}>
               <NativeUiText
                 fontSize={21}
-                textType={"medium"}
+                textType={'medium'}
                 style={styles.userProfile}
               >
                 Description
               </NativeUiText>
 
               <View>
-                <RenderHtml
-                  contentWidth={width}
+                <WebView
+                  scrollEnabled={false}
+                  originWhitelist={['*']}
                   source={{
                     html: `
-             ${projectDetails?.description}
-                 `,
+                  <!DOCTYPE html>
+                  <html lang="en">
+                  <head>
+                      <meta charset="UTF-8">
+                      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  </head>
+                  <body>
+                      ${projectDetails?.description}
+                  </body>
+                  </html>
+                  `,
+                  }}
+                  onMessage={onWebViewMessage}
+                  injectedJavaScript="window.ReactNativeWebView.postMessage(document.body.scrollHeight)"
+                  style={{
+                    height: webViewHeight + 20,
                   }}
                 />
               </View>
@@ -331,7 +353,7 @@ const ProjectDetail = ({ route }) => {
             <View style={styles.userProfile}>
               <NativeUiText
                 fontSize={21}
-                textType={"medium"}
+                textType={'medium'}
                 style={styles.userProfile}
               >
                 Materials Used
@@ -340,14 +362,14 @@ const ProjectDetail = ({ route }) => {
               <View style={styles.materialPrimary}>
                 {projectDetails?.materials_used &&
                   projectDetails?.materials_used
-                    .split(",")
+                    .split(',')
                     .map((material, index) => (
                       <View key={index} style={styles.materialContainer}>
                         <NativeUiText
                           textColor={THEME.COLORS.PRIMARY_TEAL}
-                          textType={"medium"}
+                          textType={'medium'}
                         >
-                          {material}{" "}
+                          {material}{' '}
                         </NativeUiText>
                       </View>
                     ))}
@@ -357,7 +379,7 @@ const ProjectDetail = ({ route }) => {
             <View style={styles.userProfile}>
               <NativeUiText
                 fontSize={21}
-                textType={"medium"}
+                textType={'medium'}
                 style={styles.userProfile}
               >
                 Catergory

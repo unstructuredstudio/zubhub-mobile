@@ -43,11 +43,11 @@ const Projects = () => {
   const [imagesDataSet, setImagesDataSet] = useState([]);
   const [publishTypes, setPublishTypes] = useState([]);
   const [projectData, setProjectData] = useState({
-    title: '',
+    title: 'ww',
     description: '',
     video: '',
-    materials_used: '',
-    category: '',
+    materials_used: 'sss',
+    category: 'Art',
     publish: {},
   });
 
@@ -273,6 +273,9 @@ const LayoutOne = ({ projectData, setProjectData }) => {
     setProjectData(data);
   };
 
+  useEffect(() => {
+    console.log(projectData);
+  }, [projectData]);
   return (
     <>
       <ScrollView style={styles.container}>
@@ -300,12 +303,31 @@ const LayoutOne = ({ projectData, setProjectData }) => {
             /> */}
             <View
               style={{
-                height: 339,
+                height: 300,
                 width: '100%',
               }}
             >
-              <QuillToolbar editor={_editor} options="basic" theme="light" />
-              <QuillEditor style={styles.editor} ref={_editor} />
+              <QuillToolbar
+                styles={{
+                  toolbar: {
+                    provider: (provided) => ({
+                      borderTopWidth: 0,
+                    }),
+                    root: (provided) => ({
+                      ...provided,
+                      width: '100%',
+                    }),
+                  },
+                }}
+                editor={_editor}
+                options="basic"
+                theme="light"
+              />
+              <QuillEditor
+                onHtmlChange={({ html }) => changeText(html, 'description')}
+                style={styles.editor}
+                ref={_editor}
+              />
             </View>
           </View>
         </View>
@@ -338,19 +360,19 @@ const LayoutTwo = ({
     arr[index] = { value: txt };
     setMaterialUsedArray(arr);
 
-    let str = '';
-    materialUsedArray.map((elem, index) => {
-      if (elem !== '') {
-        if (index !== 0) {
-          str += ',' + elem.value;
-        } else {
-          str += elem.value;
-        }
-      }
-    });
-    console.log(str);
+    // let str = '';
+    // materialUsedArray.map((elem, index) => {
+    //   if (elem !== '') {
+    //     if (index !== 0) {
+    //       str += ',' + elem.value;
+    //     } else {
+    //       str += elem.value;
+    //     }
+    //   }
+    // });
+    // console.log(str);
 
-    setProjectData({ ...projectData, materials_used: str });
+    setProjectData({ ...projectData, materials_used: 'str' });
   };
   const widgetSettings = useMemo(
     () => ({

@@ -149,16 +149,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     paddingVertical: 10,
   },
-  root: {
-    flex: 1,
-    // marginTop: StatusBar.currentHeight || 0,
-    backgroundColor: '#eaeaea',
-  },
+
   editor: {
     flex: 1,
     padding: 0,
 
-    marginVertical: 5,
+    marginVertical: 12,
     backgroundColor: 'white',
     width: '100%',
     // height: 55,

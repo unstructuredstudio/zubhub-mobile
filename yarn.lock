@@ -7340,6 +7340,14 @@
   dependencies:
     "prop-types" "^15.7.2"
 
+"react-native-autoheight-webview@^1.6.4":
+  "integrity" "sha512-e3eVTxP2BxEMWRTiXdU1fpyjbXMmgbNc399Mtz7uFqXDgjU8hGdDeEV62oXwrCpq/4KD8Qs2TJtG9HCUu9AZAQ=="
+  "resolved" "https://registry.npmjs.org/react-native-autoheight-webview/-/react-native-autoheight-webview-1.6.4.tgz"
+  "version" "1.6.4"
+  dependencies:
+    "deprecated-react-native-prop-types" "^2.3.0"
+    "prop-types" "^15.7.2"
+
 "react-native-cn-quill@^0.7.17":
   "integrity" "sha512-tAxGmZPQ4kvGVaUNmV1Iad22DZd6yrWiBLtKIbqGMjpGDgIqdmTAOVcLbdnYWkifKy8Mclksu421gwhm/L38Gg=="
   "resolved" "https://registry.npmjs.org/react-native-cn-quill/-/react-native-cn-quill-0.7.17.tgz"
@@ -7484,7 +7492,7 @@
     "normalize-css-color" "^1.0.2"
     "prop-types" "^15.6.0"
 
-"react-native-webview@^11.0.0", "react-native-webview@^11.22.7":
+"react-native-webview@^11.0.0", "react-native-webview@^11.22.7", "react-native-webview@>= 10.9.0":
   "integrity" "sha512-IYMElB4fFS6S8LbhivAQfAlW95HorqCK4T3mFKmWsV24iPVTfYoaiA1TNzkRnjw2mMgXDk/QnMeH9IbjBVs1Ag=="
   "resolved" "https://registry.npmjs.org/react-native-webview/-/react-native-webview-11.22.7.tgz"
   "version" "11.22.7"
@@ -7492,7 +7500,7 @@
     "escape-string-regexp" "2.0.0"
     "invariant" "2.2.4"
 
-"react-native@*", "react-native@^*", "react-native@^0.0.0-0 || 0.60 - 0.69 || 1000.0.0", "react-native@>=0.59", "react-native@>=0.65.0", "react-native@0.68.2":
+"react-native@*", "react-native@^*", "react-native@^0.0.0-0 || 0.60 - 0.69 || 1000.0.0", "react-native@>= 0.60.0", "react-native@>=0.59", "react-native@>=0.65.0", "react-native@0.68.2":
   "integrity" "sha512-qNMz+mdIirCEmlrhapAtAG+SWVx6MAiSfCbFNhfHqiqu1xw1OKXdzIrjaBEPihRC2pcORCoCHduHGQe/Pz9Yuw=="
   "resolved" "https://registry.npmjs.org/react-native/-/react-native-0.68.2.tgz"
   "version" "0.68.2"

@@ -1,6 +1,6 @@
-import { StyleSheet } from "react-native";
-import layout from "../../constants/layout";
-import * as THEME from "../../constants/theme";
+import { StyleSheet } from 'react-native';
+import layout from '../../constants/layout';
+import * as THEME from '../../constants/theme';
 
 const styles = StyleSheet.create({
   container: {
@@ -20,8 +20,8 @@ const styles = StyleSheet.create({
   },
 
   img: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
 
   avaterContainer: {
@@ -30,8 +30,8 @@ const styles = StyleSheet.create({
   },
 
   avater: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     borderRadius: 50,
     backgroundColor: THEME.COLORS.PRIMARY_YELLOW,
   },
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   mainImageContainer: {
     height: 188,
     marginTop: 22,
-    width: "100%",
+    width: '100%',
   },
 
   leftCard: {
@@ -100,15 +100,15 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-    position: "absolute",
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
     bottom: 60,
     right: 40,
   },
 
   userProfilex: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginTop: 21,
   },
 
@@ -117,13 +117,13 @@ const styles = StyleSheet.create({
   },
 
   fullImage: {
-    width: "100%",
+    width: '100%',
     height: 400,
   },
 
   webView: {
     flex: 1,
-    backgroundColor: "red",
+    backgroundColor: 'red',
     height: 200,
     marginTop: 12,
   },
@@ -138,8 +138,12 @@ const styles = StyleSheet.create({
   },
 
   materialPrimary: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+
+  webViewStyle: {
+    height: 400,
   },
 });
 
