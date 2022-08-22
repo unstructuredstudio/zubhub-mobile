@@ -1,7 +1,10 @@
-import { SET_PROJECTS } from "../types/index";
+import { SET_PROJECTS } from '../types/index';
 
 const initialState = {
   allProjects: [],
+  staff_picks: [],
+  hero: {},
+  zubhub: {},
 };
 
 export const projects_reducer = (state = initialState, action) => {

@@ -1,5 +1,6 @@
 const baseURL = 'http://localhost:8000/api';
 import i18n from 'i18next';
+import axios from 'axios';
 
 const request = ({
   url = '/',
@@ -273,6 +274,17 @@ export const toggleFollow = ({ id, token }) => {
 };
 
 /**
+ * @method getCategories
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const getCategories = () => {
+  const url = '/projects/categories/';
+  return request({ url }).then((res) => res.json());
+};
+
+/**
  * @method shouldUploadToLocal
  * @author Alice Ndeh <alicendeh16@gmail.com>
  *
@@ -281,4 +293,59 @@ export const toggleFollow = ({ id, token }) => {
 export const shouldUploadToLocal = ({ token }) => {
   const url = '/upload-file-to-local/';
   return request({ url, token }).then((res) => res.json());
+};
+
+/**
+ * @method shouldUploadToLocalPost
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const shouldUploadToLocalPost = async ({ formData, token }) => {
+  // console.log('in');
+  const method = 'POST';
+  const body = formData;
+  // const content_type = 'multipart/form-data';
+
+  const url = '/upload-file-to-local/';
+  return request({ url, method, token, body }).then((res) => res.json());
+};
+
+/**
+ * @method createProject
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const createProject = ({ projectData, token, uploaded_images_url }) => {
+  console.log(projectData, 'data');
+  const { title, description, video, publish, materials_used, category } =
+    projectData;
+  const url = '/projects/create/';
+  const method = 'POST';
+
+  const body = JSON.stringify({
+    title,
+    description,
+    images: uploaded_images_url,
+    video: '',
+    materials_used,
+    category,
+    publish,
+    tags: [],
+  });
+
+  return request({ url, method, token, body }).then((res) => res.json());
+};
+
+/**
+ * @method getHero
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const getHero = () => {
+  const url = `/hero/`;
+
+  return request({ url }).then((res) => res.json());
 };

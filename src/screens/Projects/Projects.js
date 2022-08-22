@@ -5,7 +5,6 @@ import {
   FlatList,
   Pressable,
   TouchableOpacity,
-  Image,
 } from 'react-native';
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import {
@@ -13,7 +12,7 @@ import {
   NativeUiText,
   NativeUiInput,
   NativeUiButton,
-  NativeUiSelect,
+  NativeUiActionSheet,
 } from '@components/';
 import * as THEME from '../../constants/theme';
 import styles from './Projects.style';
@@ -21,59 +20,69 @@ import DefaultStyles from '../../constants/DefaultStyles.style';
 import layout from '../../constants/layout';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, Octicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
-import { UploadToLocal } from '../../redux/actions/projectsAction';
+import {
+  initUpload,
+  getAllCategories,
+  buildPublishTypes,
+} from '../../redux/actions/projectsAction';
 import { useDispatch, useSelector } from 'react-redux';
-
-const initialValues = {
-  title: '',
-  description: '',
-  images: [
-    {
-      image_url: '',
-      public_id: '',
-    },
-  ],
-  video: '',
-  materials_used: '',
-  category: '',
-};
+import { SheetManager } from 'react-native-actions-sheet';
+import QuillEditor, { QuillToolbar } from 'react-native-cn-quill';
 
 const Projects = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  const projects = useSelector((state) => state.projects);
 
   const ref = useRef(null);
   const [currentElemIndex, setCurrentElemIndex] = useState(0);
-  const [componentsArray, setComponentsArray] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [imagesDataSet, setImagesDataSet] = useState([]);
+  const [publishTypes, setPublishTypes] = useState([]);
   const [projectData, setProjectData] = useState({
     title: '',
     description: '',
-    images: [
-      {
-        image_url: '',
-        public_id: '',
-      },
-    ],
     video: '',
     materials_used: '',
     category: '',
+    publish: {},
   });
 
   useEffect(() => {
-    setComponentsArray([
-      <LayoutOne projectData={projectData} setProjectData={setProjectData} />,
-      <LayoutTwo
-        projectData={projectData}
-        setImagesDataSet={setImagesDataSet}
-        setProjectData={setProjectData}
-      />,
-      <LayoutThree projectData={projectData} setProjectData={setProjectData} />,
-    ]);
+    dispatch(getAllCategories()).then((category) =>
+      setCategories(category?.categories)
+    );
+    let publishArray = buildPublishTypes(
+      projects?.zubhub,
+      setProjectData,
+      projectData
+    );
+    setPublishTypes(publishArray && publishArray.publish_types);
   }, []);
+
+  // useEffect(() => {
+  //   console.log(projectData);
+  // }, [projectData]);
+
+  const componentsArray = [
+    <LayoutOne projectData={projectData} setProjectData={setProjectData} />,
+    <LayoutTwo
+      projectData={projectData}
+      setImagesDataSet={setImagesDataSet}
+      imagesDataSet={imagesDataSet}
+      setProjectData={setProjectData}
+    />,
+    <LayoutThree
+      projectData={projectData}
+      setProjectData={setProjectData}
+      categories={categories}
+      publishTypes={publishTypes}
+      setPublishTypes={setPublishTypes}
+    />,
+  ];
 
   const updateCurrentSlideIndex = (e) => {
     const contentOffsetX = e.nativeEvent.contentOffset.x;
@@ -103,13 +112,7 @@ const Projects = () => {
   };
 
   const onCreateProject = () => {
-    console.log(imagesDataSet, 'img');
-    dispatch(
-      UploadToLocal({
-        t: [imagesDataSet[0].uri],
-        token: user?.token,
-      })
-    );
+    dispatch(initUpload({ projectData, imagesDataSet, token: user?.token }));
   };
 
   return (
@@ -262,6 +265,14 @@ const Projects = () => {
 export default Projects;
 
 const LayoutOne = ({ projectData, setProjectData }) => {
+  const _editor = React.createRef();
+
+  const changeText = (e, key) => {
+    const data = { ...projectData };
+    data[key] = e;
+    setProjectData(data);
+  };
+
   return (
     <>
       <ScrollView style={styles.container}>
@@ -270,23 +281,32 @@ const LayoutOne = ({ projectData, setProjectData }) => {
             <NativeUiInput
               label={'Name your project'}
               placeholder={'Project name'}
-              onChangeText={(name) =>
-                setProjectData({ ...projectData, name: name })
-              }
+              onChangeText={(e) => {
+                changeText(e, 'title');
+              }}
             />
           </View>
           <View style={styles.input}>
-            <NativeUiInput
+            {/* <NativeUiInput
               label={'Describe what it is'}
               placeholder={'Describe your project...'}
               multiline={true}
               bottomText={
                 'Tell us something interesting about the project! You can share what it is about, what inspired you to make it, your making process, fun and challenging moments you experienced, etc.'
               }
-              onChangeText={(description) =>
-                setProjectData({ ...projectData, description: description })
-              }
-            />
+              onChangeText={(e) => {
+                changeText(e, 'description');
+              }}
+            /> */}
+            <View
+              style={{
+                height: 339,
+                width: '100%',
+              }}
+            >
+              <QuillToolbar editor={_editor} options="basic" theme="light" />
+              <QuillEditor style={styles.editor} ref={_editor} />
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -294,9 +314,13 @@ const LayoutOne = ({ projectData, setProjectData }) => {
   );
 };
 
-const LayoutTwo = ({ projectData, setProjectData, setImagesDataSet }) => {
+const LayoutTwo = ({
+  projectData,
+  setProjectData,
+  imagesDataSet,
+  setImagesDataSet,
+}) => {
   const [visible, setVisible] = useState(false);
-  const [selectedImages, setSelectedImages] = useState([]);
   const [materialUsedArray, setMaterialUsedArray] = useState([
     {
       value: '',
@@ -309,6 +333,25 @@ const LayoutTwo = ({ projectData, setProjectData, setImagesDataSet }) => {
     },
   ]);
 
+  const onChangeText = (index, txt) => {
+    let arr = materialUsedArray;
+    arr[index] = { value: txt };
+    setMaterialUsedArray(arr);
+
+    let str = '';
+    materialUsedArray.map((elem, index) => {
+      if (elem !== '') {
+        if (index !== 0) {
+          str += ',' + elem.value;
+        } else {
+          str += elem.value;
+        }
+      }
+    });
+    console.log(str);
+
+    setProjectData({ ...projectData, materials_used: str });
+  };
   const widgetSettings = useMemo(
     () => ({
       getImageMetaData: false,
@@ -392,14 +435,6 @@ const LayoutTwo = ({ projectData, setProjectData, setImagesDataSet }) => {
     []
   );
 
-  const onChangeText = (index, txt) => {
-    let arr = materialUsedArray;
-    arr[index] = { value: txt };
-    setMaterialUsedArray(arr);
-    // console.log(materialUsedArray, 'ma');
-  };
-  // useEffect(() => {}, [materialUsedArray]);
-
   return (
     <>
       <ScrollView style={styles.container}>
@@ -418,23 +453,35 @@ const LayoutTwo = ({ projectData, setProjectData, setImagesDataSet }) => {
                   Dont have them? Add a video instead!
                 </NativeUiText>
 
-                <TouchableOpacity
-                  onPress={() => setVisible(true)}
-                  style={[DefaultStyles.containerRow, styles.imageContainer]}
-                >
-                  <Entypo
-                    name="folder-images"
-                    size={24}
-                    color={THEME.COLORS.PRIMARY_TEAL}
-                  />
-                  <NativeUiText
-                    textColor={THEME.COLORS.PRIMARY_TEAL}
-                    textType={'medium'}
-                    style={styles.txt}
+                <View>
+                  <TouchableOpacity
+                    onPress={() => setVisible(true)}
+                    style={[DefaultStyles.containerRow, styles.imageContainer]}
                   >
-                    ADD IMAGES
-                  </NativeUiText>
-                </TouchableOpacity>
+                    <Entypo
+                      name="folder-images"
+                      size={24}
+                      color={THEME.COLORS.PRIMARY_TEAL}
+                    />
+                    <NativeUiText
+                      textColor={THEME.COLORS.PRIMARY_TEAL}
+                      textType={'medium'}
+                      style={styles.txt}
+                    >
+                      ADD IMAGES
+                    </NativeUiText>
+                  </TouchableOpacity>
+                  {imagesDataSet.length > 0 && (
+                    <NativeUiText
+                      fontSize={12}
+                      textColor={THEME.COLORS.PRIMARY_TEAL}
+                      style={styles.imgAdded}
+                    >
+                      {imagesDataSet.length} image
+                      {imagesDataSet.length > 1 && 's'} added
+                    </NativeUiText>
+                  )}
+                </View>
                 <Modal
                   onBackdropPress={() => setVisible(false)}
                   isVisible={visible}
@@ -499,8 +546,8 @@ const LayoutTwo = ({ projectData, setProjectData, setImagesDataSet }) => {
                 <NativeUiText textType="medium" style={styles.materialsText}>
                   What materials did you use
                 </NativeUiText>
-                {materialUsedArray.map((item, index) => (
-                  <View style={styles.materialInput}>
+                {materialUsedArray.map((_, index) => (
+                  <View key={Math.random()} style={styles.materialInput}>
                     <NativeUiInput
                       onChangeText={(e) => onChangeText(index, e)}
                       // value={item.value}
@@ -547,22 +594,120 @@ const LayoutTwo = ({ projectData, setProjectData, setImagesDataSet }) => {
   );
 };
 
-const LayoutThree = () => {
+const LayoutThree = ({
+  projectData,
+  setProjectData,
+  categories,
+  publishTypes,
+}) => {
+  const [publishCategory, setPublishCategory] = useState('');
+  const changeText = (e, key) => {
+    const data = { ...projectData };
+    data[key] = e;
+    setProjectData(data);
+    SheetManager.hide('categorySheet');
+  };
+
+  const changePublish = (val) => {
+    const data = { ...projectData };
+    const publish = {
+      type: val.value,
+      visible_to: [],
+    };
+    data['publish'] = publish;
+    setProjectData(data);
+    setPublishCategory(val.name);
+    SheetManager.hide('publishTypeSheet');
+  };
   return (
     <>
       <ScrollView style={styles.container}>
+        <NativeUiActionSheet id="categorySheet" sheetTitle="Select A Category">
+          <View style={styles.categoryBox}>
+            {categories?.map((cat) => (
+              <TouchableOpacity
+                onPress={() => changeText(cat.name, 'category')}
+                style={styles.categoryView}
+                key={cat.id}
+              >
+                <NativeUiText fontSize={16} textType={'medium'}>
+                  {cat.name}
+                </NativeUiText>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </NativeUiActionSheet>
+        <NativeUiActionSheet
+          id="publishTypeSheet"
+          sheetTitle="Select An Option"
+        >
+          <View style={styles.categoryBox}>
+            {publishTypes?.map((val) => (
+              <TouchableOpacity
+                onPress={() => changePublish(val)}
+                style={styles.categoryView}
+                key={val.value}
+              >
+                <NativeUiText fontSize={16} textType={'medium'}>
+                  {val.name}
+                </NativeUiText>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </NativeUiActionSheet>
         <View style={[styles.introContainer]}>
+          <TouchableOpacity
+            onPress={async () => await SheetManager.show('categorySheet')}
+          >
+            <NativeUiText textType="medium" style={styles.categoryText}>
+              What is the category of your project
+            </NativeUiText>
+            <View
+              style={[styles.dropdownContainer, DefaultStyles.containerSpaced]}
+            >
+              <View style={styles.dropdown}>
+                <NativeUiText>
+                  {projectData?.category === ''
+                    ? 'Select an option'
+                    : projectData?.category}
+                </NativeUiText>
+              </View>
+              <Octicons name="chevron-down" size={20} color="black" />
+            </View>
+          </TouchableOpacity>
+
           <View style={styles.input}>
             <NativeUiInput
               label={'What tag best describe your project'}
               placeholder={'Add a tag...'}
             />
           </View>
-          <View style={styles.input}>
-            <NativeUiInput
-              label={'What publish option do you want to set for this project'}
-              placeholder={'Public'}
-            />
+
+          <View>
+            <NativeUiText textType="medium" style={styles.categoryText}>
+              What publish option do you want to set for this project
+            </NativeUiText>
+            <TouchableOpacity
+              onPress={async () => await SheetManager.show('publishTypeSheet')}
+              style={[styles.dropdownContainer, DefaultStyles.containerSpaced]}
+            >
+              <View style={styles.dropdown}>
+                <NativeUiText>
+                  {publishCategory === '' ? 'Public' : publishCategory}
+                </NativeUiText>
+              </View>
+              <Octicons name="chevron-down" size={20} color="black" />
+            </TouchableOpacity>
+            <NativeUiText
+              fontSize={12}
+              textColor={THEME.COLORS.SECONDARY_TEXT}
+              style={styles.roleText}
+            >
+              Think about your target audience. Should this project be visible
+              to all creators?, authenticated creators?, or do you want to
+              provide the usernames of creators this project should be visible
+              to?
+            </NativeUiText>
           </View>
         </View>
       </ScrollView>

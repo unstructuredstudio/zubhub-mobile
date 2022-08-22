@@ -10,8 +10,14 @@ import Entypo from 'react-native-vector-icons/Entypo';
 
 const NativeUiActionSheet = ({ children, id, sheetTitle }) => {
   return (
-    <ActionSheet containerStyle={styles.main} id={id}>
-      <View style={[DefaultStyles.containerSpaced, styles.topContainer]}>
+    <ActionSheet id={id}>
+      <View
+        style={[
+          DefaultStyles.containerSpaced,
+          styles.topContainer,
+          styles.main,
+        ]}
+      >
         <View />
         <NativeUiText fontSize={THEME.FONT_SIZE.MEDIUM} textType="medium">
           {sheetTitle}
@@ -24,7 +30,9 @@ const NativeUiActionSheet = ({ children, id, sheetTitle }) => {
           />
         </TouchableOpacity>
       </View>
-      <ScrollView style={styles.container}>{children}</ScrollView>
+      <ScrollView style={styles.container}>
+        <View style={styles.main}>{children}</View>
+      </ScrollView>
     </ActionSheet>
   );
 };

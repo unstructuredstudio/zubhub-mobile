@@ -1,16 +1,17 @@
-import { StyleSheet } from "react-native";
-import * as THEME from "../../constants/theme";
+import { StyleSheet } from 'react-native';
+import * as THEME from '../../constants/theme';
 
 const styles = (textColor) =>
   StyleSheet.create({
     textStyle: {
-      color: textColor ? textColor : "#ccc",
+      color: textColor ? textColor : '#ccc',
       marginBottom: 7,
     },
     smallTextStyle: {
-      color: textColor ? textColor : "#ccc",
-      fontWeight: "400",
+      color: textColor ? textColor : '#ccc',
+      fontWeight: '400',
       marginTop: 7,
+      fontStyle: 'italic',
     },
     textInputStyle: {
       flex: 1,
@@ -23,7 +24,7 @@ const styles = (textColor) =>
       paddingHorizontal: 15,
       borderRadius: 10,
       backgroundColor: THEME.COLORS.WHITE,
-      shadowColor: "#ccc",
+      shadowColor: '#ccc',
       shadowOffset: {
         width: 0,
         height: 1,
@@ -32,11 +33,10 @@ const styles = (textColor) =>
       shadowRadius: 2.22,
       elevation: 3,
       borderWidth: 2,
-      borderColor: "#eee",
-      fontWeight: "bold",
+      borderColor: '#eee',
+      fontWeight: 'bold',
       color: THEME.COLORS.BLACK,
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
     },
 
     errorText: {
@@ -45,8 +45,7 @@ const styles = (textColor) =>
 
     itemView: {
       flex: 1,
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
     },
   });
 export default styles;

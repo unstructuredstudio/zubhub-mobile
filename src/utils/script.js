@@ -1,3 +1,5 @@
+import AWS from 'aws-sdk';
+
 export const dFormatter = (str) => {
   const date = new Date(str);
 
@@ -35,7 +37,7 @@ export const dFormatter = (str) => {
 
 /**
  * @function buildVideoThumbnailURL
- * @author Raymond Ndibe <ndiberaymond1@gmail.com>
+ * @author Alice Ndeh <alicendeh16@gmail.com>
  *
  * @todo - describe function's signature
  */
@@ -61,4 +63,71 @@ export const buildVideoThumbnailURL = (video_url) => {
   } else {
     return video_url + '.jpg';
   }
+};
+
+/**
+ * @constant doConfig
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe constant's function
+ */
+export const doConfig = {
+  digitalOceanSpaces: 'https://zubhub.sfo2.digitaloceanspaces.com/',
+  bucketName: 'zubhub',
+  project_images: 'project_images',
+};
+
+/**
+ * @object s3
+ * @author Alice Ndeh<alicendeh16@gmail.com>
+ *
+ * @todo - describe object's function
+ */
+export const s3 = new AWS.S3({
+  endpoint: new AWS.Endpoint('sfo2.digitaloceanspaces.com'),
+  accessKeyId: process.env.REACT_APP_DOSPACE_ACCESS_KEY_ID,
+  secretAccessKey: process.env.REACT_APP_DOSPACE_ACCESS_SECRET_KEY,
+});
+
+/**
+ * @function Compress
+ * @author Alice Ndeh<alicendeh16@gmail.com>
+ *
+ * @todo - describe function's signature
+ */
+export const Compress = (images, state, handleSetState) => {
+  let compressed = [];
+
+  for (let index = 0; index < images.length; index += 1) {
+    let image = images[index];
+
+    if (image && image.type.split('/')[1] !== 'gif') {
+      new Compressor(image, {
+        quality: 0.6,
+        convertSize: 100000,
+        success: (result) => {
+          compressed.push(result);
+          shouldSetImages(compressed, images, state, handleSetState);
+        },
+        error: (error) => {
+          console.warn(error.message);
+          compressed.push(image);
+          shouldSetImages(compressed, images, state, handleSetState);
+        },
+      });
+    } else {
+      compressed.push(image);
+      shouldSetImages(compressed, images, state, handleSetState);
+    }
+  }
+};
+
+/**
+ * @function slugify
+ * @author Alice Ndeh<alicendeh16@gmail.com>
+ *
+ * @todo - describe function's signature
+ */
+export const slugify = (str) => {
+  return str.replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
 };

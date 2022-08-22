@@ -8,7 +8,10 @@ import {
 import React, { useState, useEffect } from 'react';
 import styles from './Home.style';
 import DefaultStyles from '../../constants/DefaultStyles.style';
-import { getAllProjects } from '../../redux/actions/projectsAction';
+import {
+  getAllProjects,
+  getHeroProperties,
+} from '../../redux/actions/projectsAction';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { loadUser } from '../../redux/actions/authAction';
@@ -28,7 +31,9 @@ const Home = () => {
 
   useEffect(() => {
     loadUserData();
+    dispatch(getHeroProperties());
   }, []);
+
   useEffect(() => {
     fetchAllProjects();
   }, [currentPage]);

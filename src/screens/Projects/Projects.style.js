@@ -24,6 +24,10 @@ const styles = StyleSheet.create({
     marginBottom: 21,
   },
 
+  categoryText: {
+    marginBottom: 8,
+  },
+
   member: {
     marginVertical: 21,
     textAlign: 'center',
@@ -93,6 +97,86 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 10,
     borderColor: '#BEBEBE',
+  },
+
+  dropdown: {
+    flex: 1,
+  },
+
+  dropdownContainer: {
+    marginBottom: 21,
+    height: 55,
+    backgroundColor: THEME.COLORS.WHITE,
+    shadowColor: '#ccc',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 2.22,
+    elevation: 3,
+    borderWidth: 2,
+    borderColor: '#eee',
+    fontWeight: 'bold',
+    color: THEME.COLORS.BLACK,
+    borderRadius: 10,
+    paddingHorizontal: 15,
+  },
+
+  categoryView: {
+    backgroundColor: THEME.COLORS.SECONDARY_GREY,
+    marginTop: 22,
+    borderRadius: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 14,
+  },
+
+  categoryBox: {
+    marginBottom: 55,
+  },
+
+  imgAdded: {
+    marginTop: 8,
+    fontStyle: 'italic',
+  },
+
+  roleText: {
+    fontStyle: 'italic',
+  },
+
+  title: {
+    fontWeight: 'bold',
+    alignSelf: 'center',
+    paddingVertical: 10,
+  },
+  root: {
+    flex: 1,
+    // marginTop: StatusBar.currentHeight || 0,
+    backgroundColor: '#eaeaea',
+  },
+  editor: {
+    flex: 1,
+    padding: 0,
+
+    marginVertical: 5,
+    backgroundColor: 'white',
+    width: '100%',
+    // height: 55,
+    backgroundColor: THEME.COLORS.WHITE,
+    shadowColor: '#ccc',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 2.22,
+    elevation: 3,
+    borderWidth: 2,
+    borderColor: '#eee',
+    fontWeight: 'bold',
+    color: THEME.COLORS.BLACK,
+    borderRadius: 10,
+    paddingHorizontal: 15,
   },
 });
 
