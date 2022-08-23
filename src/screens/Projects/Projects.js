@@ -354,26 +354,16 @@ const LayoutTwo = ({
       value: '',
     },
   ]);
+  const [activeVideOption, setActiveVideOption] = useState('link');
+  const [videoURL, setvideoURL] = useState('');
 
   const onChangeText = (index, txt) => {
     let arr = materialUsedArray;
     arr[index] = { value: txt };
     setMaterialUsedArray(arr);
-
-    // let str = '';
-    // materialUsedArray.map((elem, index) => {
-    //   if (elem !== '') {
-    //     if (index !== 0) {
-    //       str += ',' + elem.value;
-    //     } else {
-    //       str += elem.value;
-    //     }
-    //   }
-    // });
-    // console.log(str);
-
     setProjectData({ ...projectData, materials_used: 'str' });
   };
+
   const widgetSettings = useMemo(
     () => ({
       getImageMetaData: false,
@@ -461,6 +451,107 @@ const LayoutTwo = ({
     <>
       <ScrollView style={styles.container}>
         <View style={[styles.introContainer, styles.topContainer]}>
+          <NativeUiActionSheet
+            id="videoUploadShet"
+            sheetTitle="Select An Option"
+          >
+            <View>
+              <View style={styles.optionContainer}>
+                <TouchableOpacity
+                  onPress={() => setActiveVideOption('link')}
+                  style={
+                    activeVideOption === 'link'
+                      ? styles.defaultOption
+                      : styles.unselectedOption
+                  }
+                >
+                  <NativeUiText
+                    textColor={
+                      activeVideOption === 'link'
+                        ? THEME.COLORS.WHITE
+                        : THEME.COLORS.PRIMARY_TEAL
+                    }
+                  >
+                    LINK VIDEO
+                  </NativeUiText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setActiveVideOption('device')}
+                  style={
+                    activeVideOption !== 'link'
+                      ? styles.defaultOption
+                      : styles.unselectedOption
+                  }
+                >
+                  <NativeUiText
+                    textColor={
+                      activeVideOption !== 'link'
+                        ? THEME.COLORS.WHITE
+                        : THEME.COLORS.PRIMARY_TEAL
+                    }
+                  >
+                    UPLOAD VIDEO
+                  </NativeUiText>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={styles.onSelectInput}>
+              {activeVideOption === 'link' ? (
+                <NativeUiInput
+                  onChangeText={(txt) => setvideoURL(txt)}
+                  placeholder={'https://youtube.com'}
+                  label={'Video URL'}
+                />
+              ) : (
+                <TouchableOpacity
+                  onPress={async () =>
+                    await SheetManager.show('videoUploadShet')
+                  }
+                  style={[
+                    DefaultStyles.containerRow,
+                    styles.imageContainer,
+                    styles.elemHeight,
+                  ]}
+                >
+                  <NativeUiText
+                    textColor={THEME.COLORS.PRIMARY_TEAL}
+                    textType={'medium'}
+                    style={styles.txt}
+                  >
+                    TAP HERE TO UPLOAD
+                  </NativeUiText>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            <View style={[DefaultStyles.containerSpaced, styles.onSelectInput]}>
+              <TouchableOpacity
+                onPress={() => SheetManager.hide('videoUploadShet')}
+                style={styles.cancelContainer}
+              >
+                <NativeUiText
+                  textColor={THEME.COLORS.PRIMARY_TEAL}
+                  textType={'medium'}
+                >
+                  Cancel
+                </NativeUiText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  SheetManager.hide('videoUploadShet');
+                  setProjectData({ ...projectData, video: videoURL });
+                }}
+                style={styles.uploadContainer}
+              >
+                <NativeUiText
+                  textColor={THEME.COLORS.WHITE}
+                  textType={'medium'}
+                >
+                  Upload
+                </NativeUiText>
+              </TouchableOpacity>
+            </View>
+          </NativeUiActionSheet>
           <View>
             <View style={styles.input}>
               <View>
@@ -544,7 +635,10 @@ const LayoutTwo = ({
                   Its ok if you dont have a video, you can add images
                 </NativeUiText>
 
-                <View
+                <TouchableOpacity
+                  onPress={async () =>
+                    await SheetManager.show('videoUploadShet')
+                  }
                   style={[DefaultStyles.containerRow, styles.imageContainer]}
                 >
                   <Entypo
@@ -559,7 +653,7 @@ const LayoutTwo = ({
                   >
                     ADD VIDEO
                   </NativeUiText>
-                </View>
+                </TouchableOpacity>
               </View>
             </View>
 

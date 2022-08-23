@@ -174,6 +174,63 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 15,
   },
+
+  optionContainer: {
+    width: THEME.WIDTH * 0.9,
+    borderRadius: 32,
+    height: 50,
+    borderWidth: 2,
+    borderColor: THEME.COLORS.PRIMARY_TEAL,
+    backgroundColor: THEME.COLORS.WHITE,
+    flexDirection: 'row',
+    marginTop: 22,
+    paddingHorizontal: 3,
+  },
+  defaultOption: {
+    backgroundColor: THEME.COLORS.PRIMARY_TEAL,
+    width: THEME.WIDTH * 0.43,
+    borderRadius: 22,
+    height: 42,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+
+  unselectedOption: {
+    width: THEME.WIDTH * 0.44,
+    borderRadius: 22,
+    height: 42,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+
+  onSelectInput: {
+    marginTop: 22,
+  },
+
+  elemHeight: {
+    height: 55,
+  },
+
+  cancelContainer: {
+    borderWidth: 1,
+    borderColor: THEME.COLORS.PRIMARY_TEAL,
+    borderRadius: 9,
+    height: 42,
+    width: THEME.WIDTH * 0.4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  uploadContainer: {
+    height: 42,
+    width: THEME.WIDTH * 0.4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: THEME.COLORS.PRIMARY_TEAL,
+    borderRadius: 9,
+  },
 });
 
 export default styles;

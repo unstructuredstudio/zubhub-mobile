@@ -317,7 +317,12 @@ export const shouldUploadToLocalPost = async ({ formData, token }) => {
  *
  * @todo - describe method's signature
  */
-export const createProject = ({ projectData, token, uploaded_images_url }) => {
+export const createProject = ({
+  projectData,
+  token,
+  uploaded_images_url,
+  uploaded_videos_url,
+}) => {
   console.log(projectData, 'data');
   const { title, description, video, publish, materials_used, category } =
     projectData;
@@ -328,7 +333,18 @@ export const createProject = ({ projectData, token, uploaded_images_url }) => {
     title,
     description,
     images: uploaded_images_url,
-    video: '',
+    video: uploaded_videos_url[0],
+    materials_used,
+    category,
+    publish,
+    tags: [],
+  });
+
+  console.log({
+    title,
+    description,
+    images: uploaded_images_url,
+    video: uploaded_videos_url[0],
     materials_used,
     category,
     publish,

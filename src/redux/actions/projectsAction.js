@@ -530,6 +530,36 @@ export const uploadImageToDO = (image, state, props, handleSetState) => {
 };
 
 /**
+ * @function uploadVideo
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe function's signature
+ */
+export const uploadVideo = (args) => {
+  if (
+    typeof args.video === 'string' &&
+    args.video.match(
+      /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
+    )
+  ) {
+    return new Promise((r) => r({ secure_url: args.video }));
+  } else {
+    const args = {
+      t: props.t,
+      token: props.auth.token,
+    };
+
+    return props.shouldUploadToLocal(args).then((res) => {
+      if (res && res.local === true) {
+        return uploadVideoToLocal(video, state, props, handleSetState);
+      } else if (res && res.local === false) {
+        return uploadVideoToCloudinary(video, state, props, handleSetState);
+      }
+    });
+  }
+};
+
+/**
  * @function createProject
  * @author Alice Ndeh <alicendeh16@gmail.com>
  *
@@ -539,10 +569,27 @@ export const initUpload =
   ({ projectData, imagesDataSet, token }) =>
   (dispatch) => {
     let promises = [];
+
     // upload images
     for (let index = 0; index < imagesDataSet.length; index++) {
       promises.push(UploadToLocal({ token, image: imagesDataSet[index] }));
     }
+
+    // upload videos
+    // for (
+    //   let index = 0;
+    //   index < state.media_upload.videos_to_upload.length;
+    //   index++
+    // ) {
+    if (projectData.video) {
+      promises.push(
+        uploadVideo({
+          token,
+          video: projectData.video,
+        })
+      );
+    }
+    // }
 
     Promise.all(promises).then((all) => {
       const uploaded_images_url = [];
@@ -552,20 +599,22 @@ export const initUpload =
         if (each.public_id) {
           uploaded_images_url.push(each);
         } else if (each.secure_url) {
+          console.log(each.secure_url, 'secure url');
           uploaded_videos_url[0] = each.secure_url;
         }
       });
 
-      createAProject({ projectData, token, uploaded_images_url });
+      createAProject({
+        projectData,
+        token,
+        uploaded_images_url,
+        uploaded_videos_url,
+      });
+      // if (uploaded_images_url.length > 0) {
+      // } else {
+      //   createAProject({ projectData, token, uploaded_videos_url });
+      // }
     });
-
-    // return createProject({ projectData, token, promises }).then((res) => {
-    //   if (!res.id) {
-    //     throw new Error(JSON.stringify(res));
-    //   } else {
-    //     console.log('successs');
-    //   }
-    // });
   };
 
 /**
@@ -574,15 +623,23 @@ export const initUpload =
  *
  * @todo - describe function's signature
  */
-export const createAProject = ({ projectData, token, uploaded_images_url }) => {
+export const createAProject = ({
+  projectData,
+  token,
+  uploaded_images_url,
+  uploaded_videos_url,
+}) => {
   // let data =
-  return createProject({ projectData, token, uploaded_images_url }).then(
-    (res) => {
-      if (!res.id) {
-        throw new Error(JSON.stringify(res));
-      } else {
-        console.log('successs');
-      }
+  return createProject({
+    projectData,
+    token,
+    uploaded_images_url,
+    uploaded_videos_url,
+  }).then((res) => {
+    if (!res.id) {
+      throw new Error(JSON.stringify(res));
+    } else {
+      console.log('successs');
     }
-  );
+  });
 };
