@@ -5,6 +5,7 @@ import {
   FlatList,
   Pressable,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import {
@@ -30,6 +31,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { SheetManager } from 'react-native-actions-sheet';
 import QuillEditor, { QuillToolbar } from 'react-native-cn-quill';
+import * as ImagePicker from 'expo-image-picker';
 
 const Projects = () => {
   const navigation = useNavigation();
@@ -43,13 +45,14 @@ const Projects = () => {
   const [imagesDataSet, setImagesDataSet] = useState([]);
   const [publishTypes, setPublishTypes] = useState([]);
   const [projectData, setProjectData] = useState({
-    title: 'ww',
+    title: 'sss',
     description: '',
-    video: '',
+    video: null,
     materials_used: 'sss',
     category: 'Art',
     publish: {},
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     dispatch(getAllCategories()).then((category) =>
@@ -112,8 +115,18 @@ const Projects = () => {
   };
 
   const onCreateProject = () => {
-    dispatch(initUpload({ projectData, imagesDataSet, token: user?.token }));
+    // setLoading(true);
+    dispatch(
+      initUpload({
+        projectData,
+        imagesDataSet,
+        token: user?.token,
+        setLoading,
+        user,
+      })
+    );
   };
+  // setLoading(false);
 
   return (
     <View style={styles.container}>
@@ -245,18 +258,22 @@ const Projects = () => {
         )}
       />
       <View style={styles.bottomContainer}>
-        <NativeUiButton
-          label={
-            currentElemIndex === componentsArray.length - 1
-              ? 'Create Project'
-              : 'Next'
-          }
-          onPress={() =>
-            currentElemIndex === componentsArray.length - 1
-              ? onCreateProject()
-              : goToNextSlide()
-          }
-        />
+        {loading ? (
+          <ActivityIndicator size={21} color={THEME.COLORS.PRIMARY_TEAL} />
+        ) : (
+          <NativeUiButton
+            label={
+              currentElemIndex === componentsArray.length - 1
+                ? 'Create Project'
+                : 'Next'
+            }
+            onPress={() =>
+              currentElemIndex === componentsArray.length - 1
+                ? onCreateProject()
+                : goToNextSlide()
+            }
+          />
+        )}
       </View>
     </View>
   );
@@ -273,9 +290,9 @@ const LayoutOne = ({ projectData, setProjectData }) => {
     setProjectData(data);
   };
 
-  useEffect(() => {
-    console.log(projectData);
-  }, [projectData]);
+  // useEffect(() => {
+  //   console.log(projectData);
+  // }, [projectData]);
   return (
     <>
       <ScrollView style={styles.container}>
@@ -447,6 +464,23 @@ const LayoutTwo = ({
     []
   );
 
+  const pickVideo = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    setProjectData({ ...projectData, video: result });
+
+    if (!result.cancelled) {
+      // setImage(result.uri);
+      // console.log(result.uri);
+    }
+  };
+
   return (
     <>
       <ScrollView style={styles.container}>
@@ -504,9 +538,10 @@ const LayoutTwo = ({
                 />
               ) : (
                 <TouchableOpacity
-                  onPress={async () =>
-                    await SheetManager.show('videoUploadShet')
-                  }
+                  onPress={async () => {
+                    await SheetManager.show('videoUploadShet');
+                    pickVideo();
+                  }}
                   style={[
                     DefaultStyles.containerRow,
                     styles.imageContainer,

@@ -3,6 +3,14 @@
     "name": "zubhub",
     "slug": "zubhub",
     "version": "1.0.0",
-    "assetBundlePatterns": ["**/*"]
+    "assetBundlePatterns": ["**/*"],
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "All Zubhub access your images and videos"
+        }
+      ]
+    ]
   }
 }

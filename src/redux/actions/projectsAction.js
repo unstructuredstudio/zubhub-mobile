@@ -16,7 +16,7 @@ import { SET_PROJECTS } from '../types';
 import { CustomToasts } from '../../components/CustomToasts/CustomToasts';
 import { nanoid } from 'nanoid';
 import { site_mode, publish_type } from '../../utils/constants';
-import { doConfig, s3 as DO } from '../../utils/script';
+import { doConfig, s3 as DO, slugify } from '../../utils/script';
 
 //Get all projects
 export const getAllProjects = (setLoading, args) => (dispatch) => {
@@ -412,11 +412,9 @@ export const buildPublishTypes = (zubhub, setProjectData, projectData) => {
  * @todo - describe function's signature
  */
 export const UploadToLocal = (args) => {
-  // return () => {
   let result = shouldUploadToLocal(args)
     .then((res) => {
       if (res && res.local === true) {
-        // console.log(uploadImageToLocal(args));
         return uploadImageToLocal(args);
       } else if (res && res.local === false) {
         return uploadImageToDO(args);
@@ -544,19 +542,54 @@ export const uploadVideo = (args) => {
   ) {
     return new Promise((r) => r({ secure_url: args.video }));
   } else {
-    const args = {
-      t: props.t,
-      token: props.auth.token,
-    };
-
-    return props.shouldUploadToLocal(args).then((res) => {
+    return shouldUploadToLocal(args).then((res) => {
       if (res && res.local === true) {
-        return uploadVideoToLocal(video, state, props, handleSetState);
-      } else if (res && res.local === false) {
-        return uploadVideoToCloudinary(video, state, props, handleSetState);
+        return uploadVideoToLocal(args);
       }
+      // else if (res && res.local === false) {
+      //   return uploadVideoToCloudinary(video, state, props, handleSetState);
+      // }
     });
   }
+};
+
+/**
+ * @function uploadVideoToLocal
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe function's signature
+ */
+export const uploadVideoToLocal = (args) => {
+  let key = nanoid();
+  key = key.slice(0, Math.floor(key.length / 3));
+  key = `videos/${slugify(args?.user?.user?.username)}-${slugify(
+    'big_buck_bunny.mp4'
+  )}-${key}`;
+
+  const formData = new FormData();
+  formData.append('file', {
+    ...args.video,
+    type: 'video/mp4',
+    name: 'big_buck_bunny.mp4',
+    size: 2239733,
+  });
+  formData.append('key', key);
+
+  // console.log({ ...args.video, type: 'video/mov' }, key, 'data');
+
+  return shouldUploadToLocalPost({
+    formData,
+    token: args.token,
+  })
+    .then((res) => {
+      // console.log(res, 'from upload');
+      if (res.secure_url) {
+        return { secure_url: res.secure_url };
+      }
+    })
+    .catch((err) => {
+      console.log(err, 'ERROR IN UPLOADING TO LOCAL');
+    });
 };
 
 /**
@@ -566,7 +599,7 @@ export const uploadVideo = (args) => {
  * @todo - describe function's signature
  */
 export const initUpload =
-  ({ projectData, imagesDataSet, token }) =>
+  ({ projectData, imagesDataSet, token, user }) =>
   (dispatch) => {
     let promises = [];
 
@@ -575,21 +608,15 @@ export const initUpload =
       promises.push(UploadToLocal({ token, image: imagesDataSet[index] }));
     }
 
-    // upload videos
-    // for (
-    //   let index = 0;
-    //   index < state.media_upload.videos_to_upload.length;
-    //   index++
-    // ) {
     if (projectData.video) {
       promises.push(
         uploadVideo({
           token,
           video: projectData.video,
+          user,
         })
       );
     }
-    // }
 
     Promise.all(promises).then((all) => {
       const uploaded_images_url = [];
@@ -610,10 +637,6 @@ export const initUpload =
         uploaded_images_url,
         uploaded_videos_url,
       });
-      // if (uploaded_images_url.length > 0) {
-      // } else {
-      //   createAProject({ projectData, token, uploaded_videos_url });
-      // }
     });
   };
 
@@ -629,7 +652,6 @@ export const createAProject = ({
   uploaded_images_url,
   uploaded_videos_url,
 }) => {
-  // let data =
   return createProject({
     projectData,
     token,

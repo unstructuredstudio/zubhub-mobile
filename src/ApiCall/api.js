@@ -323,24 +323,12 @@ export const createProject = ({
   uploaded_images_url,
   uploaded_videos_url,
 }) => {
-  console.log(projectData, 'data');
   const { title, description, video, publish, materials_used, category } =
     projectData;
   const url = '/projects/create/';
   const method = 'POST';
 
   const body = JSON.stringify({
-    title,
-    description,
-    images: uploaded_images_url,
-    video: uploaded_videos_url[0],
-    materials_used,
-    category,
-    publish,
-    tags: [],
-  });
-
-  console.log({
     title,
     description,
     images: uploaded_images_url,
