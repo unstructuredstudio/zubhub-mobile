@@ -42,6 +42,7 @@ const ProjectDetail = ({ route }) => {
   const [webViewHeight, setWebViewHeight] = useState(null);
 
   const { item } = route.params;
+  console.log(item);
 
   useEffect(() => {
     setLoading(true);
@@ -236,7 +237,7 @@ const ProjectDetail = ({ route }) => {
               </View>
             </View>
 
-            {projectDetails.images && projectDetails?.images.length > 0 ? (
+            {projectDetails.images && projectDetails?.images?.length > 0 ? (
               <>
                 <View>
                   <View style={styles.mainImageContainer}>
@@ -282,7 +283,7 @@ const ProjectDetail = ({ route }) => {
               </>
             ) : (
               <View style={styles.webView}>
-                {isGdriveORVimeoORYoutube(item.video) ? (
+                {isGdriveORVimeoORYoutube(item?.video) ? (
                   <WebView
                     originWhitelist={['*']}
                     source={{

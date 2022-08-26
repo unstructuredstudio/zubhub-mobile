@@ -561,21 +561,20 @@ export const uploadVideo = (args) => {
  */
 export const uploadVideoToLocal = (args) => {
   let key = nanoid();
+  let video = {
+    ...args.video,
+    name: nanoid(),
+    // size: 2239733,
+  };
+
   key = key.slice(0, Math.floor(key.length / 3));
   key = `videos/${slugify(args?.user?.user?.username)}-${slugify(
-    'big_buck_bunny.mp4'
+    video.name
   )}-${key}`;
 
   const formData = new FormData();
-  formData.append('file', {
-    ...args.video,
-    type: 'video/mp4',
-    name: 'big_buck_bunny.mp4',
-    size: 2239733,
-  });
+  formData.append('file', video);
   formData.append('key', key);
-
-  // console.log({ ...args.video, type: 'video/mov' }, key, 'data');
 
   return shouldUploadToLocalPost({
     formData,

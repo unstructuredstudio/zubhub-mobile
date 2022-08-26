@@ -60,7 +60,6 @@ const Home = () => {
   }, [projects?.all_projects]);
 
   const onEndReached = () => {
-    console.log('is it same?');
     if (projects?.all_projects?.next !== null) {
       console.log(projects?.all_projects?.next, 'page number');
       return setCurrentPage(currentPage + 1);

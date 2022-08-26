@@ -1,5 +1,5 @@
-import { StyleSheet } from "react-native";
-import * as THEME from "../../constants/theme";
+import { StyleSheet } from 'react-native';
+import * as THEME from '../../constants/theme';
 
 const style = StyleSheet.create({
   mainContainer: {
@@ -27,7 +27,7 @@ const style = StyleSheet.create({
   },
 
   image: {
-    width: "100%",
+    width: '100%',
     borderTopRightRadius: 15,
     borderTopLeftRadius: 15,
     height: 188,
@@ -39,15 +39,15 @@ const style = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   firstIcon: {
     marginRight: 15,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: THEME.COLORS.PRIMARY_RED,
     // width: 40,
     height: 30,
@@ -56,8 +56,8 @@ const style = StyleSheet.create({
   },
 
   iconContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
     marginTop: -17,
     marginRight: 12,
   },
@@ -86,8 +86,8 @@ const style = StyleSheet.create({
   },
 
   avater: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     borderRadius: 50,
     backgroundColor: THEME.COLORS.WHITE,
   },
@@ -97,14 +97,14 @@ const style = StyleSheet.create({
   },
 
   creatorsName: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 
   lastItems: {
-    flexDirection: "row",
+    flexDirection: 'row',
     flex: 1,
-    justifyContent: "space-between",
-    alignItems: "center",
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginRight: 12,
   },
 
@@ -121,14 +121,22 @@ const style = StyleSheet.create({
   },
 
   role: {
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
   },
 
   videoIcon: {
-    position: "absolute",
+    position: 'absolute',
     top: 50,
 
-    alignSelf: "center",
+    alignSelf: 'center',
+  },
+
+  image: {
+    width: '100%',
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
+    height: 188,
+    backgroundColor: THEME.COLORS.PRIMARY_YELLOW,
   },
 });
 

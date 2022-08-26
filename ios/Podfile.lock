@@ -17,10 +17,12 @@ PODS:
   - EXMediaLibrary (14.1.0):
     - ExpoModulesCore
     - React-Core
-  - Expo (45.0.6):
+  - Expo (45.0.8):
     - ExpoModulesCore
   - ExpoImageManipulator (10.3.1):
     - EXImageLoader
+    - ExpoModulesCore
+  - ExpoImagePicker (13.3.1):
     - ExpoModulesCore
   - ExpoKeepAwake (10.1.1):
     - ExpoModulesCore
@@ -328,15 +330,6 @@ PODS:
     - React-Core
   - RNGestureHandler (2.2.1):
     - React-Core
-  - RNImageCropPicker (0.38.0):
-    - React-Core
-    - React-RCTImage
-    - RNImageCropPicker/QBImagePickerController (= 0.38.0)
-    - TOCropViewController
-  - RNImageCropPicker/QBImagePickerController (0.38.0):
-    - React-Core
-    - React-RCTImage
-    - TOCropViewController
   - RNReanimated (2.9.1):
     - DoubleConversion
     - FBLazyVector
@@ -369,7 +362,6 @@ PODS:
     - React-RCTImage
   - RNVectorIcons (9.2.0):
     - React-Core
-  - TOCropViewController (2.6.1)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -384,6 +376,7 @@ DEPENDENCIES:
   - EXMediaLibrary (from `../node_modules/expo-media-library/ios`)
   - Expo (from `../node_modules/expo/ios`)
   - ExpoImageManipulator (from `../node_modules/expo-image-manipulator/ios`)
+  - ExpoImagePicker (from `../node_modules/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
   - ExpoLocalization (from `../node_modules/expo-localization/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core/ios`)
@@ -423,7 +416,6 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
-  - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
@@ -432,7 +424,6 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - fmt
-    - TOCropViewController
 
 EXTERNAL SOURCES:
   boost:
@@ -457,6 +448,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo/ios"
   ExpoImageManipulator:
     :path: "../node_modules/expo-image-manipulator/ios"
+  ExpoImagePicker:
+    :path: "../node_modules/expo-image-picker/ios"
   ExpoKeepAwake:
     :path: "../node_modules/expo-keep-awake/ios"
   ExpoLocalization:
@@ -531,8 +524,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/datetimepicker"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
-  RNImageCropPicker:
-    :path: "../node_modules/react-native-image-crop-picker"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -552,8 +543,9 @@ SPEC CHECKSUMS:
   EXFont: 04235cc22e6fef86028feb67db452978dc6f240f
   EXImageLoader: b88e053d760f85a82405b1db2de4abf11978fc9f
   EXMediaLibrary: 84cddf988a089e28070790438caf58d8b265b37a
-  Expo: 3df4af520db4f37f9821ba732ce9ac0dc67bb7b8
+  Expo: 1133eaf0e12dc265ac82a256f3815401b7570f96
   ExpoImageManipulator: b55580bbc7b10099c7707949903e7176a8542ee8
+  ExpoImagePicker: ca4207f2952a78e6dac2d7852d7e170dd2eaf1d0
   ExpoKeepAwake: c0c494b442ecd8122974c13b93ccfb57bd408e88
   ExpoLocalization: 8f619bb6eec64575cd5220bfabbd7b4e2d6f33f8
   ExpoModulesCore: e4278a668e8c13c0269ed8b8a4200989deea2973
@@ -592,11 +584,9 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: d81ee5c3db1060afd49ea7045ad460eff82d2b7d
   RNDateTimePicker: 6f1f0b4cf7c71b6e2aea7a3aa62969111084bbd1
   RNGestureHandler: 1dc1ea9d4b64f999042afafbaccf5b143f0b2fa2
-  RNImageCropPicker: ffbba608264885c241cbf3a8f78eb7aeeb978241
   RNReanimated: 5c8c17e26787fd8984cd5accdc70fef2ca70aafd
   RNScreens: 4d83613b50b74ed277026375dc0810893b0c347f
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
-  TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   Yoga: 99652481fcd320aefa4a7ef90095b95acd181952
 
 PODFILE CHECKSUM: 66f79d1ac305d30e66e87d178f00cd90e8c1bd26

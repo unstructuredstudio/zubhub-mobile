@@ -328,7 +328,19 @@ export const createProject = ({
   const url = '/projects/create/';
   const method = 'POST';
 
+  console.log(uploaded_videos_url.length);
   const body = JSON.stringify({
+    title,
+    description,
+    images: uploaded_images_url,
+    video: uploaded_videos_url.length > 0 ? uploaded_videos_url[0] : '',
+    materials_used,
+    category,
+    publish,
+    tags: [],
+  });
+
+  console.log({
     title,
     description,
     images: uploaded_images_url,
@@ -350,6 +362,18 @@ export const createProject = ({
  */
 export const getHero = () => {
   const url = `/hero/`;
+
+  return request({ url }).then((res) => res.json());
+};
+
+/**
+ * @method autocompleteProjects
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const autocompleteProjects = (query) => {
+  const url = `/projects/autocomplete/?q=${query}`;
 
   return request({ url }).then((res) => res.json());
 };
