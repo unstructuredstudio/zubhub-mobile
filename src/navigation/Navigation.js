@@ -18,14 +18,14 @@ import {
 } from '../screens';
 import BottomNavigator from './BottomNavigator';
 import * as THEME from '../constants/theme';
-import { TOKEN } from '../utils/storageKeys';
+import { TOKEN, FIRST_TIME } from '../utils/storageKeys';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
 
 export default function Navigation() {
   const [token, setToken] = useState(null);
-
+  const [isFirstTime, setIsFirstTime] = useState(null);
   useEffect(() => {
     getToken();
   }, []);
@@ -33,6 +33,8 @@ export default function Navigation() {
   const getToken = async () => {
     let userToken = await AsyncStorage.getItem(TOKEN);
     setToken(userToken);
+    let firstTime = await AsyncStorage.getItem(FIRST_TIME);
+    setIsFirstTime(firstTime);
   };
 
   return (
@@ -46,6 +48,10 @@ export default function Navigation() {
           initialRouteName="Onboarding"
           screenOptions={{ headerShown: false }}
         >
+          {isFirstTime === null && (
+            <Stack.Screen name="Onboarding" component={Onboarding} />
+          )}
+
           {token === null && (
             <>
               <Stack.Screen name="Login" component={Login} />
@@ -60,7 +66,6 @@ export default function Navigation() {
           <Stack.Screen name="UsersProjects" component={UsersProjects} />
           <Stack.Screen name="UsersFollowers" component={UsersFollowers} />
           <Stack.Screen name="UsersFollowing" component={UsersFollowing} />
-          <Stack.Screen name="Onboarding" component={Onboarding} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>

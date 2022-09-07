@@ -13,6 +13,8 @@ import { ONBOARD_DATA } from '../../data';
 import { Feather } from '@expo/vector-icons';
 import { NativeUiButton, NativeUiText } from '@components/';
 import * as THEME from '../../constants/theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FIRST_TIME } from '../../utils/storageKeys';
 
 const WIDTH = Dimensions.get('screen').width;
 
@@ -26,10 +28,11 @@ const Onboarding = ({ navigation }) => {
     setCurrentElemIndex(currentIndex);
   };
 
-  const goToNextSlide = () => {
+  const goToNextSlide = async () => {
     const nextSlideIndex = currentElemIndex + 1;
     if (currentElemIndex === ONBOARD_DATA.length - 1) {
-      navigation.replace('Home');
+      await AsyncStorage.setItem(FIRST_TIME, 'true');
+      navigation.replace('Login');
     } else {
       if (nextSlideIndex != ONBOARD_DATA.length) {
         const offset = nextSlideIndex * WIDTH;
@@ -41,6 +44,9 @@ const Onboarding = ({ navigation }) => {
 
   const goToPrevSlide = () => {
     const prevSlideIndex = currentElemIndex - 1;
+    if (prevSlideIndex === -1) {
+      return;
+    }
     if (prevSlideIndex != ONBOARD_DATA.length) {
       const offset = prevSlideIndex * WIDTH;
       ref?.current?.scrollToOffset({ offset });

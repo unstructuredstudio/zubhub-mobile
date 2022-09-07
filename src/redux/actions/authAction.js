@@ -1,4 +1,4 @@
-import { SET_AUTH_USER } from "../types";
+import { SET_AUTH_USER } from '../types';
 import {
   signup,
   login,
@@ -6,10 +6,10 @@ import {
   getAuthUser,
   getFollowers,
   getFollowing,
-} from "../../ApiCall/api";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TOKEN, USER } from "../../utils/storageKeys";
-import { CustomToasts } from "../../components/CustomToasts/CustomToasts";
+} from '../../ApiCall/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TOKEN, USER } from '../../utils/storageKeys';
+import { CustomToasts } from '../../components/CustomToasts/CustomToasts';
 
 /**
  * @function register
@@ -96,7 +96,7 @@ export const loadUser = (token) => (dispatch) => {
 export const resetPassordLink = (email, setVisible, setLoading) => {
   return () => {
     let response = sendPasswordResetLink(email).then((res) => {
-      if (res.detail !== "ok") {
+      if (res.detail !== 'ok') {
         throw new Error(JSON.stringify(res));
       } else {
         setLoading(false);
@@ -125,17 +125,17 @@ export const getAUsersFollowers = (args) => (dispatch) => {
       } else {
         res = Object.keys(res)
           .map((key) => res[key])
-          .join("\n");
+          .join('\n');
         throw new Error(res);
       }
     })
     .catch((error) => {
-      if (error.message.startsWith("Unexpected")) {
-        console.log("error in getting bookmarks");
+      if (error.message.startsWith('Unexpected')) {
+        console.log('error in getting bookmarks');
 
         // toast.warning(args.t("savedProjects.errors.unexpected"));
       } else {
-        console.log(error, "error in getting bookmarks");
+        console.log(error, 'error in getting bookmarks');
 
         // toast.warning(error.message);
       }
@@ -162,17 +162,17 @@ export const getAUsersFollowingList = (args) => (dispatch) => {
       } else {
         res = Object.keys(res)
           .map((key) => res[key])
-          .join("\n");
+          .join('\n');
         throw new Error(res);
       }
     })
     .catch((error) => {
-      if (error.message.startsWith("Unexpected")) {
-        console.log("error in getting bookmarks");
+      if (error.message.startsWith('Unexpected')) {
+        console.log('error in getting bookmarks');
 
         // toast.warning(args.t("savedProjects.errors.unexpected"));
       } else {
-        console.log(error, "error in getting bookmarks");
+        console.log(error, 'error in getting bookmarks');
 
         // toast.warning(error.message);
       }
