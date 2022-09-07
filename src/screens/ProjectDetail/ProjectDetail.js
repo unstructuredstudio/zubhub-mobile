@@ -28,6 +28,7 @@ import {
   toggleFollowOnProject,
   toggleLikeOnProject,
   toggleSaveOnProject,
+  deleteAProject,
 } from '../../redux/actions/projectsAction';
 import { loadUser } from '../../redux/actions/authAction';
 import { useNavigation } from '@react-navigation/native';
@@ -120,14 +121,35 @@ const ProjectDetail = ({ route }) => {
 
   const copyToCLipboard = async () => {
     try {
-      // await Clipboard.setStringAsync('play store link');
+      await Clipboard.setStringAsync('play store link');
 
-      Alert.alert('Copied!', 'Google playstore URL copied to', [
+      Alert.alert('Copied!', 'Google playstore URL copied to clipboard', [
         {
           text: 'Okay',
         },
       ]);
     } catch (error) {}
+  };
+
+  const onDelete = () => {
+    Alert.alert(
+      'Delete Project!',
+      `Are you sure you want to delete this project You can't undo this action!! `,
+      [
+        {
+          text: 'Cancel',
+        },
+        {
+          text: 'Proceed',
+          onPress: () =>
+            deleteAProject({
+              id: projectDetails.id,
+              token: user?.token,
+              navigation: navigation,
+            }).then((res) => res && navigation.navigate('UsersProjects')),
+        },
+      ]
+    );
   };
 
   const actions = [
@@ -268,7 +290,10 @@ const ProjectDetail = ({ route }) => {
                         Edit
                       </NativeUiText>
                     </View>
-                    <View style={[styles.delete, styles.authorDetails]}>
+                    <TouchableOpacity
+                      onPress={onDelete}
+                      style={[styles.delete, styles.authorDetails]}
+                    >
                       <NativeUiText
                         textColor={THEME.COLORS.WHITE}
                         textType={'medium'}
@@ -276,7 +301,7 @@ const ProjectDetail = ({ route }) => {
                       >
                         Delete
                       </NativeUiText>
-                    </View>
+                    </TouchableOpacity>
                   </View>
                 ) : (
                   <View

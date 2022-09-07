@@ -11,6 +11,7 @@ import {
   createProject,
   getCategories,
   getHero,
+  deleteProject,
 } from '../../ApiCall/api';
 import { SET_PROJECTS } from '../types';
 import { CustomToasts } from '../../components/CustomToasts/CustomToasts';
@@ -663,4 +664,27 @@ export const createAProject = ({
       console.log('successs');
     }
   });
+};
+
+/**
+ * @function deleteProject
+ * @author  Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe function's signature
+ */
+export const deleteAProject = (args) => {
+  let response = deleteProject({ token: args.token, id: args.id }).then(
+    (res) => {
+      if (res.detail !== 'ok') {
+        throw new Error(res.detail);
+      } else {
+        console.log("de'e");
+        // toast.success(args.t('projectDetails.deleteProjectToastSuccess'));
+        // navigation.navigate('UsersProjects');
+        return true;
+      }
+    }
+  );
+
+  return response;
 };

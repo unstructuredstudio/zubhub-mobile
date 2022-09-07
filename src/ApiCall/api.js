@@ -377,3 +377,17 @@ export const autocompleteProjects = (query) => {
 
   return request({ url }).then((res) => res.json());
 };
+
+/**
+ * @method deleteProject
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const deleteProject = ({ token, id }) => {
+  const url = `/projects/${id}/delete/`;
+  const method = 'DELETE';
+  return request({ url, method, token }).then((res) =>
+    Promise.resolve(res.status === 204 ? { detail: 'ok' } : res.json())
+  );
+};

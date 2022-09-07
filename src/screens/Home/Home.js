@@ -54,7 +54,6 @@ const Home = () => {
       })
     );
   };
-
   useEffect(() => {
     if (Array.isArray(projects?.all_projects?.results)) {
       setAllProjects([...allProjects, ...projects?.all_projects?.results]);
