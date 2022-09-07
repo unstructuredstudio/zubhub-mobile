@@ -39,6 +39,15 @@ const Onboarding = ({ navigation }) => {
     }
   };
 
+  const goToPrevSlide = () => {
+    const prevSlideIndex = currentElemIndex - 1;
+    if (prevSlideIndex != ONBOARD_DATA.length) {
+      const offset = prevSlideIndex * WIDTH;
+      ref?.current?.scrollToOffset({ offset });
+      setCurrentElemIndex(prevSlideIndex);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#fff" barStyle={'dark-content'} />
@@ -78,6 +87,7 @@ const Onboarding = ({ navigation }) => {
       />
 
       <FooterComponent
+        goToPrevSlide={goToPrevSlide}
         goToNextSlide={goToNextSlide}
         currentElemIndex={currentElemIndex}
       />
@@ -87,15 +97,36 @@ const Onboarding = ({ navigation }) => {
 
 export default Onboarding;
 
-const FooterComponent = ({ currentElemIndex, goToNextSlide }) => {
+const FooterComponent = ({
+  currentElemIndex,
+  goToNextSlide,
+  goToPrevSlide,
+}) => {
   return (
     <View style={styles.footer}>
-      <NativeUiButton
+      <TouchableOpacity style={styles.iconView} onPress={goToPrevSlide}>
+        <Feather name="arrow-left" size={22} color={THEME.COLORS.WHITE} />
+      </TouchableOpacity>
+      <View style={styles.indicatorView}>
+        {ONBOARD_DATA.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.indicator,
+              currentElemIndex === index && {
+                backgroundColor: THEME.COLORS.PRIMARY_YELLOW,
+                width: 40,
+              },
+            ]}
+          ></View>
+        ))}
+      </View>
+      <TouchableOpacity
         onPress={goToNextSlide}
-        label={
-          currentElemIndex === ONBOARD_DATA.length - 1 ? 'Get Started' : 'Next'
-        }
-      />
+        style={[styles.iconView, styles.rightIcon]}
+      >
+        <Feather name="arrow-right" size={22} color={THEME.COLORS.WHITE} />
+      </TouchableOpacity>
     </View>
   );
 };

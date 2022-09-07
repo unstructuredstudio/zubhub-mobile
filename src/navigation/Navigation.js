@@ -1,9 +1,9 @@
-import { StatusBar } from "expo-status-bar";
-import { View } from "react-native";
-import React, { useState, useEffect } from "react";
-import { StyleSheet } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import { StatusBar } from 'expo-status-bar';
+import { View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import {
   Home,
   Register,
@@ -14,11 +14,12 @@ import {
   UsersProjects,
   UsersFollowers,
   UsersFollowing,
-} from "../screens";
-import BottomNavigator from "./BottomNavigator";
-import * as THEME from "../constants/theme";
-import { TOKEN } from "../utils/storageKeys";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+  Onboarding,
+} from '../screens';
+import BottomNavigator from './BottomNavigator';
+import * as THEME from '../constants/theme';
+import { TOKEN } from '../utils/storageKeys';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
 
@@ -37,11 +38,14 @@ export default function Navigation() {
   return (
     <View style={styles.container}>
       <StatusBar
-        barStyle={"dark-content"}
+        barStyle={'dark-content'}
         backgroundColor={THEME.COLORS.PRIMARY_GREY}
       />
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator
+          initialRouteName="Onboarding"
+          screenOptions={{ headerShown: false }}
+        >
           {token === null && (
             <>
               <Stack.Screen name="Login" component={Login} />
@@ -56,6 +60,7 @@ export default function Navigation() {
           <Stack.Screen name="UsersProjects" component={UsersProjects} />
           <Stack.Screen name="UsersFollowers" component={UsersFollowers} />
           <Stack.Screen name="UsersFollowing" component={UsersFollowing} />
+          <Stack.Screen name="Onboarding" component={Onboarding} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>

@@ -54,11 +54,9 @@ const style = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#fff',
-    borderWidth: 1,
+    backgroundColor: THEME.COLORS.PRIMARY_YELLOW,
     alignItems: 'center',
     justifyContent: 'center',
-    borderColor: THEME.COLORS.PRIMARY_TEAL,
   },
   footer: {
     paddingHorizontal: 14,
@@ -66,12 +64,13 @@ const style = StyleSheet.create({
 
   rightIcon: {
     elevation: 12,
-    backgroundColor: THEME.COLORS.PRIMARY_TEAL,
+    backgroundColor: THEME.COLORS.PRIMARY_YELLOW,
   },
   indicatorView: {
     flexDirection: 'row',
     alignItems: 'center',
   },
+
   indicator: {
     height: 6,
     width: 25,
@@ -79,12 +78,15 @@ const style = StyleSheet.create({
     marginHorizontal: 3,
     borderRadius: 7,
   },
+
   isLast: {
     display: 'flex',
   },
+
   diff: {
     display: 'none',
   },
+
   subtitle: {
     color: '#000',
     fontSize: 13,
@@ -93,12 +95,20 @@ const style = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 23,
   },
+
   title: {
     color: '#000',
     fontSize: 22,
     fontWeight: 'bold',
     marginTop: 20,
     textAlign: 'center',
+  },
+
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 14,
   },
 });
 
