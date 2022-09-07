@@ -1,20 +1,20 @@
-import { View, Image, TouchableOpacity } from "react-native";
-import React, { useState, useEffect } from "react";
-import styles from "./ProjectCard.style";
-import { Feather } from "@expo/vector-icons";
-import * as THEME from "../../constants/theme";
-import Fontisto from "react-native-vector-icons/Fontisto";
-import DefaultStyles from "../../constants/DefaultStyles.style";
-import { NativeUiText, NativeUiActionSheet, NativeUiButton } from "..";
-import { SheetManager } from "react-native-actions-sheet";
-import { useNavigation } from "@react-navigation/native";
-import { dFormatter, buildVideoThumbnailURL } from "../../utils/script";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import { useSelector, useDispatch } from "react-redux";
+import { View, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import styles from './ProjectCard.style';
+import { Feather } from '@expo/vector-icons';
+import * as THEME from '../../constants/theme';
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import DefaultStyles from '../../constants/DefaultStyles.style';
+import { NativeUiText, NativeUiActionSheet, NativeUiButton } from '..';
+import { SheetManager } from 'react-native-actions-sheet';
+import { useNavigation } from '@react-navigation/native';
+import { dFormatter, buildVideoThumbnailURL } from '../../utils/script';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   toggleLikeOnProject,
   toggleSaveOnProject,
-} from "../../redux/actions/projectsAction";
+} from '../../redux/actions/projectsAction';
 
 const ProjectCard = ({ item, token }) => {
   const user = useSelector((state) => state.user);
@@ -27,13 +27,15 @@ const ProjectCard = ({ item, token }) => {
   }, []);
 
   const toggleClap = () => {
-    SheetManager.show("authenticationSheet");
+    SheetManager.show('authenticationSheet');
   };
   const onClap = () => {
     let result = dispatch(
       toggleLikeOnProject({ id: cardItem.id, token: user?.token })
     );
-    result.then((res) => setCardItem({ ...res.project }));
+    result.then((res) => {
+      setCardItem({ ...cardItem, likes: res?.project?.likes });
+    });
   };
 
   const onSave = () => {
@@ -41,13 +43,13 @@ const ProjectCard = ({ item, token }) => {
       toggleSaveOnProject({ id: cardItem.id, token: user?.token })
     );
     result.then((res) => {
-      setCardItem({ ...res.project });
+      setCardItem({ ...cardItem, saved_by: res?.project?.saved_by });
     });
   };
   return (
     <TouchableOpacity
       style={styles.mainCard}
-      onPress={() => navigation.navigate("ProjectDetail", { item })}
+      onPress={() => navigation.navigate('ProjectDetail', { item })}
     >
       <NativeUiActionSheet id="authenticationSheet" sheetTitle="Create Account">
         <NativeUiText style={styles.space}>
@@ -55,10 +57,10 @@ const ProjectCard = ({ item, token }) => {
         </NativeUiText>
         <NativeUiButton
           onPress={async () => {
-            navigation.navigate("Register");
-            await SheetManager.hide("authenticationSheet");
+            navigation.navigate('Register');
+            await SheetManager.hide('authenticationSheet');
           }}
-          label={"Create Account"}
+          label={'Create Account'}
           style={styles.space}
         />
       </NativeUiActionSheet>
@@ -107,9 +109,9 @@ const ProjectCard = ({ item, token }) => {
                     source={
                       user?.user?.id !== null
                         ? cardItem.likes.includes(user?.user?.id)
-                          ? require("@asset/clap.png")
-                          : require("@asset/clapOutline.png")
-                        : require("@asset/clapOutline.png")
+                          ? require('@asset/clap.png')
+                          : require('@asset/clapOutline.png')
+                        : require('@asset/clapOutline.png')
                     }
                     style={styles.clap}
                   />
@@ -127,9 +129,9 @@ const ProjectCard = ({ item, token }) => {
                     name={
                       user?.user?.id !== null
                         ? cardItem.saved_by.includes(user?.user?.id)
-                          ? "bookmark-alt"
-                          : "bookmark"
-                        : "bookmark"
+                          ? 'bookmark-alt'
+                          : 'bookmark'
+                        : 'bookmark'
                     }
                     size={20}
                     color={THEME.COLORS.PRIMARY_YELLOW}
@@ -137,7 +139,7 @@ const ProjectCard = ({ item, token }) => {
                 </TouchableOpacity>
               </View>
 
-              <NativeUiText fontSize={THEME.FONT_SIZE.MEDIUM} textType={"bold"}>
+              <NativeUiText fontSize={THEME.FONT_SIZE.MEDIUM} textType={'bold'}>
                 {cardItem.title}
               </NativeUiText>
 
@@ -162,7 +164,7 @@ const ProjectCard = ({ item, token }) => {
                   </NativeUiText>
                   <NativeUiText
                     textColor={THEME.COLORS.PRIMARY_TEAL}
-                    textType={"medium"}
+                    textType={'medium'}
                     fontSize={THEME.FONT_SIZE.SMALL}
                     style={styles.role}
                   >
@@ -204,7 +206,7 @@ const ProjectCard = ({ item, token }) => {
                         textColor={THEME.COLORS.SECONDARY_TEXT}
                         style={styles.txt}
                       >
-                        {cardItem.comments_count}{" "}
+                        {cardItem.comments_count}{' '}
                       </NativeUiText>
                     </View>
                   </View>
@@ -213,7 +215,7 @@ const ProjectCard = ({ item, token }) => {
                       textColor={THEME.COLORS.SECONDARY_TEXT}
                       style={styles.txt}
                       fontSize={THEME.FONT_SIZE.SMALL}
-                      textType={"medium"}
+                      textType={'medium'}
                     >
                       {`${dFormatter(cardItem.created_on).value}  ${
                         dFormatter(cardItem.created_on).key

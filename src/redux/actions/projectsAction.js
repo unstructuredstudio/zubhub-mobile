@@ -91,7 +91,6 @@ export const toggleLikeOnProject = (args) => {
   return () => {
     return toggleLike(args)
       .then((res) => {
-        console.log(res, 'response ogg');
         if (res.title) {
           return { project: res };
         } else {

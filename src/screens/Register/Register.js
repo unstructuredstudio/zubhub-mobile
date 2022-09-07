@@ -8,6 +8,7 @@ import {
   NativeUiModal,
   ErrorCard,
   NativeUiActivityIndicator,
+  NativeKeyboardAvoidingView,
 } from '@components/';
 import * as THEME from '../../constants/theme';
 import styles from './Register.style';
@@ -190,7 +191,9 @@ const Register = () => {
               </TouchableOpacity>
               <View style={styles.line} />
             </View>
-            <NativeUiText style={styles.step}>Step 1</NativeUiText>
+            <NativeUiText fontSize={12} style={styles.step}>
+              Step 1
+            </NativeUiText>
           </View>
 
           <View style={styles.box}>
@@ -231,6 +234,7 @@ const Register = () => {
                   ? THEME.COLORS.PRIMARY_GREEN
                   : THEME.COLORS.PRIMARY_BLUE
               }
+              fontSize={12}
               style={styles.step}
             >
               Step 2
@@ -263,6 +267,7 @@ const Register = () => {
                   ? THEME.COLORS.PRIMARY_GREEN
                   : THEME.COLORS.PRIMARY_BLUE
               }
+              fontSize={12}
               style={styles.step}
             >
               Step 3
@@ -271,25 +276,27 @@ const Register = () => {
         </View>
       </View>
 
-      <FlatList
-        ref={ref}
-        keyExtractor={(_, index) => index}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        pagingEnabled
-        onMomentumScrollEnd={updateCurrentSlideIndex}
-        data={componentsArray}
-        renderItem={({ item }) => (
-          <View
-            style={{
-              width: THEME.WIDTH * 1,
-              paddingHorizontal: 12,
-            }}
-          >
-            {item}
-          </View>
-        )}
-      />
+      <NativeKeyboardAvoidingView>
+        <FlatList
+          ref={ref}
+          keyExtractor={(_, index) => index}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          pagingEnabled
+          onMomentumScrollEnd={updateCurrentSlideIndex}
+          data={componentsArray}
+          renderItem={({ item }) => (
+            <View
+              style={{
+                width: THEME.WIDTH * 1,
+                paddingHorizontal: 12,
+              }}
+            >
+              {item}
+            </View>
+          )}
+        />
+      </NativeKeyboardAvoidingView>
       <View style={styles.bottomContainer}>
         {!loading ? (
           <NativeUiButton

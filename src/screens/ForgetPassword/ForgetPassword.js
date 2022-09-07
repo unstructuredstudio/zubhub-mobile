@@ -1,5 +1,5 @@
-import { View } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { View, ScrollView } from 'react-native';
+import React, { useState } from 'react';
 import {
   NativeUiHeader,
   NativeUiText,
@@ -8,6 +8,7 @@ import {
   ErrorCard,
   NativeUiModal,
   NativeUiActivityIndicator,
+  NativeKeyboardAvoidingView,
 } from '@components/';
 import * as THEME from '../../constants/theme';
 import styles from './ForgetPassword.style';
@@ -82,72 +83,84 @@ const ForgetPassword = () => {
   return (
     <View style={styles.container}>
       <NativeUiHeader subScreen={true} sectionTitle={'Forget Password'} />
-      <NativeUiModal
-        navigation={navigation}
-        visible={visible}
-        setVisible={setVisible}
-        description={
-          'We just sent a password reset link to your email! Check your mail!'
-        }
-        navigateTo={'Home'}
-        label={'Go to Home'}
-      />
-      <View style={styles.topContainer}>
-        <View style={[styles.introContainer]}>
-          <NativeUiText fontSize={THEME.FONT_SIZE.LARGE} textType={'medium'}>
-            Password Reset
-          </NativeUiText>
-          <NativeUiText
-            style={styles.createAccount}
-            textColor={THEME.COLORS.SECONDARY_TEXT}
-            textType={'medium'}
-          >
-            Enter your email so we can send you a pass word reset link
-          </NativeUiText>
-        </View>
-        {error.length > 0 && <ErrorCard setError={setError} error={error} />}
-      </View>
+      <NativeKeyboardAvoidingView>
+        <ScrollView>
+          <NativeUiModal
+            navigation={navigation}
+            visible={visible}
+            setVisible={setVisible}
+            description={
+              'We just sent a password reset link to your email! Check your mail!'
+            }
+            navigateTo={'Home'}
+            label={'Go to Home'}
+          />
+          <View style={styles.topContainer}>
+            <View style={[styles.introContainer]}>
+              <NativeUiText
+                fontSize={THEME.FONT_SIZE.LARGE}
+                textType={'medium'}
+              >
+                Password Reset
+              </NativeUiText>
+              <NativeUiText
+                style={styles.createAccount}
+                textColor={THEME.COLORS.SECONDARY_TEXT}
+                textType={'medium'}
+              >
+                Enter your email so we can send you a pass word reset link
+              </NativeUiText>
+            </View>
+            {error.length > 0 && (
+              <ErrorCard setError={setError} error={error} />
+            )}
+          </View>
 
-      <View style={styles.container}>
-        <View style={[styles.introContainer, styles.topContainer]}>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-          >
-            {({
-              errors,
-              touched,
-              handleBlur,
-              setFieldValue,
-              setFieldTouched,
-            }) => {
-              return (
-                <View style={styles.input}>
-                  <NativeUiInput
-                    label={'Enter your email'}
-                    placeholder={' Email'}
-                    onChangeText={(e) => {
-                      setFieldValue('email', e);
-                      setFieldTouched('email', true, false);
-                      changeText(e, 'email');
-                    }}
-                    onBlur={handleBlur('email')}
-                    error={touched.email && errors.email}
-                  />
-                </View>
-              );
-            }}
-          </Formik>
-        </View>
-      </View>
+          <View style={styles.container}>
+            <View style={[styles.introContainer, styles.topContainer]}>
+              <Formik
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+              >
+                {({
+                  errors,
+                  touched,
+                  handleBlur,
+                  setFieldValue,
+                  setFieldTouched,
+                }) => {
+                  return (
+                    <View style={styles.input}>
+                      <NativeUiInput
+                        label={'Enter your email'}
+                        placeholder={' Email'}
+                        onChangeText={(e) => {
+                          setFieldValue('email', e);
+                          setFieldTouched('email', true, false);
+                          changeText(e, 'email');
+                        }}
+                        onBlur={handleBlur('email')}
+                        error={touched.email && errors.email}
+                      />
+                    </View>
+                  );
+                }}
+              </Formik>
+            </View>
+          </View>
 
-      <View style={styles.bottomContainer}>
-        {!loading ? (
-          <NativeUiButton label={'Send reset link'} onPress={onResetClick} />
-        ) : (
-          <NativeUiActivityIndicator />
-        )}
-      </View>
+          <View style={styles.bottomContainer}>
+            {!loading ? (
+              <NativeUiButton
+                label={'Send reset link'}
+                onPress={onResetClick}
+              />
+            ) : (
+              <NativeUiActivityIndicator />
+            )}
+          </View>
+        </ScrollView>
+      </NativeKeyboardAvoidingView>
     </View>
   );
 };

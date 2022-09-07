@@ -61,7 +61,6 @@ const Home = () => {
 
   const onEndReached = () => {
     if (projects?.all_projects?.next !== null) {
-      console.log(projects?.all_projects?.next, 'page number');
       return setCurrentPage(currentPage + 1);
     }
   };

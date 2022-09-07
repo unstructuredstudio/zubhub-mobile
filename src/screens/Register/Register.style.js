@@ -29,8 +29,8 @@ const styles = StyleSheet.create({
   },
 
   circle: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 25,
     backgroundColor: THEME.COLORS.PRIMARY_GREEN,
   },

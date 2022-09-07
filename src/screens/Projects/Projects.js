@@ -14,6 +14,7 @@ import {
   NativeUiInput,
   NativeUiButton,
   NativeUiActionSheet,
+  NativeKeyboardAvoidingView,
 } from '@components/';
 import * as THEME from '../../constants/theme';
 import styles from './Projects.style';
@@ -157,7 +158,9 @@ const Projects = () => {
               </TouchableOpacity>
               <View style={styles.line} />
             </View>
-            <NativeUiText style={styles.step}>Step 1</NativeUiText>
+            <NativeUiText fontSize={12} style={styles.step}>
+              Step 1
+            </NativeUiText>
           </View>
 
           <View style={styles.box}>
@@ -198,6 +201,7 @@ const Projects = () => {
                   ? THEME.COLORS.PRIMARY_GREEN
                   : THEME.COLORS.PRIMARY_BLUE
               }
+              fontSize={12}
               style={styles.step}
             >
               Step 2
@@ -230,6 +234,7 @@ const Projects = () => {
                   ? THEME.COLORS.PRIMARY_GREEN
                   : THEME.COLORS.PRIMARY_BLUE
               }
+              fontSize={12}
               style={styles.step}
             >
               Step 3
@@ -238,25 +243,27 @@ const Projects = () => {
         </View>
       </View>
 
-      <FlatList
-        ref={ref}
-        keyExtractor={(_, index) => index}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        pagingEnabled
-        onMomentumScrollEnd={updateCurrentSlideIndex}
-        data={componentsArray}
-        renderItem={({ item }) => (
-          <View
-            style={{
-              width: layout.window.width * 1,
-              paddingHorizontal: 12,
-            }}
-          >
-            {item}
-          </View>
-        )}
-      />
+      <NativeKeyboardAvoidingView>
+        <FlatList
+          ref={ref}
+          keyExtractor={(_, index) => index}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          pagingEnabled
+          onMomentumScrollEnd={updateCurrentSlideIndex}
+          data={componentsArray}
+          renderItem={({ item }) => (
+            <View
+              style={{
+                width: layout.window.width * 1,
+                paddingHorizontal: 12,
+              }}
+            >
+              {item}
+            </View>
+          )}
+        />
+      </NativeKeyboardAvoidingView>
       <View style={styles.bottomContainer}>
         {loading ? (
           <ActivityIndicator size={21} color={THEME.COLORS.PRIMARY_TEAL} />
