@@ -33,6 +33,7 @@ const Home = () => {
     loadUserData();
     dispatch(getHeroProperties());
   }, []);
+  console.log('I am mounting');
 
   useEffect(() => {
     fetchAllProjects();

@@ -7,14 +7,14 @@ import * as THEME from '../../constants/theme';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import { useNavigation } from '@react-navigation/native';
 
-const NativeUiHeader = ({ subScreen, sectionTitle }) => {
+const NativeUiHeader = ({ subScreen, sectionTitle, onPress }) => {
   const navigation = useNavigation();
   return (
     <View style={styles.headerContainer}>
       {subScreen ? (
         <View style={DefaultStyles.containerRow}>
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={onPress ? onPress : () => navigation.goBack()}
             style={[DefaultStyles.containerCenter, styles.header]}
           >
             <AntDesign

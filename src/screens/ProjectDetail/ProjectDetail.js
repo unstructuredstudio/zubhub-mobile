@@ -22,12 +22,17 @@ import { WebView } from 'react-native-webview';
 import { isCloudinaryVideo, isGdriveORVimeoORYoutube } from './ProjectScript';
 import RenderHtml from 'react-native-render-html';
 import { useSelector, useDispatch } from 'react-redux';
-import { getProjectDetails } from '../../redux/actions/projectsAction';
+import {
+  getProjectDetails,
+  getAllProjects,
+} from '../../redux/actions/projectsAction';
 import { toggleFollowOnProject } from '../../redux/actions/projectsAction';
 import { loadUser } from '../../redux/actions/authAction';
 import AutoHeightWebView from 'react-native-autoheight-webview';
+import { useNavigation } from '@react-navigation/native';
 
 const ProjectDetail = ({ route }) => {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
 
@@ -42,7 +47,6 @@ const ProjectDetail = ({ route }) => {
   const [webViewHeight, setWebViewHeight] = useState(null);
 
   const { item } = route.params;
-  console.log(item);
 
   useEffect(() => {
     setLoading(true);
@@ -100,9 +104,6 @@ const ProjectDetail = ({ route }) => {
   };
   const { width } = useWindowDimensions();
 
-  console.log(projectDetails);
-  // console.log(res.projectDetails.id);
-
   const toggleFollow = () => {
     let result = dispatch(
       toggleFollowOnProject({
@@ -120,9 +121,22 @@ const ProjectDetail = ({ route }) => {
     setWebViewHeight(Number(event.nativeEvent.data));
   };
 
+  const returnToHome = () => {
+    // dispatch(
+    //   getAllProjects(setLoading, {
+    //     page: 1,
+    //     token: user?.token,
+    //   })
+    // );
+    navigation.navigate('Home');
+  };
   return (
     <SafeAreaView style={styles.container}>
-      <NativeUiHeader subScreen={true} sectionTitle={'Project Details'} />
+      <NativeUiHeader
+        onPress={returnToHome}
+        subScreen={true}
+        sectionTitle={'Project Details'}
+      />
       <Modal
         isVisible={selectedImage.showModal}
         onBackdropPress={() => {
