@@ -64,7 +64,10 @@ const NativeUiInput = ({
             secureTextEntry={password && showPassword && true}
           />
           {password && (
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <TouchableOpacity
+              style={DefaultStyles.containerCenter}
+              onPress={() => setShowPassword(!showPassword)}
+            >
               <Entypo
                 name={showPassword ? 'eye-with-line' : 'eye'}
                 color={THEME.COLORS.SECONDARY_TEXT}

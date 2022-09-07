@@ -1,4 +1,4 @@
-import { View, Dimensions } from 'react-native';
+import { View } from 'react-native';
 import React from 'react';
 import SkeletonLoader from 'expo-skeleton-loader';
 import * as THEME from '../../constants/theme';
