@@ -18,6 +18,7 @@
     "aws-sdk": "^2.1199.0",
     "axios": "^0.27.2",
     "expo": "~45.0.0",
+    "expo-clipboard": "^3.0.1",
     "expo-image-manipulator": "~10.3.1",
     "expo-image-picker": "^13.3.1",
     "expo-images-picker": "^2.4.1",

@@ -1,9 +1,10 @@
-import { FlatList, SafeAreaView, ScrollView } from 'react-native';
+import { FlatList, SafeAreaView, ScrollView, View } from 'react-native';
 import {
   NativeUiHeader,
   ProjectCard,
   NativeUiCardSkeleton,
   NativeUiActivityIndicator,
+  NativeUiText,
 } from '@components/';
 import React, { useState, useEffect } from 'react';
 import styles from './Home.style';
@@ -17,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { loadUser } from '../../redux/actions/authAction';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TOKEN } from '../../utils/storageKeys';
+import { HEIGHT } from '../../../src/constants/theme';
 
 const Home = () => {
   const { t } = useTranslation();
@@ -33,7 +35,6 @@ const Home = () => {
     loadUserData();
     dispatch(getHeroProperties());
   }, []);
-  console.log('I am mounting');
 
   useEffect(() => {
     fetchAllProjects();
@@ -61,10 +62,13 @@ const Home = () => {
   }, [projects?.all_projects]);
 
   const onEndReached = () => {
+    console.log('end reached');
     if (projects?.all_projects?.next !== null) {
+      console.log('moving to next', currentPage + 1);
       return setCurrentPage(currentPage + 1);
     }
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <NativeUiHeader />
@@ -75,19 +79,55 @@ const Home = () => {
           ))}
         </ScrollView>
       ) : (
-        <FlatList
-          contentContainerStyle={[styles.list, DefaultStyles.containerCenter]}
-          data={allProjects}
-          keyExtractor={(_, index) => index}
-          renderItem={({ item }) => <ProjectCard item={item} token={token} />}
-          onEndReachedThreshold={0}
-          onEndReached={onEndReached}
-          ListFooterComponent={
-            projects?.all_projects?.next !== null && (
-              <NativeUiActivityIndicator />
-            )
-          }
-        />
+        <>
+          <FlatList
+            contentContainerStyle={[styles.list, DefaultStyles.containerCenter]}
+            data={allProjects}
+            keyExtractor={(_, index) => index}
+            renderItem={({ item }) => (
+              <View
+                style={{
+                  height: HEIGHT / 2.3,
+                  // backgroundColor: 'red',
+                  // marginTop: 33,
+                }}
+              >
+                <ProjectCard item={item} token={token} />
+              </View>
+            )}
+            onEndReachedThreshold={0.8}
+            onEndReached={onEndReached}
+            ListFooterComponent={
+              projects?.all_projects?.next !== null && (
+                <NativeUiActivityIndicator />
+              )
+            }
+          />
+          {/* <FlatList
+            contentContainerStyle={[styles.list, DefaultStyles.containerCenter]}
+            data={[
+              1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+              4, 4, 4,
+            ]}
+            keyExtractor={(_, index) => index}
+            renderItem={({ item }) => (
+              <View
+                style={{
+                  height: 124,
+                }}
+              >
+                <NativeUiText>{item}</NativeUiText>
+              </View>
+            )}
+            // onEndReachedThreshold={0.8}
+            onEndReached={onEndReached}
+            // ListFooterComponent={
+            //   projects?.all_projects?.next !== null && (
+            //     <NativeUiActivityIndicator />
+            //   )
+            // }
+          /> */}
+        </>
       )}
     </SafeAreaView>
   );

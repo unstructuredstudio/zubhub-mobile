@@ -20,9 +20,9 @@ import { doConfig, s3 as DO, slugify } from '../../utils/script';
 
 //Get all projects
 export const getAllProjects = (setLoading, args) => (dispatch) => {
-  console.log('kfdlmdf');
   let response = getProjects(args)
     .then((res) => {
+      console.log(res, 'set');
       if (Array.isArray(res.results)) {
         dispatch({
           type: SET_PROJECTS,

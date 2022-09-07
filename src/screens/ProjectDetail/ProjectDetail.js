@@ -4,8 +4,9 @@ import {
   SafeAreaView,
   Image,
   Pressable,
-  useWindowDimensions,
   TouchableOpacity,
+  Linking,
+  Alert,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import {
@@ -22,19 +23,23 @@ import { WebView } from 'react-native-webview';
 import { isCloudinaryVideo, isGdriveORVimeoORYoutube } from './ProjectScript';
 import RenderHtml from 'react-native-render-html';
 import { useSelector, useDispatch } from 'react-redux';
+import { getProjectDetails } from '../../redux/actions/projectsAction';
 import {
-  getProjectDetails,
-  getAllProjects,
+  toggleFollowOnProject,
+  toggleLikeOnProject,
+  toggleSaveOnProject,
 } from '../../redux/actions/projectsAction';
-import { toggleFollowOnProject } from '../../redux/actions/projectsAction';
 import { loadUser } from '../../redux/actions/authAction';
-import AutoHeightWebView from 'react-native-autoheight-webview';
 import { useNavigation } from '@react-navigation/native';
+import * as Clipboard from 'expo-clipboard';
 
 const ProjectDetail = ({ route }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  const projects = useSelector(
+    (state) => state?.projects?.all_projects?.results
+  );
 
   const videoRef = React.useRef(null);
   const [selectedImage, setSelectedImage] = useState({
@@ -56,53 +61,12 @@ const ProjectDetail = ({ route }) => {
     });
   }, [item]);
 
-  const actions = [
-    {
-      text: 'Claps: 0',
-      icon: require('../images/clap.png'),
-      name: 'bt_language',
-      position: 1,
-    },
-    {
-      text: 'Bookmark',
-      icon: require('../images/bookmark.png'),
-      name: 'bt_accessibility',
-      position: 2,
-    },
-
-    {
-      text: 'Views: 0',
-      icon: require('../images/eye.png'),
-      name: 'bt_room',
-      position: 3,
-    },
-    {
-      text: 'Facebook',
-      icon: require('../images/facebook.png'),
-      name: 'bt_videocam',
-      position: 4,
-    },
-    {
-      text: 'Whatsapp',
-      icon: require('../images/whatsapp.png'),
-      name: 'bt_videocam1',
-      position: 5,
-    },
-    {
-      text: 'URL',
-      icon: require('../images/link.png'),
-      name: 'bt_videocam2',
-      position: 6,
-    },
-  ];
-
   const enlargeImage = (uri) => {
     setSelectedImage({
       imageUri: uri,
       showModal: true,
     });
   };
-  const { width } = useWindowDimensions();
 
   const toggleFollow = () => {
     let result = dispatch(
@@ -121,6 +85,8 @@ const ProjectDetail = ({ route }) => {
     setWebViewHeight(Number(event.nativeEvent.data));
   };
 
+  console.log(projectDetails, 'all pro');
+
   const returnToHome = () => {
     // dispatch(
     //   getAllProjects(setLoading, {
@@ -129,6 +95,106 @@ const ProjectDetail = ({ route }) => {
     //   })
     // );
     navigation.navigate('Home');
+  };
+
+  const onClap = () => {
+    let result = dispatch(
+      toggleLikeOnProject({ id: projectDetails.id, token: user?.token })
+    );
+    result.then((res) => {
+      setprojectDetails({ ...projectDetails, likes: res?.project?.likes });
+    });
+  };
+
+  const onSave = () => {
+    let result = dispatch(
+      toggleSaveOnProject({ id: projectDetails.id, token: user?.token })
+    );
+    result.then((res) => {
+      setprojectDetails({
+        ...projectDetails,
+        saved_by: res?.project?.saved_by,
+      });
+    });
+  };
+
+  const copyToCLipboard = async () => {
+    try {
+      // await Clipboard.setStringAsync('play store link');
+
+      Alert.alert('Copied!', 'Google playstore URL copied to', [
+        {
+          text: 'Okay',
+        },
+      ]);
+    } catch (error) {}
+  };
+
+  const actions = [
+    {
+      text: `Claps: ${projectDetails?.likes?.length}`,
+      icon: projectDetails?.likes?.includes(user?.user?.id)
+        ? require('../images/clap.png')
+        : require('../images/clap.png'),
+      name: 'clap',
+      position: 1,
+    },
+
+    {
+      text: 'Bookmark',
+      icon: projectDetails?.saved_by?.includes(user?.user?.id)
+        ? require('../images/bookmarkFill.png')
+        : require('../images/bookmark.png'),
+      name: 'bookmark',
+      position: 2,
+    },
+
+    {
+      text: `Views: ${projectDetails?.views_count}`,
+      icon: require('../images/eye.png'),
+      name: 'views',
+      position: 3,
+    },
+    {
+      text: 'Facebook',
+      icon: require('../images/facebook.png'),
+      name: 'facebook',
+      position: 4,
+    },
+    {
+      text: 'Whatsapp',
+      icon: require('../images/whatsapp.png'),
+      name: 'whatsapp',
+      position: 5,
+    },
+    {
+      text: 'URL',
+      icon: require('../images/link.png'),
+      name: 'url',
+      position: 6,
+    },
+  ];
+
+  const onActionPress = (name) => {
+    switch (name) {
+      case 'clap':
+        return onClap();
+
+      case 'bookmark':
+        return onSave();
+
+      case 'views':
+        return;
+
+      case 'facebook':
+        return Linking.openURL('https://www.facebook.com/sharer/sharer.php?u=');
+
+      case 'whatsapp':
+        return Linking.openURL('https://web.whatsapp.com/send?text=');
+
+      case 'url':
+        return copyToCLipboard();
+    }
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -413,9 +479,7 @@ const ProjectDetail = ({ route }) => {
           <FloatingAction
             actions={actions}
             color={THEME.COLORS.PRIMARY_TEAL}
-            onPressItem={(name) => {
-              console.log(`selected button: ${name}`);
-            }}
+            onPressItem={(name) => onActionPress(name)}
           />
         </>
       )}
