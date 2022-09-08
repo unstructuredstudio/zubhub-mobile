@@ -405,3 +405,18 @@ export const addComment = ({ id, text, token, parent_id }) => {
 
   return request({ url, method, body, token }).then((res) => res.json());
 };
+
+/**
+ * @method getUserProfile - get the user profile of the user that the username belongs to
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const getUserProfile = ({ username, token }) => {
+  const url = `/creators/${username}/`;
+  if (token) {
+    return request({ url, token }).then((res) => res.json());
+  } else {
+    return request({ url }).then((res) => res.json());
+  }
+};

@@ -15,6 +15,7 @@ import {
   UsersFollowers,
   UsersFollowing,
   Onboarding,
+  CreatorsProfile,
 } from '../screens';
 import BottomNavigator from './BottomNavigator';
 import * as THEME from '../constants/theme';
@@ -66,6 +67,7 @@ export default function Navigation() {
           <Stack.Screen name="UsersProjects" component={UsersProjects} />
           <Stack.Screen name="UsersFollowers" component={UsersFollowers} />
           <Stack.Screen name="UsersFollowing" component={UsersFollowing} />
+          <Stack.Screen name="CreatorsProfile" component={CreatorsProfile} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>

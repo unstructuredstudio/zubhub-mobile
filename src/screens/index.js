@@ -14,6 +14,7 @@ import UsersProjects from './UsersProjects/UsersProjects';
 import UsersFollowers from './UsersFollowers/UsersFollowers';
 import UsersFollowing from './UsersFollowing/UsersFollowing';
 import Onboarding from './Onboarding/Onboarding';
+import CreatorsProfile from './CreatorsProfile/CreatorsProfile';
 
 export {
   Home,
@@ -32,4 +33,5 @@ export {
   UsersFollowers,
   UsersFollowing,
   Onboarding,
+  CreatorsProfile,
 };

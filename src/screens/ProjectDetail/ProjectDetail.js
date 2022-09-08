@@ -252,6 +252,7 @@ const ProjectDetail = ({ route }) => {
     });
   };
 
+  console.log(projectDetails);
   return (
     <SafeAreaView style={styles.container}>
       <NativeUiHeader subScreen={true} sectionTitle={'Project Details'} />
@@ -599,7 +600,7 @@ const ProjectDetail = ({ route }) => {
                 {projectDetails?.comments?.length > 0 && (
                   <View style={styles.commentCard}>
                     {projectDetails?.comments?.map((comment) => (
-                      <View style={styles.comments}>
+                      <View key={comment.created_on} style={styles.comments}>
                         <CommentCard
                           authorName={comment?.creator?.username}
                           commentTime={`${

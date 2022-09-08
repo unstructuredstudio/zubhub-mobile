@@ -152,8 +152,22 @@ const ProjectCard = ({ item, token }) => {
                   .replace(/(<([^>]+)>)/gi, '')
                   .replace(/\s+/g, ' ')}
               </NativeUiText>
+              {console.log(
+                user?.user?.username,
+                cardItem.creator.username,
+                'fujk'
+              )}
 
-              <View style={DefaultStyles.containerRow}>
+              <TouchableOpacity
+                onPress={() =>
+                  user?.user?.username === cardItem.creator.username
+                    ? navigation.navigate('Profile')
+                    : navigation.navigate('CreatorsProfile', {
+                        username: cardItem.creator.username,
+                      })
+                }
+                style={DefaultStyles.containerRow}
+              >
                 <View style={styles.avaterContainer}>
                   <Image
                     source={{ uri: cardItem.creator.avatar }}
@@ -173,7 +187,7 @@ const ProjectCard = ({ item, token }) => {
                     {cardItem.creator.tags[0]}
                   </NativeUiText>
                 </View>
-              </View>
+              </TouchableOpacity>
 
               <View style={DefaultStyles.containerRow}>
                 <View style={styles.avaterContainer}></View>
