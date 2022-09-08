@@ -21,7 +21,6 @@ import { FloatingAction } from 'react-native-floating-action';
 import Modal from 'react-native-modal';
 import { WebView } from 'react-native-webview';
 import { isCloudinaryVideo, isGdriveORVimeoORYoutube } from './ProjectScript';
-import RenderHtml from 'react-native-render-html';
 import { useSelector, useDispatch } from 'react-redux';
 import { getProjectDetails } from '../../redux/actions/projectsAction';
 import {
@@ -33,6 +32,8 @@ import {
 import { loadUser } from '../../redux/actions/authAction';
 import { useNavigation } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
+import { buildVideoThumbnailURL } from '../../utils/script';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const ProjectDetail = ({ route }) => {
   const navigation = useNavigation();
@@ -51,6 +52,7 @@ const ProjectDetail = ({ route }) => {
   const [projectDetails, setprojectDetails] = useState({});
   const [followState, setFollowState] = useState(null);
   const [webViewHeight, setWebViewHeight] = useState(null);
+  const [shouldPlayVideo, setShouldPlayVideo] = useState(false);
 
   const { item } = route.params;
 
@@ -85,8 +87,6 @@ const ProjectDetail = ({ route }) => {
   const onWebViewMessage = (event) => {
     setWebViewHeight(Number(event.nativeEvent.data));
   };
-
-  console.log(projectDetails, 'all pro');
 
   const returnToHome = () => {
     // dispatch(
@@ -218,6 +218,8 @@ const ProjectDetail = ({ route }) => {
         return copyToCLipboard();
     }
   };
+
+  console.log(projectDetails);
   return (
     <SafeAreaView style={styles.container}>
       <NativeUiHeader
@@ -318,14 +320,6 @@ const ProjectDetail = ({ route }) => {
                         textColor={THEME.COLORS.WHITE}
                         textType={'medium'}
                       >
-                        {/* {followState !== null
-                          ? followState?.followers?.length > 0
-                            ? "UNFOLLOW"
-                            : "FOLLOW"
-                          : projectDetails?.creator?.followers?.length > 0
-                          ? "UNFOLLOW"
-                          : "FOLLOW"} */}
-
                         {followState !== null
                           ? followState?.followers?.includes(user?.user?.id)
                             ? 'UNFOLLOW'
@@ -352,7 +346,7 @@ const ProjectDetail = ({ route }) => {
                     />
                   </View>
                 </View>
-                {projectDetails?.images.length > 1 ? (
+                {projectDetails?.images?.length > 1 ? (
                   <View style={[styles.userProfilex]}>
                     <ScrollView
                       showsHorizontalScrollIndicator={false}
@@ -388,33 +382,66 @@ const ProjectDetail = ({ route }) => {
               </>
             ) : (
               <View style={styles.webView}>
-                {isGdriveORVimeoORYoutube(item?.video) ? (
-                  <WebView
-                    originWhitelist={['*']}
-                    source={{
-                      html: `
-                  <iframe width="920" height="600"
-                    title={item.title}
-                    src=${projectDetails?.video}
-                ></iframe>
-                 `,
-                    }}
-                  />
-                ) : (
-                  <WebView
-                    originWhitelist={['*']}
-                    source={{
-                      html: `
-                  <video width="920" controls>
-                    <source 
-                    src=${projectDetails?.video}
-                     type="video/mp4">
-                    <source src="movie.ogg" type="video/ogg">
-                    Your browser does not support the video tag.
-                  </video>
-                 `,
-                    }}
-                  />
+                {projectDetails && projectDetails?.video && (
+                  <>
+                    {isGdriveORVimeoORYoutube(projectDetails?.video) ? (
+                      <WebView
+                        originWhitelist={['*']}
+                        source={{
+                          html: `
+                      <iframe width="920" height="600"
+                        title={item.title}
+                        src=${projectDetails?.video}
+                    ></iframe>
+                     `,
+                        }}
+                      />
+                    ) : (
+                      <>
+                        {shouldPlayVideo ? (
+                          <WebView
+                            originWhitelist={['*']}
+                            source={{
+                              html: `
+                              <video
+                                width="100%"  height="600" autoplay controls>
+                                <source
+                                src=${projectDetails?.video}
+                                type="video/mp4">
+                                  <source src="movie.ogg" type="video/ogg">
+                                  Your browser does not support the video tag.
+                              </video> `,
+                            }}
+                          />
+                        ) : (
+                          <TouchableOpacity
+                            onPress={() => setShouldPlayVideo(true)}
+                          >
+                            <Image
+                              source={{
+                                uri: buildVideoThumbnailURL(
+                                  projectDetails.video
+                                ),
+                              }}
+                              style={styles.image}
+                            />
+                            <View
+                              style={[
+                                styles.videoIcon,
+                                DefaultStyles.containerCenter,
+                              ]}
+                            >
+                              <AntDesign
+                                name="youtube"
+                                size={102}
+                                color={THEME.COLORS.PRIMARY_TEAL}
+                              />
+                            </View>
+                          </TouchableOpacity>
+                        )}
+                      </>
+                    )}
+                  </>
                 )}
               </View>
             )}

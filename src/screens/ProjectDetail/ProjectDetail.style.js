@@ -123,8 +123,8 @@ const styles = StyleSheet.create({
 
   webView: {
     flex: 1,
-    backgroundColor: 'red',
-    height: 200,
+    backgroundColor: THEME.COLORS.PRIMARY_YELLOW,
+    height: 250,
     marginTop: 12,
   },
 
@@ -144,6 +144,20 @@ const styles = StyleSheet.create({
 
   webViewStyle: {
     height: 400,
+  },
+
+  videoIcon: {
+    position: 'absolute',
+    top: 50,
+
+    alignSelf: 'center',
+  },
+
+  image: {
+    width: '100%',
+
+    height: '100%',
+    backgroundColor: THEME.COLORS.PRIMARY_YELLOW,
   },
 });
 
