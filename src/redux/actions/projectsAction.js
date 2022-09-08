@@ -12,6 +12,7 @@ import {
   getCategories,
   getHero,
   deleteProject,
+  addComment,
 } from '../../ApiCall/api';
 import { SET_PROJECTS } from '../types';
 import { CustomToasts } from '../../components/CustomToasts/CustomToasts';
@@ -678,13 +679,45 @@ export const deleteAProject = (args) => {
       if (res.detail !== 'ok') {
         throw new Error(res.detail);
       } else {
-        console.log("de'e");
         // toast.success(args.t('projectDetails.deleteProjectToastSuccess'));
         // navigation.navigate('UsersProjects');
         return true;
       }
     }
   );
+
+  return response;
+};
+
+/**
+ * @function addComment
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe function's signature
+ */
+export const addAComment = (args) => {
+  console.log(args);
+  let response = addComment(args)
+    .then((res) => {
+      if (res.title) {
+        console.log(res, 'comment response');
+        return { project: res, loading: false };
+      } else {
+        res = Object.keys(res)
+          .map((key) => res[key])
+          .join('\n');
+        throw new Error(res);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      // if (error.message.startsWith('Unexpected')) {
+      //   toast.warning(args.t('comments.errors.unexpected'));
+      // } else {
+      //   toast.warning(error.message);
+      // }
+      // return { loading: false };
+    });
 
   return response;
 };

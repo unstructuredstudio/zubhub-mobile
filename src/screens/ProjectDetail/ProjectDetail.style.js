@@ -155,9 +155,30 @@ const styles = StyleSheet.create({
 
   image: {
     width: '100%',
-
     height: '100%',
     backgroundColor: THEME.COLORS.PRIMARY_YELLOW,
+  },
+
+  commentBox: {
+    backgroundColor: THEME.COLORS.PRIMARY_GREY,
+    borderRadius: 7,
+    marginTop: 22,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+  },
+
+  input: {
+    paddingVertical: 12,
+    height: 124,
+    // flex: 1,
+  },
+
+  commentCard: {
+    marginTop: 22,
+  },
+
+  comments: {
+    marginBottom: 21,
   },
 });
 

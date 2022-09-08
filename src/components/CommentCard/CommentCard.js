@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import React from 'react';
 import { NativeUiText, Avater } from '@components/';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -29,7 +29,15 @@ const CommentCard = ({ authorName, commentTime, commentBody }) => {
         </NativeUiText>
       </View>
 
-      <View style={[DefaultStyles.containerRow, styles.txt]}>
+      <TouchableOpacity
+        onPress={() => {
+          Alert.alert(
+            'Coming soon!',
+            'We are working hard to make this available. Stay tunned for our next update'
+          );
+        }}
+        style={[DefaultStyles.containerRow, styles.txt]}
+      >
         <NativeUiText
           textColor={THEME.COLORS.PRIMARY_TEAL}
           fontSize={THEME.FONT_SIZE.SMALL}
@@ -38,7 +46,7 @@ const CommentCard = ({ authorName, commentTime, commentBody }) => {
           REPLY
         </NativeUiText>
         <Entypo name="reply" size={18} color={THEME.COLORS.PRIMARY_TEAL} />
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };

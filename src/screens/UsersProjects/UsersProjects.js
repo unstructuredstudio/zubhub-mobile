@@ -1,15 +1,16 @@
-import { View, FlatList } from "react-native";
-import React, { useState, useEffect } from "react";
+import { View, FlatList, SafeAreaView } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import {
   ProjectCard,
   NativeUiHeader,
   NativeUiText,
   NativeUiActivityIndicator,
-} from "@components/";
-import { useSelector, useDispatch } from "react-redux";
-import { getAUsersProject } from "../../redux/actions/projectsAction";
-import styles from "./UsersProjects.style";
-import DefaultStyles from "../../constants/DefaultStyles.style";
+} from '@components/';
+import { useSelector, useDispatch } from 'react-redux';
+import { getAUsersProject } from '../../redux/actions/projectsAction';
+import styles from './UsersProjects.style';
+import DefaultStyles from '../../constants/DefaultStyles.style';
+import { HEIGHT } from '../../../src/constants/theme';
 
 const UsersProjects = () => {
   const dispatch = useDispatch();
@@ -42,8 +43,8 @@ const UsersProjects = () => {
   };
 
   return (
-    <View>
-      <NativeUiHeader subScreen={true} sectionTitle={"My projects"} />
+    <SafeAreaView style={styles.container}>
+      <NativeUiHeader subScreen={true} sectionTitle={'My projects'} />
       <NativeUiText textType="bold" style={styles.title} fontSize={27}>
         {user?.user?.username}'s projects
       </NativeUiText>
@@ -52,7 +53,13 @@ const UsersProjects = () => {
         data={allProjects}
         keyExtractor={(_, index) => index}
         renderItem={({ item }) => (
-          <ProjectCard item={item} token={user?.token} />
+          <View
+            style={{
+              height: HEIGHT / 2.3,
+            }}
+          >
+            <ProjectCard item={item} token={user?.token} />
+          </View>
         )}
         onEndReachedThreshold={0.1}
         onEndReached={onEndReached}
@@ -60,7 +67,7 @@ const UsersProjects = () => {
           projects?.myProjects?.next !== null && <NativeUiActivityIndicator />
         }
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

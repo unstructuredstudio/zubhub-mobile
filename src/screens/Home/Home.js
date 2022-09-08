@@ -87,8 +87,6 @@ const Home = () => {
               <View
                 style={{
                   height: HEIGHT / 2.3,
-                  // backgroundColor: 'red',
-                  // marginTop: 33,
                 }}
               >
                 <ProjectCard item={item} token={token} />

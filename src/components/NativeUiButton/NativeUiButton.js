@@ -14,6 +14,7 @@ export const NativeUiButton = ({
   btnRadius = 10,
   borderWidth = 0,
   borderColor,
+  height,
 }) => {
   return (
     <View>
@@ -24,7 +25,7 @@ export const NativeUiButton = ({
               backgroundColor: btnColor,
               borderRadius: btnRadius,
               width: btnWidth,
-              height: 55,
+              height: height ?? 55,
               borderWidth: borderWidth,
               borderColor: borderColor,
             },

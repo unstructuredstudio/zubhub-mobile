@@ -391,3 +391,17 @@ export const deleteProject = ({ token, id }) => {
     Promise.resolve(res.status === 204 ? { detail: 'ok' } : res.json())
   );
 };
+
+/**
+ * @method addComment
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const addComment = ({ id, text, token, parent_id }) => {
+  const url = `/projects/${id}/add-comment/`;
+  const method = 'POST';
+  const body = JSON.stringify({ text, parent_id });
+
+  return request({ url, method, body, token }).then((res) => res.json());
+};
