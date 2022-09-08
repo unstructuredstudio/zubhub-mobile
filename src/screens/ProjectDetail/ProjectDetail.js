@@ -470,6 +470,7 @@ const ProjectDetail = ({ route }) => {
                   </head>
                   <body>
                       ${projectDetails?.description}
+
                   </body>
                   </html>
                   `,

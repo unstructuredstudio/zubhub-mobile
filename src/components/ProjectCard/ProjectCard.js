@@ -148,7 +148,9 @@ const ProjectCard = ({ item, token }) => {
                 numberOfLines={1}
                 style={styles.desc}
               >
-                {cardItem.description}
+                {cardItem.description
+                  .replace(/(<([^>]+)>)/gi, '')
+                  .replace(/\s+/g, ' ')}
               </NativeUiText>
 
               <View style={DefaultStyles.containerRow}>
