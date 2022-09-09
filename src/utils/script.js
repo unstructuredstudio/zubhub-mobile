@@ -42,7 +42,6 @@ export const dFormatter = (str) => {
  * @todo - describe function's signature
  */
 export const buildVideoThumbnailURL = (video_url) => {
-  console.log(video_url, 'url');
   if (video_url.includes('youtube.com/embed/')) {
     const id = video_url.split('youtube.com/embed/')[1];
     return `https://img.youtube.com/vi/${id}/0.jpg`;

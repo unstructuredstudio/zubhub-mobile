@@ -1,10 +1,12 @@
-import { SET_AUTH_USER } from "../types/index";
+import { SET_AUTH_USER, CLEAR } from '../types/index';
 
 const initialState = {
-  user: null,
-  isAuthenticated: false,
-  error: null,
   token: null,
+  username: null,
+  id: null,
+  avatar: null,
+  members_count: null,
+  tags: [],
 };
 
 export const auth_reducer = (state = initialState, action) => {
@@ -15,6 +17,12 @@ export const auth_reducer = (state = initialState, action) => {
       return {
         ...state,
         ...action.payload,
+      };
+    case CLEAR:
+      console.log('in here ohh');
+      return {
+        ...state,
+        myFollowers: [],
       };
 
     default:

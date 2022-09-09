@@ -1,7 +1,6 @@
-import { SET_PROJECTS } from '../types/index';
+import { SET_PROJECTS, RESET } from '../types/index';
 
 const initialState = {
-  allProjects: [],
   staff_picks: [],
   hero: {},
   zubhub: {},
@@ -15,6 +14,13 @@ export const projects_reducer = (state = initialState, action) => {
       return {
         ...state,
         ...payload,
+      };
+
+    case RESET:
+      return {
+        ...state,
+        myProjects: null,
+        all_projects: null,
       };
 
     default:

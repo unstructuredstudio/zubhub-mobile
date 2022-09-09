@@ -16,6 +16,18 @@ const styles = StyleSheet.create({
   authorsDretails: {
     marginHorizontal: 7,
   },
+
+  avaterContainer: {
+    width: 45,
+    height: 45,
+  },
+
+  avater: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 50,
+    backgroundColor: THEME.COLORS.WHITE,
+  },
 });
 
 export default styles;

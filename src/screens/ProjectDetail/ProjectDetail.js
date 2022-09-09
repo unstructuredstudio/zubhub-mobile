@@ -279,170 +279,169 @@ const ProjectDetail = ({ route }) => {
       ) : (
         <>
           <ScrollView style={styles.topContainer}>
-            {/* <TouchableWithoutFeedback
+            <TouchableWithoutFeedback
               onPress={() => {
                 Keyboard.dismiss();
                 setShowCommentSubmitButton(false);
               }}
             >
-             */}
-            <View>
-              <View style={DefaultStyles.containerCenter}>
-                <NativeUiText fontSize={21} textType={'medium'}>
-                  {projectDetails?.title}
-                </NativeUiText>
-              </View>
-              <View
-                style={[
-                  DefaultStyles.containerCenter,
-                  DefaultStyles.containerRow,
-                  styles.userProfile,
-                ]}
-              >
-                <View style={styles.avaterContainer}>
-                  <Image
-                    source={{ uri: projectDetails?.creator?.avatar }}
-                    style={styles.avater}
-                  />
+              <View>
+                <View style={DefaultStyles.containerCenter}>
+                  <NativeUiText fontSize={21} textType={'medium'}>
+                    {projectDetails?.title}
+                  </NativeUiText>
                 </View>
-                <NativeUiText style={styles.authorDetails} fontSize={16}>
-                  {projectDetails?.creator?.username}
-                </NativeUiText>
                 <View
                   style={[
                     DefaultStyles.containerCenter,
                     DefaultStyles.containerRow,
+                    styles.userProfile,
                   ]}
                 >
-                  {user?.user?.id === projectDetails?.creator?.id ? (
-                    <View
-                      style={[
-                        DefaultStyles.containerCenter,
-                        DefaultStyles.containerRow,
-                      ]}
-                    >
-                      <View style={[styles.follow, styles.authorDetails]}>
-                        <NativeUiText
-                          textColor={THEME.COLORS.WHITE}
-                          textType={'medium'}
-                        >
-                          Edit
-                        </NativeUiText>
-                      </View>
-                      <TouchableOpacity
-                        onPress={onDelete}
-                        style={[styles.delete, styles.authorDetails]}
-                      >
-                        <NativeUiText
-                          textColor={THEME.COLORS.WHITE}
-                          textType={'medium'}
-                          style={styles.authorDetails}
-                        >
-                          Delete
-                        </NativeUiText>
-                      </TouchableOpacity>
-                    </View>
-                  ) : (
-                    <View
-                      style={[
-                        DefaultStyles.containerCenter,
-                        DefaultStyles.containerRow,
-                      ]}
-                    >
-                      <TouchableOpacity
-                        onPress={toggleFollow}
-                        style={[styles.follow, styles.authorDetails]}
-                      >
-                        <NativeUiText
-                          textColor={THEME.COLORS.WHITE}
-                          textType={'medium'}
-                        >
-                          {followState !== null
-                            ? followState?.followers?.includes(user?.user?.id)
-                              ? 'UNFOLLOW'
-                              : 'FOLLOW'
-                            : projectDetails?.creator?.followers?.includes(
-                                user?.user?.id
-                              )
-                            ? 'UNFOLLOW'
-                            : 'FOLLOW'}
-                        </NativeUiText>
-                      </TouchableOpacity>
-                    </View>
-                  )}
-                </View>
-              </View>
-
-              {projectDetails.images && projectDetails?.images?.length > 0 ? (
-                <>
-                  <View>
-                    <View style={styles.mainImageContainer}>
-                      <Image
-                        style={styles.img}
-                        source={{ uri: projectDetails?.images[0]?.image_url }}
-                      />
-                    </View>
+                  <View style={styles.avaterContainer}>
+                    <Image
+                      source={{ uri: projectDetails?.creator?.avatar }}
+                      style={styles.avater}
+                    />
                   </View>
-                  {projectDetails?.images?.length > 1 ? (
-                    <View style={[styles.userProfilex]}>
-                      <ScrollView
-                        showsHorizontalScrollIndicator={false}
-                        horizontal
-                        style={styles.imageSlide}
+                  <NativeUiText style={styles.authorDetails} fontSize={16}>
+                    {projectDetails?.creator?.username}
+                  </NativeUiText>
+                  <View
+                    style={[
+                      DefaultStyles.containerCenter,
+                      DefaultStyles.containerRow,
+                    ]}
+                  >
+                    {user?.user?.id === projectDetails?.creator?.id ? (
+                      <View
+                        style={[
+                          DefaultStyles.containerCenter,
+                          DefaultStyles.containerRow,
+                        ]}
                       >
-                        {projectDetails?.images.map((image, index) => (
-                          <Pressable
-                            key={index}
-                            onPress={() => enlargeImage(image.image_url)}
+                        <View style={[styles.follow, styles.authorDetails]}>
+                          <NativeUiText
+                            textColor={THEME.COLORS.WHITE}
+                            textType={'medium'}
                           >
-                            <Image
-                              style={styles.individualImageSlider}
-                              source={{ uri: image.image_url }}
-                            />
-                          </Pressable>
-                        ))}
-                      </ScrollView>
+                            Edit
+                          </NativeUiText>
+                        </View>
+                        <TouchableOpacity
+                          onPress={onDelete}
+                          style={[styles.delete, styles.authorDetails]}
+                        >
+                          <NativeUiText
+                            textColor={THEME.COLORS.WHITE}
+                            textType={'medium'}
+                            style={styles.authorDetails}
+                          >
+                            Delete
+                          </NativeUiText>
+                        </TouchableOpacity>
+                      </View>
+                    ) : (
+                      <View
+                        style={[
+                          DefaultStyles.containerCenter,
+                          DefaultStyles.containerRow,
+                        ]}
+                      >
+                        <TouchableOpacity
+                          onPress={toggleFollow}
+                          style={[styles.follow, styles.authorDetails]}
+                        >
+                          <NativeUiText
+                            textColor={THEME.COLORS.WHITE}
+                            textType={'medium'}
+                          >
+                            {followState !== null
+                              ? followState?.followers?.includes(user?.user?.id)
+                                ? 'UNFOLLOW'
+                                : 'FOLLOW'
+                              : projectDetails?.creator?.followers?.includes(
+                                  user?.user?.id
+                                )
+                              ? 'UNFOLLOW'
+                              : 'FOLLOW'}
+                          </NativeUiText>
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                  </View>
+                </View>
+
+                {projectDetails.images && projectDetails?.images?.length > 0 ? (
+                  <>
+                    <View>
+                      <View style={styles.mainImageContainer}>
+                        <Image
+                          style={styles.img}
+                          source={{ uri: projectDetails?.images[0]?.image_url }}
+                        />
+                      </View>
                     </View>
-                  ) : (
-                    <Pressable
-                      onPress={() =>
-                        enlargeImage(projectDetails?.images[0]?.image_url)
-                      }
-                      style={[
-                        styles.userProfilex,
-                        DefaultStyles.containerCenter,
-                      ]}
-                    >
-                      <Image
-                        style={styles.individualImageSlider}
-                        source={{ uri: projectDetails?.images[0]?.image_url }}
-                      />
-                    </Pressable>
-                  )}
-                </>
-              ) : (
-                <View style={styles.webView}>
-                  {projectDetails && projectDetails?.video && (
-                    <>
-                      {isGdriveORVimeoORYoutube(projectDetails?.video) ? (
-                        <WebView
-                          originWhitelist={['*']}
-                          source={{
-                            html: `
+                    {projectDetails?.images?.length > 1 ? (
+                      <View style={[styles.userProfilex]}>
+                        <ScrollView
+                          showsHorizontalScrollIndicator={false}
+                          horizontal
+                          style={styles.imageSlide}
+                        >
+                          {projectDetails?.images.map((image, index) => (
+                            <Pressable
+                              key={index}
+                              onPress={() => enlargeImage(image.image_url)}
+                            >
+                              <Image
+                                style={styles.individualImageSlider}
+                                source={{ uri: image.image_url }}
+                              />
+                            </Pressable>
+                          ))}
+                        </ScrollView>
+                      </View>
+                    ) : (
+                      <Pressable
+                        onPress={() =>
+                          enlargeImage(projectDetails?.images[0]?.image_url)
+                        }
+                        style={[
+                          styles.userProfilex,
+                          DefaultStyles.containerCenter,
+                        ]}
+                      >
+                        <Image
+                          style={styles.individualImageSlider}
+                          source={{ uri: projectDetails?.images[0]?.image_url }}
+                        />
+                      </Pressable>
+                    )}
+                  </>
+                ) : (
+                  <View style={styles.webView}>
+                    {projectDetails && projectDetails?.video && (
+                      <>
+                        {isGdriveORVimeoORYoutube(projectDetails?.video) ? (
+                          <WebView
+                            originWhitelist={['*']}
+                            source={{
+                              html: `
                       <iframe width="920" height="600"
                         title={item.title}
                         src=${projectDetails?.video}
                     ></iframe>
                      `,
-                          }}
-                        />
-                      ) : (
-                        <>
-                          {shouldPlayVideo ? (
-                            <WebView
-                              originWhitelist={['*']}
-                              source={{
-                                html: `
+                            }}
+                          />
+                        ) : (
+                          <>
+                            {shouldPlayVideo ? (
+                              <WebView
+                                originWhitelist={['*']}
+                                source={{
+                                  html: `
                               <video
                                 width="100%"  height="600" autoplay controls>
                                 <source
@@ -451,56 +450,56 @@ const ProjectDetail = ({ route }) => {
                                   <source src="movie.ogg" type="video/ogg">
                                   Your browser does not support the video tag.
                               </video> `,
-                              }}
-                            />
-                          ) : (
-                            <TouchableOpacity
-                              onPress={() => setShouldPlayVideo(true)}
-                            >
-                              <Image
-                                source={{
-                                  uri: buildVideoThumbnailURL(
-                                    projectDetails.video
-                                  ),
                                 }}
-                                style={styles.image}
                               />
-                              <View
-                                style={[
-                                  styles.videoIcon,
-                                  DefaultStyles.containerCenter,
-                                ]}
+                            ) : (
+                              <TouchableOpacity
+                                onPress={() => setShouldPlayVideo(true)}
                               >
-                                <AntDesign
-                                  name="youtube"
-                                  size={102}
-                                  color={THEME.COLORS.PRIMARY_TEAL}
+                                <Image
+                                  source={{
+                                    uri: buildVideoThumbnailURL(
+                                      projectDetails.video
+                                    ),
+                                  }}
+                                  style={styles.image}
                                 />
-                              </View>
-                            </TouchableOpacity>
-                          )}
-                        </>
-                      )}
-                    </>
-                  )}
-                </View>
-              )}
+                                <View
+                                  style={[
+                                    styles.videoIcon,
+                                    DefaultStyles.containerCenter,
+                                  ]}
+                                >
+                                  <AntDesign
+                                    name="youtube"
+                                    size={102}
+                                    color={THEME.COLORS.PRIMARY_TEAL}
+                                  />
+                                </View>
+                              </TouchableOpacity>
+                            )}
+                          </>
+                        )}
+                      </>
+                    )}
+                  </View>
+                )}
 
-              <View style={styles.userProfile}>
-                <NativeUiText
-                  fontSize={21}
-                  textType={'medium'}
-                  style={styles.userProfile}
-                >
-                  Description
-                </NativeUiText>
+                <View style={styles.userProfile}>
+                  <NativeUiText
+                    fontSize={21}
+                    textType={'medium'}
+                    style={styles.userProfile}
+                  >
+                    Description
+                  </NativeUiText>
 
-                <View>
-                  <WebView
-                    scrollEnabled={false}
-                    originWhitelist={['*']}
-                    source={{
-                      html: `
+                  <View>
+                    <WebView
+                      scrollEnabled={false}
+                      originWhitelist={['*']}
+                      source={{
+                        html: `
                   <!DOCTYPE html>
                   <html lang="en">
                   <head>
@@ -514,108 +513,107 @@ const ProjectDetail = ({ route }) => {
                   </body>
                   </html>
                   `,
-                    }}
-                    onMessage={onWebViewMessage}
-                    injectedJavaScript="window.ReactNativeWebView.postMessage(document.body.scrollHeight)"
-                    style={{
-                      height: webViewHeight + 20,
-                    }}
-                  />
+                      }}
+                      onMessage={onWebViewMessage}
+                      injectedJavaScript="window.ReactNativeWebView.postMessage(document.body.scrollHeight)"
+                      style={{
+                        height: webViewHeight + 20,
+                      }}
+                    />
+                  </View>
                 </View>
-              </View>
 
-              <View style={styles.userProfile}>
-                <NativeUiText
-                  fontSize={21}
-                  textType={'medium'}
-                  style={styles.userProfile}
-                >
-                  Materials Used
-                </NativeUiText>
+                <View style={styles.userProfile}>
+                  <NativeUiText
+                    fontSize={21}
+                    textType={'medium'}
+                    style={styles.userProfile}
+                  >
+                    Materials Used
+                  </NativeUiText>
 
-                <View style={styles.materialPrimary}>
-                  {projectDetails?.materials_used &&
-                    projectDetails?.materials_used
-                      .split(',')
-                      .map((material, index) => (
-                        <View key={index} style={styles.materialContainer}>
-                          <NativeUiText
-                            textColor={THEME.COLORS.PRIMARY_TEAL}
-                            textType={'medium'}
-                          >
-                            {material}{' '}
-                          </NativeUiText>
+                  <View style={styles.materialPrimary}>
+                    {projectDetails?.materials_used &&
+                      projectDetails?.materials_used
+                        .split(',')
+                        .map((material, index) => (
+                          <View key={index} style={styles.materialContainer}>
+                            <NativeUiText
+                              textColor={THEME.COLORS.PRIMARY_TEAL}
+                              textType={'medium'}
+                            >
+                              {material}{' '}
+                            </NativeUiText>
+                          </View>
+                        ))}
+                  </View>
+                </View>
+
+                <View style={styles.userProfile}>
+                  <NativeUiText
+                    fontSize={21}
+                    textType={'medium'}
+                    style={styles.userProfile}
+                  >
+                    Catergory
+                  </NativeUiText>
+
+                  <NativeUiText
+                    textColor={THEME.COLORS.SECONDARY_TEXT}
+                    style={styles.userProfile}
+                    fontSize={18}
+                  >
+                    {projectDetails?.category}
+                  </NativeUiText>
+                </View>
+
+                <View style={styles.userProfile}>
+                  <NativeUiText fontSize={21} textType={'bold'}>
+                    {projectDetails?.comments?.length} Comments
+                  </NativeUiText>
+                  <View style={[styles.commentBox]}>
+                    <Avater
+                      width={35}
+                      height={35}
+                      uri={require('@asset/avater.jpg')}
+                      radius={18}
+                    />
+                    <View>
+                      <TextInput
+                        onFocus={() => setShowCommentSubmitButton(true)}
+                        onChangeText={(txt) => handleCommentChange('text', txt)}
+                        multiline={true}
+                        style={styles.input}
+                        placeholder="Write a comment....."
+                      />
+                    </View>
+                    {showCommentSubmitButton && (
+                      <NativeUiButton
+                        onPress={onSubmitComment}
+                        height={35}
+                        btnWidth={'35%'}
+                        label={'Comment'}
+                      />
+                    )}
+                  </View>
+                  {projectDetails?.comments?.length > 0 && (
+                    <View style={styles.commentCard}>
+                      {projectDetails?.comments?.map((comment) => (
+                        <View key={comment.created_on} style={styles.comments}>
+                          <CommentCard
+                            authorName={comment?.creator?.username}
+                            commentTime={`${
+                              dFormatter(comment?.created_on).value
+                            } ${dFormatter(comment?.created_on).key} ago`}
+                            commentBody={comment?.text}
+                          />
                         </View>
                       ))}
-                </View>
-              </View>
-
-              <View style={styles.userProfile}>
-                <NativeUiText
-                  fontSize={21}
-                  textType={'medium'}
-                  style={styles.userProfile}
-                >
-                  Catergory
-                </NativeUiText>
-
-                <NativeUiText
-                  textColor={THEME.COLORS.SECONDARY_TEXT}
-                  style={styles.userProfile}
-                  fontSize={18}
-                >
-                  {projectDetails?.category}
-                </NativeUiText>
-              </View>
-
-              <View style={styles.userProfile}>
-                <NativeUiText fontSize={21} textType={'bold'}>
-                  {projectDetails?.comments?.length} Comments
-                </NativeUiText>
-                <View style={[styles.commentBox]}>
-                  <Avater
-                    width={35}
-                    height={35}
-                    uri={require('@asset/avater.jpg')}
-                    radius={18}
-                  />
-                  <View>
-                    <TextInput
-                      onFocus={() => setShowCommentSubmitButton(true)}
-                      onChangeText={(txt) => handleCommentChange('text', txt)}
-                      multiline={true}
-                      style={styles.input}
-                      placeholder="Write a comment....."
-                    />
-                  </View>
-                  {showCommentSubmitButton && (
-                    <NativeUiButton
-                      onPress={onSubmitComment}
-                      height={35}
-                      btnWidth={'35%'}
-                      label={'Comment'}
-                    />
+                    </View>
                   )}
                 </View>
-                {projectDetails?.comments?.length > 0 && (
-                  <View style={styles.commentCard}>
-                    {projectDetails?.comments?.map((comment) => (
-                      <View key={comment.created_on} style={styles.comments}>
-                        <CommentCard
-                          authorName={comment?.creator?.username}
-                          commentTime={`${
-                            dFormatter(comment?.created_on).value
-                          } ${dFormatter(comment?.created_on).key} ago`}
-                          commentBody={comment?.text}
-                        />
-                      </View>
-                    ))}
-                  </View>
-                )}
               </View>
-            </View>
-            {/*
-            </TouchableWithoutFeedback> */}
+            </TouchableWithoutFeedback>
           </ScrollView>
 
           <FloatingAction

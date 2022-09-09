@@ -11,12 +11,14 @@ import { getAUsersProject } from '../../redux/actions/projectsAction';
 import styles from './UsersProjects.style';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import { HEIGHT } from '../../../src/constants/theme';
+import { RESET } from '../../redux/types/index';
 
-const UsersProjects = () => {
+const UsersProjects = ({ route }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const projects = useSelector((state) => state.projects);
 
+  // console.log(projects.myProjects);
   const [currentPage, setCurrentPage] = useState(1);
   const [allProjects, setAllProjects] = useState([]);
 
@@ -26,13 +28,21 @@ const UsersProjects = () => {
 
   const fetchAllProjects = () => {
     dispatch(
-      getAUsersProject({ page: currentPage, username: user?.user?.username })
+      getAUsersProject({
+        page: currentPage,
+        username: route.params
+          ? route.params.data?.username
+          : user?.user?.username,
+      })
     );
   };
 
   useEffect(() => {
     if (Array.isArray(projects?.myProjects?.results)) {
       setAllProjects([...allProjects, ...projects?.myProjects?.results]);
+      dispatch({
+        type: RESET,
+      });
     }
   }, [projects?.myProjects]);
 
@@ -48,6 +58,7 @@ const UsersProjects = () => {
       <NativeUiText textType="bold" style={styles.title} fontSize={27}>
         {user?.user?.username}'s projects
       </NativeUiText>
+      {console.log(allProjects)}
       <FlatList
         contentContainerStyle={[styles.list, DefaultStyles.containerCenter]}
         data={allProjects}

@@ -1,16 +1,22 @@
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Image, TouchableOpacity, Alert } from 'react-native';
 import React from 'react';
 import { NativeUiText, Avater } from '@components/';
 import Entypo from 'react-native-vector-icons/Entypo';
 import * as THEME from '../../constants/theme';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import styles from './CommentCard.style';
+import { useSelector } from 'react-redux';
 
 const CommentCard = ({ authorName, commentTime, commentBody }) => {
+  const user = useSelector((state) => state.user);
+
   return (
     <View style={styles.container}>
       <View style={DefaultStyles.containerRow}>
-        <Avater width={40} height={40} uri={require('@asset/avater.jpg')} />
+        <View style={styles.avaterContainer}>
+          <Image source={{ uri: user?.user?.avatar }} style={styles.avater} />
+        </View>
+
         <View style={styles.authorsDretails}>
           <NativeUiText textType="medium"> {authorName} </NativeUiText>
           <NativeUiText

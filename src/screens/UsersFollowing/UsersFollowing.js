@@ -1,18 +1,18 @@
-import { View, FlatList, Image, TouchableOpacity } from "react-native";
-import React, { useState, useEffect } from "react";
+import { View, FlatList, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import {
   NativeUiHeader,
   NativeUiText,
   NativeUiActivityIndicator,
-} from "@components/";
-import { useSelector, useDispatch } from "react-redux";
-import styles from "./UsersFollowing.style";
+} from '@components/';
+import { useSelector, useDispatch } from 'react-redux';
+import styles from './UsersFollowing.style';
 import {
   getAUsersFollowingList,
   loadUser,
-} from "../../redux/actions/authAction";
-import * as THEME from "../../constants/theme";
-import { toggleFollowOnProject } from "../../redux/actions/projectsAction";
+} from '../../redux/actions/authAction';
+import * as THEME from '../../constants/theme';
+import { toggleFollowOnProject } from '../../redux/actions/projectsAction';
 
 const UsersFollowing = () => {
   const dispatch = useDispatch();
@@ -65,7 +65,7 @@ const UsersFollowing = () => {
 
   return (
     <View style={styles.container}>
-      <NativeUiHeader subScreen={true} sectionTitle={"People I follow"} />
+      <NativeUiHeader subScreen={true} sectionTitle={'People I follow'} />
       <NativeUiText textType="bold" style={styles.title} fontSize={27}>
         Creator {user?.user?.username} is following
       </NativeUiText>
@@ -93,7 +93,7 @@ const UsersFollowing = () => {
                 </NativeUiText>
               </TouchableOpacity>
               <NativeUiText textType="bold" fontSize={14} style={styles.name}>
-                {item?.username}{" "}
+                {item?.username}{' '}
               </NativeUiText>
             </View>
           </View>

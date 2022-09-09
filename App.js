@@ -6,6 +6,7 @@ import Constants from 'expo-constants';
 import store from './src/redux/store';
 import { Provider } from 'react-redux';
 import Toast from 'react-native-toast-message';
+import './src/locales/i18n.config';
 
 const App = () => {
   return (

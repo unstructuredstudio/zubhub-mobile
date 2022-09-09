@@ -420,3 +420,30 @@ export const getUserProfile = ({ username, token }) => {
     return request({ url }).then((res) => res.json());
   }
 };
+
+/**
+ * @method addProfileComment
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const addProfileComment = ({ id, text, token, parent_id }) => {
+  const url = `/creators/${id}/add-comment/`;
+  const method = 'POST';
+  const body = JSON.stringify({ text, parent_id });
+
+  return request({ url, method, body, token }).then((res) => res.json());
+};
+
+/**
+ * @method logout - logout a user with the user's token
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe method's signature
+ */
+export const logout = (token) => {
+  const url = '/rest-auth/logout/';
+  const method = 'POST';
+  return request({ url, method, token });
+  // .then((res) => res.json());
+};

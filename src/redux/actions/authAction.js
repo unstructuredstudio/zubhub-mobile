@@ -1,4 +1,4 @@
-import { SET_AUTH_USER } from '../types';
+import { SET_AUTH_USER, CLEAR } from '../types';
 import {
   signup,
   login,
@@ -6,6 +6,8 @@ import {
   getAuthUser,
   getFollowers,
   getFollowing,
+  addProfileComment,
+  logout,
 } from '../../ApiCall/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TOKEN, USER } from '../../utils/storageKeys';
@@ -116,7 +118,6 @@ export const resetPassordLink = (email, setVisible, setLoading) => {
 export const getAUsersFollowers = (args) => (dispatch) => {
   let response = getFollowers(args)
     .then((res) => {
-      console.log(res);
       if (Array.isArray(res.results)) {
         dispatch({
           type: SET_AUTH_USER,
@@ -131,11 +132,11 @@ export const getAUsersFollowers = (args) => (dispatch) => {
     })
     .catch((error) => {
       if (error.message.startsWith('Unexpected')) {
-        console.log('error in getting bookmarks');
+        console.log('error in getting followes');
 
         // toast.warning(args.t("savedProjects.errors.unexpected"));
       } else {
-        console.log(error, 'error in getting bookmarks');
+        console.log(error, 'error in getting followes');
 
         // toast.warning(error.message);
       }
@@ -178,5 +179,76 @@ export const getAUsersFollowingList = (args) => (dispatch) => {
       }
       // return { loading: false };
     });
+  return response;
+};
+
+/**
+ * @function addComment
+ * @author Raymond Ndibe <ndiberaymond1@gmail.com>
+ *
+ * @todo - describe function's signature
+ */
+export const addComment = (args) => {
+  let response = addProfileComment(args)
+    .then((res) => {
+      if (res.username) {
+        return { profile: res, loading: false };
+      } else {
+        res = Object.keys(res)
+          .map((key) => res[key])
+          .join('\n');
+        throw new Error(res);
+      }
+    })
+    .catch((error) => {
+      if (error.message.startsWith('Unexpected')) {
+        console.log('err', error);
+
+        // toast.warning(args.t('comments.errors.unexpected'));
+      } else {
+        console.log('err', error);
+        // toast.warning(error.message);
+      }
+      // return { loading: false };
+    });
+
+  return response;
+};
+
+//Clear users info
+export const clearUsersInfo = () => (dispatch) => {
+  dispatch({
+    type: CLEAR,
+  });
+  return Promise.resolve(true);
+};
+
+/**
+ * @function logout
+ * @author Alice Ndeh <alicendeh16@gmail.com>
+ *
+ * @todo - describe function's signature
+ */
+export const logoutUser = (token, navigation) => (dispatch) => {
+  let response = logout(token)
+    .then(async (res) => {
+      if (res.status === 200) {
+        await AsyncStorage.removeItem(TOKEN);
+        dispatch({
+          type: SET_AUTH_USER,
+          payload: {
+            token: null,
+            username: null,
+            id: null,
+            avatar: null,
+            members_count: null,
+            tags: [],
+          },
+        });
+
+        navigation.navigate('Login');
+      }
+    })
+    .then(() => console.log('error'));
   return response;
 };

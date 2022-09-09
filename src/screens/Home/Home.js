@@ -19,6 +19,7 @@ import { loadUser } from '../../redux/actions/authAction';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TOKEN } from '../../utils/storageKeys';
 import { HEIGHT } from '../../../src/constants/theme';
+import { RESET } from '../../redux/types/index';
 
 const Home = () => {
   const { t } = useTranslation();
@@ -57,13 +58,17 @@ const Home = () => {
   useEffect(() => {
     if (Array.isArray(projects?.all_projects?.results)) {
       setAllProjects([...allProjects, ...projects?.all_projects?.results]);
+      // dispatch({
+      //   type: RESET,
+      // });
     }
   }, [projects?.all_projects]);
 
   const onEndReached = () => {
-    console.log('end reached');
-    if (projects?.all_projects?.next !== null) {
-      console.log('moving to next', currentPage + 1);
+    if (
+      projects?.all_projects?.next !== null &&
+      projects?.all_projects?.next !== undefined
+    ) {
       return setCurrentPage(currentPage + 1);
     }
   };

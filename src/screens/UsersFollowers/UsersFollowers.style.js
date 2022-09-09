@@ -1,5 +1,5 @@
-import { StyleSheet } from "react-native";
-import * as THEME from "../../constants/theme";
+import { StyleSheet } from 'react-native';
+import * as THEME from '../../constants/theme';
 
 const styles = StyleSheet.create({
   container: {
@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     marginRight: 17,
     width: THEME.WIDTH / 2.33,
     backgroundColor: THEME.COLORS.WHITE,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
@@ -20,12 +20,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.18,
     shadowRadius: 1.0,
     elevation: 1,
-    alignItems: "center",
+    alignItems: 'center',
     borderRadius: 15,
     paddingVertical: 15,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
     borderWidth: 1,
     borderColor: THEME.COLORS.PRIMARY_GREY,
+  },
+
+  main: {
+    height: THEME.HEIGHT / 4.5,
   },
 
   title: {
@@ -37,9 +41,9 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 60,
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
     backgroundColor: THEME.COLORS.WHITE,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
@@ -47,7 +51,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
     elevation: 3,
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 12,
   },
 
@@ -55,7 +59,7 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.COLORS.PRIMARY_TEAL,
     paddingVertical: 10,
     paddingHorizontal: 10,
-    alignSelf: "baseline",
+    alignSelf: 'baseline',
     borderRadius: 20,
     marginBottom: 12,
   },
@@ -66,13 +70,13 @@ const styles = StyleSheet.create({
   },
 
   unfollow: {
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
   },
 
   list: {
     paddingBottom: 31,
     width: THEME.WIDTH * 0.9,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
 });
 

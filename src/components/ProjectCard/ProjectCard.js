@@ -152,11 +152,6 @@ const ProjectCard = ({ item, token }) => {
                   .replace(/(<([^>]+)>)/gi, '')
                   .replace(/\s+/g, ' ')}
               </NativeUiText>
-              {console.log(
-                user?.user?.username,
-                cardItem.creator.username,
-                'fujk'
-              )}
 
               <TouchableOpacity
                 onPress={() =>
