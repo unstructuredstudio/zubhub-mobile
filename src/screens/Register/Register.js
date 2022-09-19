@@ -23,6 +23,7 @@ import { EvilIcons, Entypo } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser } from '../../redux/actions/authAction';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useTranslation } from 'react-i18next';
 
 const initialValues = {
   username: '',
@@ -32,25 +33,21 @@ const initialValues = {
 };
 
 const validationSchema = Yup.object({
-  username: Yup.string().trim().required('We need your username to proceed'),
-  location: Yup.string()
-    .trim()
-    .required('Looks like you forgot this! Where are you from? '),
-  dob: Yup.string().trim().required('Looks like you forgot to enter this!'),
-  phone: Yup.string()
-    .trim()
-    .required('You must enter either an email or a phone number'),
-  email: Yup.string()
-    .trim()
-    .required('You must enter either an email or a phone number'),
-  password1: Yup.string().trim().min(8, 'Provide a strong password here'),
+  username: Yup.string().trim().required('general.usernameBlank'),
+  location: Yup.string().trim().required('register.locationBlank'),
+  dob: Yup.string().trim().required('general.seemsLikeYouForgot'),
+  phone: Yup.string().trim().required('general.register'),
+  email: Yup.string().trim().required('general.register'),
+  password1: Yup.string().trim().min(8, 'general.strongPassword'),
   password2: Yup.string().equals(
     [Yup.ref('password1'), null],
-    'Password does not match!'
+    'register.passwordDontMatch!'
   ),
 });
 
 const Register = () => {
+  const { t } = useTranslation();
+
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -67,13 +64,15 @@ const Register = () => {
     dateOfBirth: '',
     location: 'France',
   });
+
   const [visible, setVisible] = useState(false);
   const [error, setError] = useState([]);
   const [loading, setLoading] = useState(false);
   const componentsArray = [
-    <LayoutOne userData={userData} setUserData={setUserData} />,
-    <LayoutTwo userData={userData} setUserData={setUserData} />,
+    <LayoutOne t={t} userData={userData} setUserData={setUserData} />,
+    <LayoutTwo t={t} userData={userData} setUserData={setUserData} />,
     <LayoutThree
+      t={t}
       setError={setError}
       error={error}
       userData={userData}
@@ -119,7 +118,7 @@ const Register = () => {
         element[0] !== 'phone' &&
         element[0] !== 'bio'
       ) {
-        err.push(`We need your ${element[0]} to proceed`);
+        err.push(` ${element[0]} ${t('general.requiredToProceed')}`);
       }
     });
 
@@ -157,26 +156,26 @@ const Register = () => {
 
   return (
     <View style={styles.container}>
-      <NativeUiHeader subScreen={true} sectionTitle={'Register'} />
+      <NativeUiHeader subScreen={true} sectionTitle={t('general.register')} />
       <NativeUiModal
         navigation={navigation}
         visible={visible}
         setVisible={setVisible}
-        description={' Your account was successfully created. Welcome onboard!'}
+        description={t('register.accountCreationSuccess')}
         navigateTo={'BottomNavigator'}
-        label={'Go to Home'}
+        label={'general.goToHome'}
       />
       <View style={styles.topContainer}>
         <View style={[styles.introContainer]}>
           <NativeUiText fontSize={THEME.FONT_SIZE.LARGE} textType={'medium'}>
-            Lets get started
+            {t('general.getStarted')}
           </NativeUiText>
           <NativeUiText
             style={styles.createAccount}
             textColor={THEME.COLORS.SECONDARY_TEXT}
             textType={'medium'}
           >
-            Lets create an account first!!
+            {t('general.createAccountFirst')}
           </NativeUiText>
         </View>
 
@@ -192,7 +191,7 @@ const Register = () => {
               <View style={styles.line} />
             </View>
             <NativeUiText fontSize={12} style={styles.step}>
-              Step 1
+              {t('general.step1')}
             </NativeUiText>
           </View>
 
@@ -237,7 +236,7 @@ const Register = () => {
               fontSize={12}
               style={styles.step}
             >
-              Step 2
+              {t('general.step2')}
             </NativeUiText>
           </View>
 
@@ -270,7 +269,7 @@ const Register = () => {
               fontSize={12}
               style={styles.step}
             >
-              Step 3
+              {t('general.step3')}
             </NativeUiText>
           </View>
         </View>
@@ -302,8 +301,8 @@ const Register = () => {
           <NativeUiButton
             label={
               currentElemIndex === componentsArray.length - 1
-                ? 'Create Account'
-                : 'Next'
+                ? t('register.createAccount')
+                : t('general.next')
             }
             onPress={submit}
           />
@@ -312,13 +311,13 @@ const Register = () => {
         )}
         <Pressable onPress={() => navigation.navigate('Login')}>
           <NativeUiText textType="medium" style={styles.member}>
-            Already a member ?
+            {t('register.alreadyAMember')} ?
             <NativeUiText
               textColor={THEME.COLORS.PRIMARY_TEAL}
               textType={'medium'}
             >
               {' '}
-              Login
+              {t('general.login')}
             </NativeUiText>
           </NativeUiText>
         </Pressable>
@@ -329,7 +328,7 @@ const Register = () => {
 
 export default Register;
 
-const LayoutOne = ({ userData, setUserData }) => {
+const LayoutOne = ({ userData, setUserData, t }) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [value, setValue] = useState('');
@@ -381,8 +380,8 @@ const LayoutOne = ({ userData, setUserData }) => {
               <View style={[styles.introContainer, styles.topContainer]}>
                 <View style={styles.input}>
                   <NativeUiInput
-                    label={'Username'}
-                    placeholder={'Username'}
+                    label={t('general.username')}
+                    placeholder={t('general.username')}
                     onChangeText={(e) => {
                       setFieldValue('username', e);
                       setFieldTouched('username', true, false);
@@ -405,7 +404,7 @@ const LayoutOne = ({ userData, setUserData }) => {
                     </View>
                   )} */}
                   <NativeUiText textType="medium" style={styles.location}>
-                    Enter phone number
+                    {t('register.enterPhoneNumber')}
                   </NativeUiText>
                   <PhoneInput
                     containerStyle={[styles.inputContainer, styles.dropdown]}
@@ -435,8 +434,8 @@ const LayoutOne = ({ userData, setUserData }) => {
                 </View>
                 <View style={styles.input}>
                   <NativeUiInput
-                    label={'Enter your email'}
-                    placeholder={'Email'}
+                    label={t('general.enterEmail')}
+                    placeholder={t('general.email')}
                     onChangeText={(e) => {
                       setFieldValue('email', e);
                       setFieldTouched('email', true, false);
@@ -449,12 +448,12 @@ const LayoutOne = ({ userData, setUserData }) => {
 
                 <View style={styles.input}>
                   <NativeUiText textType="medium" style={styles.location}>
-                    Date of Birth
+                    {t('register.dateOfBirth')}
                   </NativeUiText>
                   <View style={[styles.inputContainer]}>
                     <View style={styles.container}>
                       <NativeUiText>
-                        {dateOfBirth ? dateOfBirth : 'Select a date'}
+                        {dateOfBirth ? dateOfBirth : t('register.selectADate')}
                       </NativeUiText>
                     </View>
                     <Pressable
@@ -475,8 +474,8 @@ const LayoutOne = ({ userData, setUserData }) => {
                 <View style={styles.input}>
                   <NativeUiInput
                     password
-                    label={'Enter your password'}
-                    placeholder={'Password'}
+                    label={t('general.enterPassword')}
+                    placeholder={t('general.password')}
                     onChangeText={(e) => {
                       setFieldValue('password1', e);
                       setFieldTouched('password1', true, false);
@@ -489,8 +488,8 @@ const LayoutOne = ({ userData, setUserData }) => {
                 <View style={styles.input}>
                   <NativeUiInput
                     password
-                    label={'Confirm your password'}
-                    placeholder={'Password'}
+                    label={t('general.confirmPassword')}
+                    placeholder={t('general.password')}
                     onChangeText={(e) => {
                       setFieldValue('password2', e);
                       setFieldTouched('password2', true, false);
@@ -509,7 +508,7 @@ const LayoutOne = ({ userData, setUserData }) => {
   );
 };
 
-const LayoutTwo = ({ userData, setUserData }) => {
+const LayoutTwo = ({ userData, setUserData, t }) => {
   const [countryCode, setCountryCode] = useState('FR');
   const [country, setCountry] = useState(null);
   const [withCountryNameButton, setWithCountryNameButton] = useState(true);
@@ -538,7 +537,7 @@ const LayoutTwo = ({ userData, setUserData }) => {
       <ScrollView style={styles.container}>
         <View style={[styles.introContainer]}>
           <NativeUiText style={styles.location} textType="medium">
-            Please provide your location
+            {t('register.provideLocation')}
           </NativeUiText>
           <View style={[styles.inputContainer]}>
             <View style={styles.container}>
@@ -567,7 +566,7 @@ const LayoutTwo = ({ userData, setUserData }) => {
   );
 };
 
-const LayoutThree = ({ userData, setUserData, error, setError }) => {
+const LayoutThree = ({ userData, setUserData, error, setError, t }) => {
   return (
     <>
       <ScrollView style={styles.container}>
@@ -575,8 +574,8 @@ const LayoutThree = ({ userData, setUserData, error, setError }) => {
         <View style={[styles.introContainer]}>
           <View style={styles.input}>
             <NativeUiInput
-              label={'Tell us about yourself'}
-              placeholder={'Bio'}
+              label={t('register.tellUsAboutYou')}
+              placeholder={t('register.bio')}
               multiline
               onChangeText={(txt) => setUserData({ ...userData, bio: txt })}
             />

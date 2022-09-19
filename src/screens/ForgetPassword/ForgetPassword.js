@@ -17,6 +17,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { resetPassordLink } from '../../redux/actions/authAction';
 import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const initialValues = {
   email: '',
@@ -24,13 +25,15 @@ const initialValues = {
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
-    .email('Uhmm...The email seems to be invalid 🤔')
-    .required('Please ensure to fill this field'),
+    .email('forgetPassword.invalidEmail')
+    .required('general.fillAllFields'),
 });
 
 const ForgetPassword = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const { t } = useTranslation();
+
   const [userData, setUserData] = useState({
     email: '',
   });
@@ -50,7 +53,7 @@ const ForgetPassword = () => {
     let err = [];
     if (userData.email === '') {
       setLoading(false);
-      err.push(`Ensure to fill all fields before proceeding`);
+      err.push(t('general.fillAllFields'));
       return setError(err);
     }
 
@@ -71,29 +74,26 @@ const ForgetPassword = () => {
         });
         setError(Object.values(server_errors));
       } else {
-        setError(
-          Object.values([
-            `Uh oh, seems like we hit a snag :( Maybe try again later?`,
-          ])
-        );
+        setError(Object.values([t('general.smagError')]));
       }
     });
   };
 
   return (
     <View style={styles.container}>
-      <NativeUiHeader subScreen={true} sectionTitle={'Forget Password'} />
+      <NativeUiHeader
+        subScreen={true}
+        sectionTitle={t('general.forgetPassword')}
+      />
       <NativeKeyboardAvoidingView>
         <ScrollView>
           <NativeUiModal
             navigation={navigation}
             visible={visible}
             setVisible={setVisible}
-            description={
-              'We just sent a password reset link to your email! Check your mail!'
-            }
+            description={t('forgetPassword.invalidEmail')}
             navigateTo={'Home'}
-            label={'Go to Home'}
+            label={t('general.goToHome')}
           />
           <View style={styles.topContainer}>
             <View style={[styles.introContainer]}>
@@ -101,14 +101,14 @@ const ForgetPassword = () => {
                 fontSize={THEME.FONT_SIZE.LARGE}
                 textType={'medium'}
               >
-                Password Reset
+                {t('forgetPassword.passwordReset')}
               </NativeUiText>
               <NativeUiText
                 style={styles.createAccount}
                 textColor={THEME.COLORS.SECONDARY_TEXT}
                 textType={'medium'}
               >
-                Enter your email so we can send you a pass word reset link
+                {t('forgetPassword.enterEmailMessage')}
               </NativeUiText>
             </View>
             {error.length > 0 && (
@@ -132,8 +132,8 @@ const ForgetPassword = () => {
                   return (
                     <View style={styles.input}>
                       <NativeUiInput
-                        label={'Enter your email'}
-                        placeholder={' Email'}
+                        label={t('general.enterEmail')}
+                        placeholder={t('general.email')}
                         onChangeText={(e) => {
                           setFieldValue('email', e);
                           setFieldTouched('email', true, false);
@@ -152,7 +152,7 @@ const ForgetPassword = () => {
           <View style={styles.bottomContainer}>
             {!loading ? (
               <NativeUiButton
-                label={'Send reset link'}
+                label={t('forgetPassword.sendResetLink')}
                 onPress={onResetClick}
               />
             ) : (

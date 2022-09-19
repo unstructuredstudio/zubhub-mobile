@@ -3,8 +3,11 @@ import React, { useEffect } from 'react';
 import styles from './ErrorCard.style';
 import * as THEME from '../../constants/theme';
 import NativeUiText from '../NativeUiText/NativeUiText';
+import { useTranslation } from 'react-i18next';
 
 const ErrorCard = ({ error, setError }) => {
+  const { t } = useTranslation();
+
   useEffect(() => {
     setTimeout(() => {
       setError([]);
@@ -19,7 +22,7 @@ const ErrorCard = ({ error, setError }) => {
           textType={'medium'}
           textColor={THEME.COLORS.PRIMARY_RED}
         >
-          What went wrong?
+          {t('general.whatWentWrong')}
         </NativeUiText>
         {error.map((errorMessage, index) => (
           <View key={index} style={styles.errorBox}>

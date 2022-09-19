@@ -26,18 +26,15 @@ export const TAB_DATA_SET = [
 
 export const ONBOARD_DATA = [
   {
-    // image: require('../assets/onboard1.png'),
-    title: 'Welcome to Zubhub!',
-    desc: 'It is a documentation and collaboration platform for young creators',
+    title: 'onboarding.title1',
+    desc: 'onboarding.description1',
   },
   {
-    // image: require('../assets/onboard2.png'),
-    title: 'Sharing projects',
-    desc: 'On Zubhub, you can get inspired by our collection of activity ideas, tinker with materials and tools around you, and share your creation with others',
+    title: 'onboarding.title2',
+    desc: 'onboarding.description2',
   },
   {
-    // image: require('../assets/onboard3.png'),
-    title: 'Getting started',
-    desc: 'It is simple! Sign up to create an account on ZubHub. Upload a project when you feel ready by filling out a form. Explore projects from peers and leave feedback on their work in the form of comments.',
+    title: 'onboarding.title3',
+    desc: 'onboarding.description3',
   },
 ];

@@ -17,6 +17,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { loginUser } from '../../redux/actions/authAction';
 import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const initialValues = {
   username: '',
@@ -24,17 +25,17 @@ const initialValues = {
 };
 
 const validationSchema = Yup.object({
-  username: Yup.string().trim().required('We need your username to proceed'),
+  username: Yup.string().trim().required('general.usernameBlank'),
   password: Yup.string()
     .trim()
-    .required('Seems like you forgot this')
-    .min(8, 'Provide a strong password here'),
+    .required('general.seemsLikeYouForgot')
+    .min(8, 'general.strongPassword'),
 });
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const ref = useRef(null);
+  const { t } = useTranslation();
 
   const [userData, setUserData] = useState({
     username: '',
@@ -56,7 +57,7 @@ const Login = () => {
     let err = [];
     if (userData.username === '' && userData.password === '') {
       setLoading(false);
-      err.push(`Ensure to fill all fields before proceeding`);
+      err.push(t('general.fillAllFields'));
       return setError(err);
     }
 
@@ -78,40 +79,36 @@ const Login = () => {
 
         setError(Object.values(server_errors));
       } else {
-        setError(
-          Object.values([
-            `Uh oh, seems like we hit a snag :( Maybe try again later?`,
-          ])
-        );
+        setError(Object.values([t('general.smagError')]));
       }
     });
   };
 
   return (
     <NativeKeyboardAvoidingView style={styles.container}>
-      <NativeUiHeader subScreen={true} sectionTitle={'Login'} />
+      <NativeUiHeader subScreen={true} sectionTitle={t('general.login')} />
 
       <NativeUiModal
         navigation={navigation}
         visible={visible}
         setVisible={setVisible}
-        description={' Your login was successful. Welcome onboard!'}
+        description={t('login.loginSuccess')}
         navigateTo={'BottomNavigator'}
-        label={'Go to Home'}
+        label={t('general.goToHome')}
       />
 
       <ScrollView style={styles.container}>
         <View style={styles.topContainer}>
           <View style={[styles.introContainer]}>
             <NativeUiText fontSize={THEME.FONT_SIZE.LARGE} textType={'medium'}>
-              Lets get started
+              {t('general.getStarted')}
             </NativeUiText>
             <NativeUiText
               style={styles.createAccount}
               textColor={THEME.COLORS.SECONDARY_TEXT}
               textType={'medium'}
             >
-              Lets create an account first!!
+              {t('general.createAccountFirst')}
             </NativeUiText>
           </View>
           {error.length > 0 && <ErrorCard setError={setError} error={error} />}
@@ -131,8 +128,8 @@ const Login = () => {
               <View style={[styles.container, styles.topContainer]}>
                 <View style={styles.input}>
                   <NativeUiInput
-                    label={'Username or Email'}
-                    placeholder={'Username or Email'}
+                    label={t('general.userNameOrEmail')}
+                    placeholder={t('general.userNameOrEmail')}
                     onChangeText={(e) => {
                       setFieldValue('username', e);
                       setFieldTouched('username', true, false);
@@ -146,8 +143,8 @@ const Login = () => {
                 <View style={styles.input}>
                   <NativeUiInput
                     password
-                    label={'Enter your password'}
-                    placeholder={'Password'}
+                    label={t('general.enterPassword')}
+                    placeholder={t('general.password')}
                     onChangeText={(e) => {
                       setFieldValue('password', e);
                       setFieldTouched('password', true, false);
@@ -164,7 +161,7 @@ const Login = () => {
                       textColor={THEME.COLORS.PRIMARY_TEAL}
                       textType={'medium'}
                     >
-                      Forget Password?
+                      {t('general.forgetPassword')}?
                     </NativeUiText>
                   </Pressable>
                 </View>
@@ -175,20 +172,19 @@ const Login = () => {
 
         <View style={styles.bottomContainer}>
           {!loading ? (
-            <NativeUiButton label={'Login'} onPress={onLogin} />
+            <NativeUiButton label={t('general.login')} onPress={onLogin} />
           ) : (
             <NativeUiActivityIndicator />
           )}
 
           <Pressable onPress={() => navigation.navigate('Register')}>
             <NativeUiText textType="medium" style={styles.member}>
-              Don’t have an account yet?
+              {t('login.dontHaveAnAccount')}
               <NativeUiText
                 textColor={THEME.COLORS.PRIMARY_TEAL}
                 textType={'medium'}
               >
-                {' '}
-                Register
+                {t('general.register')}
               </NativeUiText>
             </NativeUiText>
           </Pressable>

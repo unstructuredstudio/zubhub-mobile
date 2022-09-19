@@ -5,6 +5,7 @@ import styles from './NativeUiInput.style';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import * as THEME from '../../constants/theme';
 import Entypo from 'react-native-vector-icons/Entypo';
+import { useTranslation } from 'react-i18next';
 
 const NativeUiInput = ({
   label,
@@ -31,6 +32,7 @@ const NativeUiInput = ({
     ? 'phone-pad'
     : 'default';
   const [showPassword, setShowPassword] = useState(true);
+  const { t } = useTranslation();
 
   return (
     <View>
@@ -96,7 +98,7 @@ const NativeUiInput = ({
           textColor={THEME.COLORS.PRIMARY_RED}
           style={styles(labelColor).errorText}
         >
-          {error}
+          {t(error)}
         </NativeUiText>
       )}
     </View>

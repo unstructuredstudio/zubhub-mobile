@@ -5,22 +5,23 @@ import {
   StatusBar,
   Dimensions,
   TouchableOpacity,
-  SafeAreaView,
   Image,
 } from 'react-native';
 import styles from './Onboarding.style';
 import { ONBOARD_DATA } from '../../data';
 import { Feather } from '@expo/vector-icons';
-import { NativeUiButton, NativeUiText } from '@components/';
+import { NativeUiText } from '@components/';
 import * as THEME from '../../constants/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FIRST_TIME } from '../../utils/storageKeys';
+import { useTranslation } from 'react-i18next';
 
 const WIDTH = Dimensions.get('screen').width;
 
 const Onboarding = ({ navigation }) => {
   const ref = useRef(null);
   const [currentElemIndex, setCurrentElemIndex] = useState(0);
+  const { t } = useTranslation();
 
   const updateCurrentSlideIndex = (e) => {
     const contentOffsetX = e.nativeEvent.contentOffset.x;
@@ -78,14 +79,14 @@ const Onboarding = ({ navigation }) => {
                 style={styles.heading}
                 textColor={THEME.COLORS.WHITE}
               >
-                {item.title}{' '}
+                {t(item.title)}{' '}
               </NativeUiText>
               <NativeUiText
                 textColor={THEME.COLORS.WHITE}
                 style={styles.body}
                 fontSize={18}
               >
-                {item.desc}
+                {t(item.desc)}
               </NativeUiText>
             </View>
           </View>
