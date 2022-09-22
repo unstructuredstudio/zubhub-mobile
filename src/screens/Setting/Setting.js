@@ -27,9 +27,9 @@ const Setting = () => {
 
   const quickActions = (title) => {
     switch (title) {
-      case 'Change Language':
+      case 'general.changeLanguage':
         return SheetManager.show('languageSheet');
-      case 'Logout':
+      case 'general.logout':
         return dispatch(logoutUser(user?.token, navigation));
     }
   };
@@ -43,10 +43,13 @@ const Setting = () => {
   return (
     <View>
       <NativeUiText fontSize={THEME.FONT_SIZE.MEDIUM} textType={'bold'}>
-        Settings
+        {t('general.settings')}
       </NativeUiText>
 
-      <NativeUiActionSheet id="languageSheet" sheetTitle={t('date.year')}>
+      <NativeUiActionSheet
+        id="languageSheet"
+        sheetTitle={t('general.toggleLanguage')}
+      >
         <View>
           <TouchableOpacity
             onPress={() => setLanguage('english')}
@@ -61,7 +64,9 @@ const Setting = () => {
                 },
               ]}
             ></View>
-            <NativeUiText style={styles.info}>English</NativeUiText>
+            <NativeUiText style={styles.info}>
+              {t('general.english')}
+            </NativeUiText>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -77,12 +82,14 @@ const Setting = () => {
                 },
               ]}
             ></View>
-            <NativeUiText style={styles.info}>Hindi</NativeUiText>
+            <NativeUiText style={styles.info}>
+              {t('general.hindi')}
+            </NativeUiText>
           </TouchableOpacity>
         </View>
         <NativeUiButton
           onPress={toggleLanguage}
-          label={'Toggle'}
+          label={t('general.toggle')}
           style={styles.space}
         />
       </NativeUiActionSheet>
@@ -114,14 +121,14 @@ const Setting = () => {
                 textColor={THEME.COLORS.PRIMARY_TEXT}
                 textType={'medium'}
               >
-                {item.title}
+                {t(item.title)}
               </NativeUiText>
               <NativeUiText
                 textColor={THEME.COLORS.SECONDARY_TEXT}
                 textType={'medium'}
                 style={styles.txt}
               >
-                {item.subTitle}
+                {t(item.subTitle)}
               </NativeUiText>
             </View>
           </View>

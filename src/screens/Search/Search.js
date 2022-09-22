@@ -14,10 +14,13 @@ import { Entypo, AntDesign } from 'react-native-vector-icons';
 import { autocompleteProjects } from '../../ApiCall/api';
 import { COLORS } from '../../constants/theme';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const Search = () => {
   const [autocompleteList, setAutocompleteList] = useState([]);
   const [inputText, setInputText] = useState('');
+
+  const { t } = useTranslation();
 
   const navigation = useNavigation();
 
@@ -45,7 +48,7 @@ const Search = () => {
                 getAutoCompleteList(e);
               }}
               style={styles.input}
-              placeholder="Search"
+              placeholder={t('searchScreen.search')}
             />
           </View>
           <TouchableOpacity
@@ -107,7 +110,7 @@ const Search = () => {
                 style={styles.txt}
                 fontSize={18}
               >
-                Try searching for project titles or authors
+                {t('searchScreen.default')}
               </NativeUiText>
             </View>
           )}

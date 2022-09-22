@@ -5,12 +5,15 @@ import styles from './Comments.style';
 import { USER_DETAILS } from '../../data';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import * as THEME from '../../constants/theme';
+import { useTranslation } from 'react-i18next';
 
 const Comments = () => {
+  const { t } = useTranslation();
+
   return (
     <ScrollView>
       <NativeUiText fontSize={THEME.FONT_SIZE.MEDIUM} textType={'bold'}>
-        3 Comments
+        3 {t('general.comments')}
       </NativeUiText>
       <View style={[styles.commentBox]}>
         <Avater
@@ -23,7 +26,7 @@ const Comments = () => {
           <TextInput
             multiline={true}
             style={styles.input}
-            placeholder="Write a comment....."
+            placeholder={t('general.writeAComment')}
           />
         </View>
       </View>

@@ -1,17 +1,17 @@
-import { SafeAreaView, View, TouchableOpacity } from "react-native";
-import { NativeUiHeader, NativeUiText, ProjectCard } from "@components/";
-import React, { useState, useEffect } from "react";
-import styles from "./Profile.style";
-import { TAB_DATA_SET } from "../../data";
-import DefaultStyles from "../../constants/DefaultStyles.style";
-import { About, Comments, Setting } from "@screens/";
-import { useSelector, useDispatch } from "react-redux";
+import { SafeAreaView, View, TouchableOpacity } from 'react-native';
+import { NativeUiHeader, NativeUiText, ProjectCard } from '@components/';
+import React, { useState, useEffect } from 'react';
+import styles from './Profile.style';
+import { TAB_DATA_SET } from '../../data';
+import DefaultStyles from '../../constants/DefaultStyles.style';
+import { About, Comments, Setting } from '@screens/';
+import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const Profile = () => {
-  const dispatch = useDispatch();
-
-  const [activeTab, setActiveTab] = useState("About");
+  const [activeTab, setActiveTab] = useState('general.about');
   const user = useSelector((state) => state.user);
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -24,25 +24,25 @@ const Profile = () => {
               style={[
                 styles.card,
                 {
-                  backgroundColor: activeTab === item.title ? "#000" : "#fff",
+                  backgroundColor: activeTab === item.title ? '#000' : '#fff',
                 },
               ]}
               onPress={() => setActiveTab(item.title)}
             >
               <NativeUiText
                 textType="medium"
-                textColor={activeTab === item.title ? "#fff" : "#000"}
+                textColor={activeTab === item.title ? '#fff' : '#000'}
                 fontSize={16}
               >
-                {item.title}
+                {t(item.title)}
               </NativeUiText>
             </TouchableOpacity>
           ))}
         </View>
         <View style={styles.container}>
-          {activeTab === "About" ? (
+          {activeTab === 'general.about' ? (
             <About user={user?.user} />
-          ) : activeTab === "Comments" ? (
+          ) : activeTab === 'general.comments' ? (
             <Comments />
           ) : (
             <Setting />

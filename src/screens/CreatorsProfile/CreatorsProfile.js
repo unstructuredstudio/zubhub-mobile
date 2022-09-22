@@ -24,10 +24,12 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { dFormatter } from '../../utils/script';
 import { addComment } from '../../redux/actions/authAction';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const CreatorsProfile = ({ route }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  const { t } = useTranslation();
 
   const [usersInfo, setUsersInfo] = useState({});
   const [showCommentSubmitButton, setShowCommentSubmitButton] = useState(false);
@@ -68,7 +70,10 @@ const CreatorsProfile = ({ route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <NativeUiHeader subScreen={true} sectionTitle={'Creators Detail'} />
+      <NativeUiHeader
+        subScreen={true}
+        sectionTitle={t('creatorsDetails.creatorsDetails')}
+      />
       <ScrollView contentContainerStyle={styles.main}>
         <TouchableWithoutFeedback
           onPress={() => {
@@ -113,7 +118,9 @@ const CreatorsProfile = ({ route }) => {
                 <NativeUiText textType="medium">
                   {user?.projects_count}{' '}
                 </NativeUiText>
-                <NativeUiText textType="bold">Projects </NativeUiText>
+                <NativeUiText textType="bold">
+                  {t('general.projects')}
+                </NativeUiText>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -123,7 +130,9 @@ const CreatorsProfile = ({ route }) => {
                 <NativeUiText textType="medium">
                   {usersInfo?.followers?.length}
                 </NativeUiText>
-                <NativeUiText textType="bold">Followers </NativeUiText>
+                <NativeUiText textType="bold">
+                  {t('general.followers')}
+                </NativeUiText>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -131,9 +140,11 @@ const CreatorsProfile = ({ route }) => {
                 style={[styles.card, DefaultStyles.containerCenter]}
               >
                 <NativeUiText textType="medium">
-                  {usersInfo?.following_count}{' '}
+                  {usersInfo?.following_count}
                 </NativeUiText>
-                <NativeUiText textType="bold">Following </NativeUiText>
+                <NativeUiText textType="bold">
+                  {t('general.following')}
+                </NativeUiText>
               </TouchableOpacity>
             </View>
 
@@ -142,7 +153,7 @@ const CreatorsProfile = ({ route }) => {
                 fontSize={THEME.FONT_SIZE.MEDIUM}
                 textType={'medium'}
               >
-                About Me
+                {t('general.aboutMe')}
               </NativeUiText>
               <NativeUiText
                 style={styles.aboutText}
@@ -154,7 +165,7 @@ const CreatorsProfile = ({ route }) => {
 
             <View style={styles.aboutSection}>
               <NativeUiText fontSize={21} textType={'bold'}>
-                {usersInfo?.comments?.length} Comments
+                {usersInfo?.comments?.length} {t('general.comments')}
               </NativeUiText>
               <View
                 style={[
@@ -176,7 +187,7 @@ const CreatorsProfile = ({ route }) => {
                     onChangeText={(txt) => handleCommentChange('text', txt)}
                     multiline={true}
                     style={styles.input}
-                    placeholder="Write a comment....."
+                    placeholder={t('general.writeAComment')}
                   />
                 </View>
                 {showCommentSubmitButton && (
@@ -184,7 +195,7 @@ const CreatorsProfile = ({ route }) => {
                     onPress={onSubmitComment}
                     height={35}
                     btnWidth={'35%'}
-                    label={'Comment'}
+                    label={t('general.comment')}
                   />
                 )}
               </View>

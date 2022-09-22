@@ -13,34 +13,17 @@ import {
   getAUsersFollowers,
 } from '../../redux/actions/authAction';
 import * as THEME from '../../constants/theme';
+import { useTranslation } from 'react-i18next';
 
 const UsersFollowers = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  const { t } = useTranslation();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [allMyFollowers, setAllMyFollowers] = useState([]);
 
-  // useEffect(() => {
-  //   let result = dispatch(clearUsersInfo());
-  //   if (result === true) {
-  //     console.log(result, 'here');
-  //     fetchAllFollowers();
-  //   }
-  // }, []);
-
-  // console.log(user);
-
   useEffect(() => {
-    // dispatch(clearUsersInfo());
-    // res.then((result) => {
-    //   if (result) {
-    //     fetchAllFollowers();
-    //   }
-    // });
-  }, []);
-  useEffect(() => {
-    //
     fetchAllFollowers();
   }, [currentPage]);
 
@@ -50,13 +33,7 @@ const UsersFollowers = () => {
     );
   };
 
-  console.log('boom123', allMyFollowers);
-
-  console.log('boom', user?.myFollowers?.results);
-
-  let c = 0;
   useEffect(() => {
-    console.log(c + 1, 'count');
     if (Array.isArray(user?.myFollowers?.results)) {
       setAllMyFollowers([...allMyFollowers, ...user?.myFollowers?.results]);
       dispatch(clearUsersInfo());
@@ -73,7 +50,7 @@ const UsersFollowers = () => {
     <View style={styles.container}>
       <NativeUiHeader subScreen={true} sectionTitle={'My Followers'} />
       <NativeUiText textType="bold" style={styles.title} fontSize={27}>
-        {user?.user?.username}'s followers
+        {user?.user?.username}'s {t('general.followers')}
       </NativeUiText>
       <FlatList
         contentContainerStyle={styles.list}
@@ -89,7 +66,6 @@ const UsersFollowers = () => {
               <View
                 style={{
                   alignItems: 'center',
-                  // backgroundColor: 'red',
                   justifyContent: 'center',
                 }}
               >

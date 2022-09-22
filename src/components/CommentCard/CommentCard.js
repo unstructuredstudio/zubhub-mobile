@@ -6,10 +6,11 @@ import * as THEME from '../../constants/theme';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import styles from './CommentCard.style';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const CommentCard = ({ authorName, commentTime, commentBody }) => {
   const user = useSelector((state) => state.user);
-
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
       <View style={DefaultStyles.containerRow}>
@@ -38,8 +39,8 @@ const CommentCard = ({ authorName, commentTime, commentBody }) => {
       <TouchableOpacity
         onPress={() => {
           Alert.alert(
-            'Coming soon!',
-            'We are working hard to make this available. Stay tunned for our next update'
+            t('commentCard.comingSoon'),
+            t('commentCard.comingSoonDescription')
           );
         }}
         style={[DefaultStyles.containerRow, styles.txt]}
@@ -49,7 +50,7 @@ const CommentCard = ({ authorName, commentTime, commentBody }) => {
           fontSize={THEME.FONT_SIZE.SMALL}
           textType={'medium'}
         >
-          REPLY
+          {t('general.reply')}
         </NativeUiText>
         <Entypo name="reply" size={18} color={THEME.COLORS.PRIMARY_TEAL} />
       </TouchableOpacity>

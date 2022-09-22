@@ -10,11 +10,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getSavedProjects } from '../../redux/actions/projectsAction';
 import styles from './Bookmark.style';
 import DefaultStyles from '../../constants/DefaultStyles.style';
+import { useTranslation } from 'react-i18next';
 
 const Bookmark = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const projects = useSelector((state) => state.projects);
+  const { t } = useTranslation();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [allProjects, setAllProjects] = useState([]);
@@ -46,9 +48,12 @@ const Bookmark = () => {
   }, [allProjects]);
   return (
     <View style={styles.container}>
-      <NativeUiHeader subScreen={true} sectionTitle={'Saved projects'} />
+      <NativeUiHeader
+        subScreen={true}
+        sectionTitle={t('general.savedProjects')}
+      />
       <NativeUiText textType="bold" style={styles.title} fontSize={27}>
-        Your saved projects
+        {t('general.yoursavedProjects')}
       </NativeUiText>
       <FlatList
         contentContainerStyle={[styles.list, DefaultStyles.containerCenter]}

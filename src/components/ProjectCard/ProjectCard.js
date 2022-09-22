@@ -15,13 +15,17 @@ import {
   toggleLikeOnProject,
   toggleSaveOnProject,
 } from '../../redux/actions/projectsAction';
+import { useTranslation } from 'react-i18next';
 
 const ProjectCard = ({ item, token }) => {
   const user = useSelector((state) => state.user);
+
+  const { t } = useTranslation();
   const dispatch = useDispatch();
+  const navigation = useNavigation();
+
   const [cardItem, setCardItem] = useState({});
 
-  const navigation = useNavigation();
   useEffect(() => {
     setCardItem(item);
   }, []);
@@ -51,16 +55,19 @@ const ProjectCard = ({ item, token }) => {
       style={styles.mainCard}
       onPress={() => navigation.navigate('ProjectDetail', { item })}
     >
-      <NativeUiActionSheet id="authenticationSheet" sheetTitle="Create Account">
+      <NativeUiActionSheet
+        id="authenticationSheet"
+        sheetTitle={t('register.createAccount')}
+      >
         <NativeUiText style={styles.space}>
-          Lets create an account for you first! so you can perform this action
+          {t('projectCard.createAccountFirst')}
         </NativeUiText>
         <NativeUiButton
           onPress={async () => {
             navigation.navigate('Register');
             await SheetManager.hide('authenticationSheet');
           }}
-          label={'Create Account'}
+          label={t('register.createAccount')}
           style={styles.space}
         />
       </NativeUiActionSheet>

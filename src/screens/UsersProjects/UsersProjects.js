@@ -12,13 +12,15 @@ import styles from './UsersProjects.style';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import { HEIGHT } from '../../../src/constants/theme';
 import { RESET } from '../../redux/types/index';
+import { useTranslation } from 'react-i18next';
 
 const UsersProjects = ({ route }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const projects = useSelector((state) => state.projects);
 
-  // console.log(projects.myProjects);
+  const { t } = useTranslation();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [allProjects, setAllProjects] = useState([]);
 
@@ -54,11 +56,10 @@ const UsersProjects = ({ route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <NativeUiHeader subScreen={true} sectionTitle={'My projects'} />
+      <NativeUiHeader subScreen={true} sectionTitle={t('general.myProject')} />
       <NativeUiText textType="bold" style={styles.title} fontSize={27}>
-        {user?.user?.username}'s projects
+        {user?.user?.username}'s {t('general.projects')}
       </NativeUiText>
-      {console.log(allProjects)}
       <FlatList
         contentContainerStyle={[styles.list, DefaultStyles.containerCenter]}
         data={allProjects}

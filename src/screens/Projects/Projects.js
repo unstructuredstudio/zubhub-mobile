@@ -33,12 +33,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SheetManager } from 'react-native-actions-sheet';
 import QuillEditor, { QuillToolbar } from 'react-native-cn-quill';
 import * as ImagePicker from 'expo-image-picker';
+import { useTranslation } from 'react-i18next';
 
 const Projects = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const projects = useSelector((state) => state.projects);
+
+  const { t } = useTranslation();
 
   const ref = useRef(null);
   const [currentElemIndex, setCurrentElemIndex] = useState(0);
@@ -72,14 +75,20 @@ const Projects = () => {
   // }, [projectData]);
 
   const componentsArray = [
-    <LayoutOne projectData={projectData} setProjectData={setProjectData} />,
+    <LayoutOne
+      t={t}
+      projectData={projectData}
+      setProjectData={setProjectData}
+    />,
     <LayoutTwo
+      t={t}
       projectData={projectData}
       setImagesDataSet={setImagesDataSet}
       imagesDataSet={imagesDataSet}
       setProjectData={setProjectData}
     />,
     <LayoutThree
+      t={t}
       projectData={projectData}
       setProjectData={setProjectData}
       categories={categories}
@@ -136,14 +145,14 @@ const Projects = () => {
       <View style={styles.topContainer}>
         <View style={[styles.introContainer]}>
           <NativeUiText fontSize={THEME.FONT_SIZE.LARGE} textType={'medium'}>
-            Create project
+            {t('createProject.title')}
           </NativeUiText>
           <NativeUiText
             style={styles.createAccount}
             textColor={THEME.COLORS.SECONDARY_TEXT}
             textType={'medium'}
           >
-            Tell us about your project!
+            {t('createProject.tellUsAboutYourProject')}
           </NativeUiText>
         </View>
 
@@ -159,7 +168,7 @@ const Projects = () => {
               <View style={styles.line} />
             </View>
             <NativeUiText fontSize={12} style={styles.step}>
-              Step 1
+              {t('general.step1')}
             </NativeUiText>
           </View>
 
@@ -204,7 +213,7 @@ const Projects = () => {
               fontSize={12}
               style={styles.step}
             >
-              Step 2
+              {t('general.step2')}
             </NativeUiText>
           </View>
 
@@ -237,7 +246,7 @@ const Projects = () => {
               fontSize={12}
               style={styles.step}
             >
-              Step 3
+              {t('general.step3')}
             </NativeUiText>
           </View>
         </View>
@@ -271,8 +280,8 @@ const Projects = () => {
           <NativeUiButton
             label={
               currentElemIndex === componentsArray.length - 1
-                ? 'Create Project'
-                : 'Next'
+                ? t('createProject.createProject')
+                : t('general.next')
             }
             onPress={() =>
               currentElemIndex === componentsArray.length - 1
@@ -288,7 +297,7 @@ const Projects = () => {
 
 export default Projects;
 
-const LayoutOne = ({ projectData, setProjectData }) => {
+const LayoutOne = ({ projectData, setProjectData, t }) => {
   const _editor = React.createRef();
 
   const changeText = (e, key) => {
@@ -297,34 +306,20 @@ const LayoutOne = ({ projectData, setProjectData }) => {
     setProjectData(data);
   };
 
-  // useEffect(() => {
-  //   console.log(projectData);
-  // }, [projectData]);
   return (
     <>
       <ScrollView style={styles.container}>
         <View style={[styles.introContainer, styles.topContainer]}>
           <View style={styles.input}>
             <NativeUiInput
-              label={'Name your project'}
-              placeholder={'Project name'}
+              label={t('createProject.nameProject')}
+              placeholder={t('createProject.projectName')}
               onChangeText={(e) => {
                 changeText(e, 'title');
               }}
             />
           </View>
           <View style={styles.input}>
-            {/* <NativeUiInput
-              label={'Describe what it is'}
-              placeholder={'Describe your project...'}
-              multiline={true}
-              bottomText={
-                'Tell us something interesting about the project! You can share what it is about, what inspired you to make it, your making process, fun and challenging moments you experienced, etc.'
-              }
-              onChangeText={(e) => {
-                changeText(e, 'description');
-              }}
-            /> */}
             <View
               style={{
                 height: 300,
@@ -365,6 +360,7 @@ const LayoutTwo = ({
   setProjectData,
   imagesDataSet,
   setImagesDataSet,
+  t,
 }) => {
   const [visible, setVisible] = useState(false);
   const [materialUsedArray, setMaterialUsedArray] = useState([
@@ -598,14 +594,14 @@ const LayoutTwo = ({
             <View style={styles.input}>
               <View>
                 <NativeUiText textType="medium">
-                  Lets add some pictures
+                  {t('createProject.addPictures')}
                 </NativeUiText>
                 <NativeUiText
                   fontSize={12}
                   textColor={THEME.COLORS.SECONDARY_TEXT}
                   style={styles.details}
                 >
-                  Dont have them? Add a video instead!
+                  {t('createProject.dontHavePictures')}
                 </NativeUiText>
 
                 <View>
@@ -623,7 +619,7 @@ const LayoutTwo = ({
                       textType={'medium'}
                       style={styles.txt}
                     >
-                      ADD IMAGES
+                      {t('createProject.addImages')}
                     </NativeUiText>
                   </TouchableOpacity>
                   {imagesDataSet.length > 0 && (
@@ -632,8 +628,9 @@ const LayoutTwo = ({
                       textColor={THEME.COLORS.PRIMARY_TEAL}
                       style={styles.imgAdded}
                     >
-                      {imagesDataSet.length} image
-                      {imagesDataSet.length > 1 && 's'} added
+                      {imagesDataSet.length} {t('createProject.image')}
+                      {imagesDataSet.length > 1 && 's'}{' '}
+                      {t('createProject.added')}
                     </NativeUiText>
                   )}
                 </View>
@@ -668,13 +665,15 @@ const LayoutTwo = ({
             </View>
             <View style={styles.input}>
               <View>
-                <NativeUiText textType="medium">Lets add a video</NativeUiText>
+                <NativeUiText textType="medium">
+                  {t('createProject.addVideo')}
+                </NativeUiText>
                 <NativeUiText
                   fontSize={12}
                   textColor={THEME.COLORS.SECONDARY_TEXT}
                   style={styles.details}
                 >
-                  Its ok if you dont have a video, you can add images
+                  {t('createProject.noVideo')}
                 </NativeUiText>
 
                 <TouchableOpacity
@@ -693,7 +692,7 @@ const LayoutTwo = ({
                     textType={'medium'}
                     style={styles.txt}
                   >
-                    ADD VIDEO
+                    {t('createProject.addVideoAction')}
                   </NativeUiText>
                 </TouchableOpacity>
               </View>
@@ -702,25 +701,15 @@ const LayoutTwo = ({
             <View>
               <View style={styles.input}>
                 <NativeUiText textType="medium" style={styles.materialsText}>
-                  What materials did you use
+                  {t('createProject.materialUsed')}
                 </NativeUiText>
                 {materialUsedArray.map((_, index) => (
                   <View key={Math.random()} style={styles.materialInput}>
                     <NativeUiInput
                       onChangeText={(e) => onChangeText(index, e)}
-                      // value={item.value}
                     />
                   </View>
                 ))}
-                {/* <View style={styles.materialInput}>
-                  <NativeUiInput />
-                </View>
-                <View style={styles.materialInput}>
-                  <NativeUiInput />
-                </View>
-                <View style={styles.materialInput}>
-                  <NativeUiInput />
-                </View> */}
               </View>
 
               <View>
@@ -740,7 +729,7 @@ const LayoutTwo = ({
                     textType={'medium'}
                     style={styles.txt}
                   >
-                    ADD MORE
+                    {t('createProject.addMore')}
                   </NativeUiText>
                 </Pressable>
               </View>
@@ -757,6 +746,7 @@ const LayoutThree = ({
   setProjectData,
   categories,
   publishTypes,
+  t,
 }) => {
   const [publishCategory, setPublishCategory] = useState('');
   const changeText = (e, key) => {
@@ -780,7 +770,10 @@ const LayoutThree = ({
   return (
     <>
       <ScrollView style={styles.container}>
-        <NativeUiActionSheet id="categorySheet" sheetTitle="Select A Category">
+        <NativeUiActionSheet
+          id="categorySheet"
+          sheetTitle={t('createProject.selectCategory')}
+        >
           <View style={styles.categoryBox}>
             {categories?.map((cat) => (
               <TouchableOpacity
@@ -797,7 +790,7 @@ const LayoutThree = ({
         </NativeUiActionSheet>
         <NativeUiActionSheet
           id="publishTypeSheet"
-          sheetTitle="Select An Option"
+          sheetTitle={t('createProject.selectOption')}
         >
           <View style={styles.categoryBox}>
             {publishTypes?.map((val) => (
@@ -818,7 +811,7 @@ const LayoutThree = ({
             onPress={async () => await SheetManager.show('categorySheet')}
           >
             <NativeUiText textType="medium" style={styles.categoryText}>
-              What is the category of your project
+              {t('createProject.projectCategory')}
             </NativeUiText>
             <View
               style={[styles.dropdownContainer, DefaultStyles.containerSpaced]}
@@ -826,7 +819,7 @@ const LayoutThree = ({
               <View style={styles.dropdown}>
                 <NativeUiText>
                   {projectData?.category === ''
-                    ? 'Select an option'
+                    ? t('createProject.selectOption')
                     : projectData?.category}
                 </NativeUiText>
               </View>
@@ -836,14 +829,14 @@ const LayoutThree = ({
 
           <View style={styles.input}>
             <NativeUiInput
-              label={'What tag best describe your project'}
-              placeholder={'Add a tag...'}
+              label={t('createProject.whatTagsDescribesYourProject')}
+              placeholder={t('createProject.addTag')}
             />
           </View>
 
           <View>
             <NativeUiText textType="medium" style={styles.categoryText}>
-              What publish option do you want to set for this project
+              {t('createProject.publishOption')}
             </NativeUiText>
             <TouchableOpacity
               onPress={async () => await SheetManager.show('publishTypeSheet')}
@@ -861,10 +854,7 @@ const LayoutThree = ({
               textColor={THEME.COLORS.SECONDARY_TEXT}
               style={styles.roleText}
             >
-              Think about your target audience. Should this project be visible
-              to all creators?, authenticated creators?, or do you want to
-              provide the usernames of creators this project should be visible
-              to?
+              {t('createProject.descriptionSubTitle')}
             </NativeUiText>
           </View>
         </View>

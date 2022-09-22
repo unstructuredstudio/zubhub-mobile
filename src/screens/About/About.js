@@ -1,14 +1,15 @@
-import React from "react";
-import { ScrollView, View, TouchableOpacity } from "react-native";
-import { NativeUiText, Avater } from "@components/";
-import styles from "./About.style";
-import { USER_DETAILS } from "../../data";
-import DefaultStyles from "../../constants/DefaultStyles.style";
-import * as THEME from "../../constants/theme";
-import { useNavigation } from "@react-navigation/native";
+import React from 'react';
+import { ScrollView, View, TouchableOpacity } from 'react-native';
+import { NativeUiText, Avater } from '@components/';
+import styles from './About.style';
+import DefaultStyles from '../../constants/DefaultStyles.style';
+import * as THEME from '../../constants/theme';
+import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const About = ({ user }) => {
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   return (
     <ScrollView style={styles.container}>
@@ -16,11 +17,11 @@ const About = ({ user }) => {
         <Avater
           width={67}
           height={67}
-          uri={require("@asset/avater.jpg")}
+          uri={require('@asset/avater.jpg')}
           radius={15}
         />
         <View style={styles.userDetails}>
-          <NativeUiText fontSize={THEME.FONT_SIZE.SMALL} textType={"medium"}>
+          <NativeUiText fontSize={THEME.FONT_SIZE.SMALL} textType={'medium'}>
             {user?.username}
           </NativeUiText>
           <NativeUiText
@@ -41,7 +42,7 @@ const About = ({ user }) => {
             style={styles.txt}
             fontSize={12}
             textColor={THEME.COLORS.PRIMARY_TEAL}
-            textType={"medium"}
+            textType={'medium'}
           >
             {user?.tags[0]}
           </NativeUiText>
@@ -50,44 +51,44 @@ const About = ({ user }) => {
 
       <View style={styles.cardContainer}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("UsersProjects")}
+          onPress={() => navigation.navigate('UsersProjects')}
           style={[styles.card, DefaultStyles.containerCenter]}
         >
           <NativeUiText textType="medium">{user?.projects_count} </NativeUiText>
-          <NativeUiText textType="bold">Projects </NativeUiText>
+          <NativeUiText textType="bold">{t('general.projects')} </NativeUiText>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate("Bookmark")}
+          onPress={() => navigation.navigate('Bookmark')}
           style={[styles.card, DefaultStyles.containerCenter]}
         >
-          <NativeUiText textType="bold">Bookmarks </NativeUiText>
+          <NativeUiText textType="bold">{t('general.bookmarks')} </NativeUiText>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate("UsersFollowers")}
+          onPress={() => navigation.navigate('UsersFollowers')}
           style={[styles.card, DefaultStyles.containerCenter]}
         >
           <NativeUiText textType="medium">
             {user?.followers?.length}
           </NativeUiText>
-          <NativeUiText textType="bold">Followers </NativeUiText>
+          <NativeUiText textType="bold">{t('general.followers')} </NativeUiText>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate("UsersFollowing")}
+          onPress={() => navigation.navigate('UsersFollowing')}
           style={[styles.card, DefaultStyles.containerCenter]}
         >
           <NativeUiText textType="medium">
-            {user?.following_count}{" "}
+            {user?.following_count}{' '}
           </NativeUiText>
-          <NativeUiText textType="bold">Following </NativeUiText>
+          <NativeUiText textType="bold">{t('general.following')} </NativeUiText>
         </TouchableOpacity>
       </View>
 
       <View style={styles.aboutSection}>
-        <NativeUiText fontSize={THEME.FONT_SIZE.MEDIUM} textType={"medium"}>
-          About Me
+        <NativeUiText fontSize={THEME.FONT_SIZE.MEDIUM} textType={'medium'}>
+          {t('general.aboutMe')}
         </NativeUiText>
         <NativeUiText
           style={styles.aboutText}

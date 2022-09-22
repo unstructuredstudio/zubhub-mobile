@@ -23,7 +23,46 @@
     "email": "ईमेल",
     "confirmPassword": "अपने पासवर्ड की पुष्टि करें",
     "next": "अगला",
-    "enterEmail": "अपना ईमेल दर्ज करें"
+    "enterEmail": "अपना ईमेल दर्ज करें",
+    "Okay": "ठीक",
+    "copied": "कॉपी किया गया",
+    "failed": "असफल",
+    "cancel": "रद्द करना",
+    "proceed": "आगे बढ़ना",
+    "claps": "ताली",
+    "bookmark": "बुकमार्क",
+    "bookmarks": "बुकमार्क",
+    "views": "विचारों",
+    "url": "यूआरएल",
+    "edit": "संपादन करना",
+    "delete": "मिटाना",
+    "follow": "पालन ​​करना",
+    "unfollow": "अनफ़ॉलो",
+    "description": "विवरण",
+    "materailUsed": "उपयोग किया गया सामन",
+    "category": "श्रेणी",
+    "comments": "टिप्पणियाँ",
+    "writeAComment": "टिप्पणी लिखें...",
+    "projects": "परियोजनाओं",
+    "followers": "समर्थक",
+    "following": "निम्नलिखित",
+    "aboutMe": "मेरे बारे में",
+    "reply": "जवाब दे दो",
+    "comment": "टिप्पणी",
+    "about": "के बारे में",
+    "settings": "समायोजन",
+    "myProject": "मेरी परियोजनाएं",
+    "yoursavedProjects": "आपके सहेजे गए प्रोजेक्ट",
+    "savedProjects": "सहेजे गए प्रोजेक्ट",
+    "isFollowing": "पीछा कर रहा",
+    "creator": "बनाने वाला",
+    "changeLanguage": "भाषा बदलो",
+    "logout": "लॉग आउट",
+    "logoutText": "अपने खाते से साइन आउट करें",
+    "english": "अंग्रेज़ी",
+    "hindi": "हिन्दी",
+    "toggleLanguage": "भाषा बदलो",
+    "toggle": "टॉगल"
   },
 
   "onboarding": {
@@ -61,5 +100,60 @@
     "passwordReset": "पासवर्ड रीसेट",
     "enterEmailMessage": "अपना ईमेल दर्ज करें ताकि हम आपको एक पास वर्ड रीसेट लिंक भेज सकें",
     "sendResetLink": "रीसेट लिंक भेजें"
+  },
+
+  "bottomNavigator": {
+    "home": "घर",
+    "search": "खोज",
+    "projects": "परियोजनाओं",
+    "profile": "प्रोफ़ाइल"
+  },
+
+  "projectCard": {
+    "createAccountFirst": "आइए पहले आपके लिए एक खाता बनाएं! ताकि आप यह क्रिया कर सकें",
+    "urlCopied": "प्रोजेक्ट URL को क्लिपबोर्ड पर कॉपी किया गया",
+    "failedToCopyUrl": "प्रोजेक्ट URL को क्लिपबोर्ड पर कॉपी करने में विफल",
+    "deleteProjectMessage": "प्रोजेक्ट हटाएं",
+    "deleteProjectWarning": "क्या आप वाकई इस प्रोजेक्ट को हटाना चाहते हैं आप इस क्रिया को पूर्ववत नहीं कर सकते",
+    "projectDetailTitle": "परियोजना विवरण"
+  },
+
+  "creatorsDetails": {
+    "creatorsDetails": "निर्माता विवरण"
+  },
+
+  "commentCard": {
+    "comingSoon": "जल्द आ रहा है!",
+    "comingSoonDescription": "हम इसे उपलब्ध कराने के लिए कड़ी मेहनत कर रहे हैं। हमारे अगले अपडेट के लिए बने रहें"
+  },
+
+  "searchScreen": {
+    "search": "खोज",
+    "default": "प्रोजेक्ट शीर्षक या लेखकों को खोजने का प्रयास करें"
+  },
+
+  "createProject": {
+    "title": "प्रोजेक्ट बनाएं",
+    "tellUsAboutYourProject": "हमें अपनी परियोजना के बारे में बताएं!",
+    "createProject": "प्रोजेक्ट बनाएं",
+    "nameProject": "अपने प्रोजेक्ट को नाम दें",
+    "projectName": "परियोजना का नाम",
+    "addPictures": "आइए कुछ तस्वीरें जोड़ें",
+    "dontHavePictures": "उनके पास नहीं है? इसके बजाय एक वीडियो जोड़ें!",
+    "addImages": "छवियां जोड़ें",
+    "image": "छवि",
+    "added": "जोड़ा",
+    "addVideo": "आइए एक वीडियो जोड़ें",
+    "noVideo": "ठीक है अगर आपके पास कोई वीडियो नहीं है, तो आप चित्र जोड़ सकते हैं",
+    "addVideoAction": "वीडियो जोड़ें",
+    "materialUsed": "आपने किन सामग्रियों का उपयोग किया",
+    "addMore": "अधिक जोड़ें",
+    "selectCategory": "एक श्रेणी चुनें",
+    "selectOption": "कोई विकल्प चुनें",
+    "projectCategory": "आपकी परियोजना की श्रेणी क्या है",
+    "whatTagsDescribesYourProject": "कौन सा टैग आपके प्रोजेक्ट का सबसे अच्छा वर्णन करता है",
+    "addTag": "एक टैग जोड़ना...",
+    "publishOption": "आप इस प्रोजेक्ट के लिए कौन सा प्रकाशन विकल्प सेट करना चाहते हैं?",
+    "descriptionSubTitle": "अपने लक्षित दर्शकों के बारे में सोचें। क्या यह प्रोजेक्ट सभी क्रिएटर्स को?, ऑथेंटिकेटेड क्रिएटर्स को दिखाई देना चाहिए?, या क्या आप उन क्रिएटर्स के यूजरनेम देना चाहते हैं, जिन्हें यह प्रोजेक्ट दिखाई देना चाहिए?"
   }
 }

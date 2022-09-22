@@ -13,10 +13,12 @@ import {
 } from '../../redux/actions/authAction';
 import * as THEME from '../../constants/theme';
 import { toggleFollowOnProject } from '../../redux/actions/projectsAction';
+import { useTranslation } from 'react-i18next';
 
 const UsersFollowing = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  const { t } = useTranslation();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [allFollowingList, setAllFollowingList] = useState([]);
@@ -33,8 +35,6 @@ const UsersFollowing = () => {
       })
     );
   };
-
-  console.log(user?.myFollowingList);
 
   useEffect(() => {
     if (Array.isArray(user?.myFollowingList?.results)) {
@@ -67,7 +67,7 @@ const UsersFollowing = () => {
     <View style={styles.container}>
       <NativeUiHeader subScreen={true} sectionTitle={'People I follow'} />
       <NativeUiText textType="bold" style={styles.title} fontSize={27}>
-        Creator {user?.user?.username} is following
+        {t('general.creator')} {user?.user?.username} {t('general.isFollowing')}
       </NativeUiText>
       <FlatList
         contentContainerStyle={styles.list}
@@ -93,7 +93,7 @@ const UsersFollowing = () => {
                 </NativeUiText>
               </TouchableOpacity>
               <NativeUiText textType="bold" fontSize={14} style={styles.name}>
-                {item?.username}{' '}
+                {item?.username}
               </NativeUiText>
             </View>
           </View>

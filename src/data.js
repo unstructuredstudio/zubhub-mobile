@@ -1,26 +1,26 @@
 export const SETTINGS_DATA = [
   {
     iconName: 'language',
-    title: 'Change Language',
+    title: 'general.changeLanguage',
     subTitle: 'English',
   },
 
   {
     iconName: 'logout',
-    title: 'Logout',
-    subTitle: 'Sign out from your account',
+    title: 'general.logout',
+    subTitle: 'general.logoutText',
   },
 ];
 
 export const TAB_DATA_SET = [
   {
-    title: 'About',
+    title: 'general.about',
   },
   {
-    title: 'Comments',
+    title: 'general.comments',
   },
   {
-    title: 'Settings',
+    title: 'general.settings',
   },
 ];
 

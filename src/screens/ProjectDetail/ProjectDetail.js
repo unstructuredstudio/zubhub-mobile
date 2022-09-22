@@ -26,7 +26,7 @@ import * as THEME from '../../constants/theme';
 import { FloatingAction } from 'react-native-floating-action';
 import Modal from 'react-native-modal';
 import { WebView } from 'react-native-webview';
-import { isCloudinaryVideo, isGdriveORVimeoORYoutube } from './ProjectScript';
+import { isGdriveORVimeoORYoutube } from './ProjectScript';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   getProjectDetails,
@@ -43,16 +43,15 @@ import { useNavigation } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
 import { buildVideoThumbnailURL, dFormatter } from '../../utils/script';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { useTranslation } from 'react-i18next';
 
 const ProjectDetail = ({ route }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const projects = useSelector(
-    (state) => state?.projects?.all_projects?.results
-  );
 
-  const videoRef = React.useRef(null);
+  const { t } = useTranslation();
+
   const [selectedImage, setSelectedImage] = useState({
     imageUri: '',
     showModal: false,
@@ -132,34 +131,30 @@ const ProjectDetail = ({ route }) => {
   const copyToCLipboard = async () => {
     try {
       await Clipboard.setStringAsync('play store link');
-      Alert.alert('Copied!', 'Google playstore URL copied to clipboard', [
+      Alert.alert(`${t('general.copied')}!`, `${t('projectCard.urlCopied')}`, [
         {
-          text: 'Okay',
+          text: t('general.Okay'),
         },
       ]);
     } catch (error) {
-      Alert.alert(
-        'Falied!',
-        'Failed to copy Google playstore URL to clipboard ',
-        [
-          {
-            text: 'Okay',
-          },
-        ]
-      );
+      Alert.alert(t('general.Okay'), t('projectCard.failedToCopyUrl'), [
+        {
+          text: t('general.Okay'),
+        },
+      ]);
     }
   };
 
   const onDelete = () => {
     Alert.alert(
-      'Delete Project!',
-      `Are you sure you want to delete this project You can't undo this action!! `,
+      `${'projectCard.deleteProjectMessage'}!`,
+      `${t('projectCard.deleteProjectWarning')}!!`,
       [
         {
-          text: 'Cancel',
+          text: t('general.cancel'),
         },
         {
-          text: 'Proceed',
+          text: t('general.proceed'),
           onPress: () =>
             deleteAProject({
               id: projectDetails.id,
@@ -173,7 +168,7 @@ const ProjectDetail = ({ route }) => {
 
   const actions = [
     {
-      text: `Claps: ${projectDetails?.likes?.length}`,
+      text: `${t('general.claps')}: ${projectDetails?.likes?.length}`,
       icon: projectDetails?.likes?.includes(user?.user?.id)
         ? require('../images/clap.png')
         : require('../images/clap.png'),
@@ -182,7 +177,7 @@ const ProjectDetail = ({ route }) => {
     },
 
     {
-      text: 'Bookmark',
+      text: t('general.bookmark'),
       icon: projectDetails?.saved_by?.includes(user?.user?.id)
         ? require('../images/bookmarkFill.png')
         : require('../images/bookmark.png'),
@@ -191,7 +186,7 @@ const ProjectDetail = ({ route }) => {
     },
 
     {
-      text: `Views: ${projectDetails?.views_count}`,
+      text: `${t('general.views')}: ${projectDetails?.views_count}`,
       icon: require('../images/eye.png'),
       name: 'views',
       position: 3,
@@ -209,7 +204,7 @@ const ProjectDetail = ({ route }) => {
       position: 5,
     },
     {
-      text: 'URL',
+      text: t('general.url'),
       icon: require('../images/link.png'),
       name: 'url',
       position: 6,
@@ -252,10 +247,12 @@ const ProjectDetail = ({ route }) => {
     });
   };
 
-  console.log(projectDetails);
   return (
     <SafeAreaView style={styles.container}>
-      <NativeUiHeader subScreen={true} sectionTitle={'Project Details'} />
+      <NativeUiHeader
+        subScreen={true}
+        sectionTitle={t('projectCard.projectDetailTitle')}
+      />
       <Modal
         isVisible={selectedImage.showModal}
         onBackdropPress={() => {
@@ -325,7 +322,7 @@ const ProjectDetail = ({ route }) => {
                             textColor={THEME.COLORS.WHITE}
                             textType={'medium'}
                           >
-                            Edit
+                            {t('general.edit')}
                           </NativeUiText>
                         </View>
                         <TouchableOpacity
@@ -337,7 +334,7 @@ const ProjectDetail = ({ route }) => {
                             textType={'medium'}
                             style={styles.authorDetails}
                           >
-                            Delete
+                            {t('general.delete')}
                           </NativeUiText>
                         </TouchableOpacity>
                       </View>
@@ -358,13 +355,13 @@ const ProjectDetail = ({ route }) => {
                           >
                             {followState !== null
                               ? followState?.followers?.includes(user?.user?.id)
-                                ? 'UNFOLLOW'
-                                : 'FOLLOW'
+                                ? t('general.follow')
+                                : t('general.unfollow')
                               : projectDetails?.creator?.followers?.includes(
                                   user?.user?.id
                                 )
-                              ? 'UNFOLLOW'
-                              : 'FOLLOW'}
+                              ? t('general.follow')
+                              : t('general.unfollow')}
                           </NativeUiText>
                         </TouchableOpacity>
                       </View>
@@ -491,7 +488,7 @@ const ProjectDetail = ({ route }) => {
                     textType={'medium'}
                     style={styles.userProfile}
                   >
-                    Description
+                    {t('general.description')}
                   </NativeUiText>
 
                   <View>
@@ -529,7 +526,7 @@ const ProjectDetail = ({ route }) => {
                     textType={'medium'}
                     style={styles.userProfile}
                   >
-                    Materials Used
+                    {t('general.materailUsed')}
                   </NativeUiText>
 
                   <View style={styles.materialPrimary}>
@@ -555,7 +552,7 @@ const ProjectDetail = ({ route }) => {
                     textType={'medium'}
                     style={styles.userProfile}
                   >
-                    Catergory
+                    {t('general.category')}
                   </NativeUiText>
 
                   <NativeUiText
@@ -569,7 +566,7 @@ const ProjectDetail = ({ route }) => {
 
                 <View style={styles.userProfile}>
                   <NativeUiText fontSize={21} textType={'bold'}>
-                    {projectDetails?.comments?.length} Comments
+                    {projectDetails?.comments?.length} {t('general.comments')}
                   </NativeUiText>
                   <View style={[styles.commentBox]}>
                     <Avater
@@ -584,7 +581,7 @@ const ProjectDetail = ({ route }) => {
                         onChangeText={(txt) => handleCommentChange('text', txt)}
                         multiline={true}
                         style={styles.input}
-                        placeholder="Write a comment....."
+                        placeholder={t('general.writeAComment')}
                       />
                     </View>
                     {showCommentSubmitButton && (
