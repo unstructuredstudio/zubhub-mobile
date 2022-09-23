@@ -59,6 +59,7 @@ const CreatorsProfile = ({ route }) => {
       ...commentObj,
       token: user?.token,
       id: usersInfo?.id,
+      t: t,
     });
     result.then((res) => {
       setUsersInfo({

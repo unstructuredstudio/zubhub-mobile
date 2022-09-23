@@ -30,7 +30,7 @@ const Setting = () => {
       case 'general.changeLanguage':
         return SheetManager.show('languageSheet');
       case 'general.logout':
-        return dispatch(logoutUser(user?.token, navigation));
+        return dispatch(logoutUser(user?.token, navigation, t));
     }
   };
 

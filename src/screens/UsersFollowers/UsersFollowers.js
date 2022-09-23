@@ -29,7 +29,11 @@ const UsersFollowers = () => {
 
   const fetchAllFollowers = () => {
     dispatch(
-      getAUsersFollowers({ page: currentPage, username: user?.user?.username })
+      getAUsersFollowers({
+        page: currentPage,
+        username: user?.user?.username,
+        t: t,
+      })
     );
   };
 

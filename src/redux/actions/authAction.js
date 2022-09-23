@@ -71,20 +71,25 @@ export const loginUser = (userData, setVisible, setLoading) => (dispatch) => {
  *
  * @todo - describe function's signature
  */
-export const loadUser = (token) => (dispatch) => {
+export const loadUser = (token, navigation, t) => (dispatch) => {
   let response = getAuthUser(token)
     .then((user) => {
-      dispatch({
-        type: SET_AUTH_USER,
-        payload: { user: user, token: token },
-      });
-      return true;
+      if (!user.id) {
+        logoutUser(token, navigation, t);
+      } else {
+        dispatch({
+          type: SET_AUTH_USER,
+          payload: { user: user, token: token },
+        });
+        return true;
+      }
     })
     .catch((err) => {
-      // CustomToasts({
-      //   type: "error",
-      //   text: "Failed to load user",
-      // });
+      console.log(err);
+      CustomToasts({
+        type: 'error',
+        description: t('general.smagError'),
+      });
     });
   return response;
 };
@@ -132,15 +137,16 @@ export const getAUsersFollowers = (args) => (dispatch) => {
     })
     .catch((error) => {
       if (error.message.startsWith('Unexpected')) {
-        console.log('error in getting followes');
-
-        // toast.warning(args.t("savedProjects.errors.unexpected"));
+        CustomToasts({
+          type: 'error',
+          description: args.t('general.smagError'),
+        });
       } else {
-        console.log(error, 'error in getting followes');
-
-        // toast.warning(error.message);
+        CustomToasts({
+          type: 'error',
+          description: error.message,
+        });
       }
-      // return { loading: false };
     });
   return response;
 };
@@ -169,22 +175,24 @@ export const getAUsersFollowingList = (args) => (dispatch) => {
     })
     .catch((error) => {
       if (error.message.startsWith('Unexpected')) {
-        console.log('error in getting bookmarks');
-
-        // toast.warning(args.t("savedProjects.errors.unexpected"));
+        CustomToasts({
+          type: 'error',
+          description: args.t('general.smagError'),
+        });
       } else {
         console.log(error, 'error in getting bookmarks');
-
-        // toast.warning(error.message);
+        CustomToasts({
+          type: 'error',
+          description: error.message,
+        });
       }
-      // return { loading: false };
     });
   return response;
 };
 
 /**
  * @function addComment
- * @author Raymond Ndibe <ndiberaymond1@gmail.com>
+ * @author Alice Ndeh <alicendeh@gmail.com>
  *
  * @todo - describe function's signature
  */
@@ -202,14 +210,16 @@ export const addComment = (args) => {
     })
     .catch((error) => {
       if (error.message.startsWith('Unexpected')) {
-        console.log('err', error);
-
-        // toast.warning(args.t('comments.errors.unexpected'));
+        CustomToasts({
+          type: 'error',
+          description: args.t('general.smagError'),
+        });
       } else {
-        console.log('err', error);
-        // toast.warning(error.message);
+        CustomToasts({
+          type: 'error',
+          description: error.message,
+        });
       }
-      // return { loading: false };
     });
 
   return response;
@@ -229,7 +239,7 @@ export const clearUsersInfo = () => (dispatch) => {
  *
  * @todo - describe function's signature
  */
-export const logoutUser = (token, navigation) => (dispatch) => {
+export const logoutUser = (token, navigation, t) => (dispatch) => {
   let response = logout(token)
     .then(async (res) => {
       if (res.status === 200) {
@@ -247,8 +257,18 @@ export const logoutUser = (token, navigation) => (dispatch) => {
         });
 
         navigation.navigate('Login');
+      } else {
+        CustomToasts({
+          type: 'error',
+          description: t('general.logoutFailed'),
+        });
       }
     })
-    .then(() => console.log('error'));
+    .catch(() => {
+      CustomToasts({
+        type: 'error',
+        description: t('general.logoutFailed'),
+      });
+    });
   return response;
 };

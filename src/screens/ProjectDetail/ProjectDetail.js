@@ -70,7 +70,7 @@ const ProjectDetail = ({ route }) => {
 
   useEffect(() => {
     setLoading(true);
-    let result = dispatch(getProjectDetails(item?.id, setLoading));
+    let result = dispatch(getProjectDetails(item?.id, setLoading, t));
     result.then((res) => {
       setprojectDetails(res);
     });
@@ -88,6 +88,7 @@ const ProjectDetail = ({ route }) => {
       toggleFollowOnProject({
         id: projectDetails?.creator?.id,
         token: user?.token,
+        t: t,
       })
     );
     result.then((res) => {
@@ -109,7 +110,7 @@ const ProjectDetail = ({ route }) => {
 
   const onClap = () => {
     let result = dispatch(
-      toggleLikeOnProject({ id: projectDetails.id, token: user?.token })
+      toggleLikeOnProject({ id: projectDetails.id, token: user?.token, t: t })
     );
     result.then((res) => {
       setprojectDetails({ ...projectDetails, likes: res?.project?.likes });
@@ -118,7 +119,7 @@ const ProjectDetail = ({ route }) => {
 
   const onSave = () => {
     let result = dispatch(
-      toggleSaveOnProject({ id: projectDetails.id, token: user?.token })
+      toggleSaveOnProject({ id: projectDetails.id, token: user?.token, t: t })
     );
     result.then((res) => {
       setprojectDetails({
@@ -147,7 +148,7 @@ const ProjectDetail = ({ route }) => {
 
   const onDelete = () => {
     Alert.alert(
-      `${'projectCard.deleteProjectMessage'}!`,
+      `${t('projectCard.deleteProjectMessage')}!`,
       `${t('projectCard.deleteProjectWarning')}!!`,
       [
         {
@@ -160,6 +161,7 @@ const ProjectDetail = ({ route }) => {
               id: projectDetails.id,
               token: user?.token,
               navigation: navigation,
+              t: t,
             }).then((res) => res && navigation.navigate('UsersProjects')),
         },
       ]
@@ -238,6 +240,7 @@ const ProjectDetail = ({ route }) => {
       ...commentObj,
       token: user?.token,
       id: projectDetails?.id,
+      t: t,
     });
     result.then((res) => {
       setprojectDetails({

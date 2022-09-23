@@ -40,15 +40,15 @@ export const getAllProjects = (setLoading, args) => (dispatch) => {
     })
     .catch((error) => {
       if (error.message.startsWith('Unexpected')) {
-        // CustomToasts({
-        //   type: error,
-        //   description: "oops error occured",
-        // });
+        CustomToasts({
+          type: 'error',
+          description: args.t('general.smagError'),
+        });
       } else {
-        // CustomToasts({
-        //   type: error,
-        //   description: error.message,
-        // });
+        CustomToasts({
+          type: 'error',
+          description: error.message,
+        });
       }
       setLoading(false);
     });
@@ -56,7 +56,7 @@ export const getAllProjects = (setLoading, args) => (dispatch) => {
 };
 
 //Get project details
-export const getProjectDetails = (id, setLoading) => (dispatch) => {
+export const getProjectDetails = (id, setLoading, t) => (dispatch) => {
   let response = getAProjectsDetail(id)
     .then((res) => {
       setLoading(false);
@@ -67,15 +67,15 @@ export const getProjectDetails = (id, setLoading) => (dispatch) => {
     .catch((error) => {
       console.log(error, 'error in getting all projects');
       if (error.message.startsWith('Unexpected')) {
-        // CustomToasts({
-        //   type: error,
-        //   description: args.t("projects.errors.unexpected"),
-        // });
+        CustomToasts({
+          type: 'error',
+          description: t('general.smagError'),
+        });
       } else {
-        // CustomToasts({
-        //   type: error,
-        //   description: error.message,
-        // });
+        CustomToasts({
+          type: 'error',
+          description: error.message,
+        });
       }
       setLoading(false);
     });
@@ -104,12 +104,15 @@ export const toggleLikeOnProject = (args) => {
       })
       .catch((error) => {
         if (error.message.startsWith('Unexpected')) {
-          console.log('error in toggling lin=ke on project');
-          // toast.warning(args.t("projectDetails.errors.unexpected"));
+          CustomToasts({
+            type: 'error',
+            description: args.t('general.smagError'),
+          });
         } else {
-          console.log('error in toggling lin=ke on project');
-
-          // toast.warning(error.message);
+          CustomToasts({
+            type: 'error',
+            description: error.message,
+          });
         }
 
         return { loading: false };
@@ -138,13 +141,15 @@ export const toggleSaveOnProject = (args) => {
       })
       .catch((error) => {
         if (error.message.startsWith('Unexpected')) {
-          console.log('error in saving project');
-
-          // toast.warning(args.t("projects.errors.unexpected"));
+          CustomToasts({
+            type: 'error',
+            description: args.t('general.smagError'),
+          });
         } else {
-          console.log('error in saving project');
-
-          // toast.warning(error.message);
+          CustomToasts({
+            type: 'error',
+            description: error.message,
+          });
         }
         return { loading: false };
       });
@@ -161,7 +166,6 @@ export const getSavedProjects = (args) => (dispatch) => {
   let response = getSaved(args)
     .then((res) => {
       if (Array.isArray(res.results)) {
-        // console.log(res);
         dispatch({
           type: SET_PROJECTS,
           payload: { bookmarks: res },
@@ -175,15 +179,16 @@ export const getSavedProjects = (args) => (dispatch) => {
     })
     .catch((error) => {
       if (error.message.startsWith('Unexpected')) {
-        console.log('error in getting bookmarks');
-
-        // toast.warning(args.t("savedProjects.errors.unexpected"));
+        CustomToasts({
+          type: 'error',
+          description: args.t('general.smagError'),
+        });
       } else {
-        console.log(error, 'error in getting bookmarks');
-
-        // toast.warning(error.message);
+        CustomToasts({
+          type: 'error',
+          description: error.message,
+        });
       }
-      // return { loading: false };
     });
   return response;
 };
@@ -198,7 +203,6 @@ export const getAUsersProject = (args) => (dispatch) => {
   let response = getUserProjects(args)
     .then((res) => {
       if (Array.isArray(res.results)) {
-        // console.log(res);
         dispatch({
           type: SET_PROJECTS,
           payload: { myProjects: res },
@@ -212,15 +216,16 @@ export const getAUsersProject = (args) => (dispatch) => {
     })
     .catch((error) => {
       if (error.message.startsWith('Unexpected')) {
-        console.log('error in getting bookmarks');
-
-        // toast.warning(args.t("savedProjects.errors.unexpected"));
+        CustomToasts({
+          type: 'error',
+          description: args.t('general.smagError'),
+        });
       } else {
-        console.log(error, 'error in getting bookmarks');
-
-        // toast.warning(error.message);
+        CustomToasts({
+          type: 'error',
+          description: error.message,
+        });
       }
-      // return { loading: false };
     });
   return response;
 };
@@ -235,7 +240,6 @@ export const toggleFollowOnProject = (args) => {
   return () => {
     return toggleFollow(args)
       .then((res) => {
-        // console.log(res, "response ogg");
         if (res.bio) {
           return { creatorsInfo: res };
         } else {
@@ -247,12 +251,15 @@ export const toggleFollowOnProject = (args) => {
       })
       .catch((error) => {
         if (error.message.startsWith('Unexpected')) {
-          console.log('error in toggling like on project');
-          // toast.warning(args.t("projectDetails.errors.unexpected"));
+          CustomToasts({
+            type: 'error',
+            description: args.t('general.smagError'),
+          });
         } else {
-          console.log('error in toggling like on project');
-
-          // toast.warning(error.message);
+          CustomToasts({
+            type: 'error',
+            description: error.message,
+          });
         }
 
         return { loading: false };
@@ -281,11 +288,15 @@ export const getAllCategories = (args) => {
       })
       .catch((error) => {
         if (error.message.startsWith('Unexpected')) {
-          // toast.warning(args.t('projects.errors.unexpected'));
-          console.log(err, 'in getting categories');
+          CustomToasts({
+            type: 'error',
+            description: args.t('general.smagError'),
+          });
         } else {
-          // toast.warning(error.message);
-          console.log(err, 'in getting categories');
+          CustomToasts({
+            type: 'error',
+            description: error.message,
+          });
         }
         return { loading: false };
       });
@@ -347,9 +358,15 @@ export const getHeroProperties = () => {
       })
       .catch((error) => {
         if (error.message.startsWith('Unexpected')) {
-          console.log('error in getting hero');
+          CustomToasts({
+            type: 'error',
+            description: t('general.smagError'),
+          });
         } else {
-          console.log('error in getting hero');
+          CustomToasts({
+            type: 'error',
+            description: error.message,
+          });
         }
         return { loading: false };
       });
@@ -422,9 +439,11 @@ export const UploadToLocal = (args) => {
       }
     })
 
-    .catch((err) => {
-      console.log(err, 'ERROR IN UPLOADING TO LOCAL');
-      // toast.warning(args.t('createProject.errors.unexpected'));
+    .catch((error) => {
+      CustomToasts({
+        type: 'error',
+        description: error.message,
+      });
     });
   // };
   return result;
@@ -464,8 +483,11 @@ export const uploadImageToLocal = (args) => {
         return { image_url: secure_url, public_id };
       }
     })
-    .catch((err) => {
-      console.log(err, 'ERROR IN UPLOADING TO LOCAL');
+    .catch((error) => {
+      CustomToasts({
+        type: 'error',
+        description: error.message,
+      });
     });
 };
 
@@ -514,7 +536,11 @@ export const uploadImageToDO = (image, state, props, handleSetState) => {
       .send((err, data) => {
         if (err) {
           if (err.message.startsWith('Unexpected')) {
-            const error = props.t('createProject.errors.unexpected');
+            const error = 'Error in uploading image';
+            CustomToasts({
+              type: 'error',
+              description: 'Error in uploading image',
+            });
             reject(error);
           } else {
             reject(err.message);
@@ -587,7 +613,12 @@ export const uploadVideoToLocal = (args) => {
         return { secure_url: res.secure_url };
       }
     })
-    .catch((err) => {
+    .catch((error) => {
+      CustomToasts({
+        type: 'error',
+        description: error.message,
+      });
+
       console.log(err, 'ERROR IN UPLOADING TO LOCAL');
     });
 };
@@ -676,10 +707,16 @@ export const deleteAProject = (args) => {
   let response = deleteProject({ token: args.token, id: args.id }).then(
     (res) => {
       if (res.detail !== 'ok') {
+        CustomToasts({
+          type: 'error',
+          description: args.t('projectCard.failedToDeleteProject'),
+        });
         throw new Error(res.detail);
       } else {
-        // toast.success(args.t('projectDetails.deleteProjectToastSuccess'));
-        // navigation.navigate('UsersProjects');
+        CustomToasts({
+          type: 'success',
+          description: args.t('projectCard.deleteProjectToastSuccess'),
+        });
         return true;
       }
     }
@@ -710,12 +747,17 @@ export const addAComment = (args) => {
     })
     .catch((error) => {
       console.log(error);
-      // if (error.message.startsWith('Unexpected')) {
-      //   toast.warning(args.t('comments.errors.unexpected'));
-      // } else {
-      //   toast.warning(error.message);
-      // }
-      // return { loading: false };
+      if (error.message.startsWith('Unexpected')) {
+        CustomToasts({
+          type: 'error',
+          description: args.t('general.smagError'),
+        });
+      } else {
+        CustomToasts({
+          type: 'error',
+          description: error.message,
+        });
+      }
     });
 
   return response;

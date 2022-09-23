@@ -35,7 +35,7 @@ const ProjectCard = ({ item, token }) => {
   };
   const onClap = () => {
     let result = dispatch(
-      toggleLikeOnProject({ id: cardItem.id, token: user?.token })
+      toggleLikeOnProject({ id: cardItem.id, token: user?.token, t: t })
     );
     result.then((res) => {
       setCardItem({ ...cardItem, likes: res?.project?.likes });
@@ -44,7 +44,7 @@ const ProjectCard = ({ item, token }) => {
 
   const onSave = () => {
     let result = dispatch(
-      toggleSaveOnProject({ id: cardItem.id, token: user?.token })
+      toggleSaveOnProject({ id: cardItem.id, token: user?.token, t: t })
     );
     result.then((res) => {
       setCardItem({ ...cardItem, saved_by: res?.project?.saved_by });

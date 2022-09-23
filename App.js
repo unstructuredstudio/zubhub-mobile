@@ -5,8 +5,9 @@ import * as THEME from './src/constants/theme';
 import Constants from 'expo-constants';
 import store from './src/redux/store';
 import { Provider } from 'react-redux';
-import Toast from 'react-native-toast-message';
+import Toast, { ErrorToast } from 'react-native-toast-message';
 import './src/locales/i18n.config';
+import { NativeUiText, ToastUi } from '@components/';
 
 const App = () => {
   return (
@@ -15,7 +16,7 @@ const App = () => {
         <StatusBar backgroundColor={THEME.COLORS.PRIMARY_RED} />
         <Navigation />
       </Provider>
-      <Toast />
+      <Toast config={toastConfig} />
     </View>
   );
 };
@@ -30,3 +31,7 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
+const toastConfig = {
+  error: ({ text2 }) => <ToastUi text2={text2} />,
+};

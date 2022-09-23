@@ -59,7 +59,7 @@ const Projects = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    dispatch(getAllCategories()).then((category) =>
+    dispatch(getAllCategories({ t: t })).then((category) =>
       setCategories(category?.categories)
     );
     let publishArray = buildPublishTypes(

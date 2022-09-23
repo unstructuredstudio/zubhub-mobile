@@ -35,6 +35,7 @@ const UsersProjects = ({ route }) => {
         username: route.params
           ? route.params.data?.username
           : user?.user?.username,
+        t: t,
       })
     );
   };

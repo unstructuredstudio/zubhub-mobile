@@ -32,6 +32,7 @@ const UsersFollowing = () => {
       getAUsersFollowingList({
         page: currentPage,
         username: user?.user?.username,
+        t: t,
       })
     );
   };
@@ -56,6 +57,7 @@ const UsersFollowing = () => {
       toggleFollowOnProject({
         id: id,
         token: user?.token,
+        t: t,
       })
     );
     result.then(() => {

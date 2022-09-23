@@ -26,7 +26,7 @@ const Bookmark = () => {
   }, [currentPage]);
 
   const fetchAllProjects = () => {
-    dispatch(getSavedProjects({ page: currentPage, token: user?.token }));
+    dispatch(getSavedProjects({ page: currentPage, token: user?.token, t: t }));
   };
 
   useEffect(() => {

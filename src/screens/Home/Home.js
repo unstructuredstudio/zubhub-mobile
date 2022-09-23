@@ -19,7 +19,7 @@ import { loadUser } from '../../redux/actions/authAction';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TOKEN } from '../../utils/storageKeys';
 import { HEIGHT } from '../../../src/constants/theme';
-import { RESET } from '../../redux/types/index';
+import { useNavigation } from '@react-navigation/native';
 
 const Home = () => {
   const { t } = useTranslation();
@@ -31,6 +31,7 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [allProjects, setAllProjects] = useState([]);
   const [token, setToken] = useState(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     loadUserData();
@@ -43,7 +44,7 @@ const Home = () => {
 
   const loadUserData = async () => {
     setToken(await AsyncStorage.getItem(TOKEN));
-    dispatch(loadUser(await AsyncStorage.getItem(TOKEN)));
+    dispatch(loadUser(await AsyncStorage.getItem(TOKEN), navigation, t));
   };
 
   const fetchAllProjects = () => {
@@ -52,6 +53,7 @@ const Home = () => {
       getAllProjects(setLoading, {
         page: currentPage,
         token: user?.token,
+        t: t,
       })
     );
   };

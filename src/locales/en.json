@@ -62,7 +62,8 @@
     "english": "English",
     "hindi": "Hindi",
     "toggleLanguage": "Change Language",
-    "toggle": "Toggle"
+    "toggle": "Toggle",
+    "logoutFailed": "Hmm..seems like an occured while signing you out. Please try again"
   },
 
   "onboarding": {
@@ -115,7 +116,9 @@
     "failedToCopyUrl": "Failed to copy Project URL to clipboard",
     "deleteProjectMessage": "Delete Project",
     "deleteProjectWarning": "Are you sure you want to delete this project You can't undo this action",
-    "projectDetailTitle": "Project Details"
+    "projectDetailTitle": "Project Details",
+    "deleteProjectToastSuccess": "Your project was deleted successfully!",
+    "failedToDeleteProject": "Your project was not deleted successfully. Please try again!"
   },
 
   "creatorsDetails": {

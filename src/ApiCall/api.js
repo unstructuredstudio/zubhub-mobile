@@ -444,6 +444,5 @@ export const addProfileComment = ({ id, text, token, parent_id }) => {
 export const logout = (token) => {
   const url = '/rest-auth/logout/';
   const method = 'POST';
-  return request({ url, method, token });
-  // .then((res) => res.json());
+  return request({ url, method, token }).then((res) => res.json());
 };

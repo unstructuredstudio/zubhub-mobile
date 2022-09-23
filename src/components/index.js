@@ -12,6 +12,7 @@ import NativeUiModal from './NativeUiModal/NativeUiModal';
 import ErrorCard from './ErrorCard/ErrorCard';
 import NativeUiActivityIndicator from './NativeUiActivityIndicator';
 import NativeUiCardSkeleton from './NativeUiCardSkeleton/NativeUiCardSkeleton';
+import ToastUi from './CustomToasts/ToastUi';
 
 export {
   NativeUiText,
@@ -28,4 +29,5 @@ export {
   ErrorCard,
   NativeUiActivityIndicator,
   NativeUiCardSkeleton,
+  ToastUi,
 };
