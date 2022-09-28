@@ -5,9 +5,16 @@ import Search from './Search/Search';
 import Projects from './Projects/Projects';
 import Profile from './Profile/Profile';
 import ForgetPassword from './ForgetPassword/ForgetPassword';
+import ProjectDetail from './ProjectDetail/ProjectDetail';
 import About from './About/About';
 import Comments from './Comments/Comments';
 import Setting from './Setting/Setting';
+import Bookmark from './Bookmark/Bookmark';
+import UsersProjects from './UsersProjects/UsersProjects';
+import UsersFollowers from './UsersFollowers/UsersFollowers';
+import UsersFollowing from './UsersFollowing/UsersFollowing';
+import Onboarding from './Onboarding/Onboarding';
+import CreatorsProfile from './CreatorsProfile/CreatorsProfile';
 
 export {
   Home,
@@ -17,7 +24,14 @@ export {
   Projects,
   Profile,
   ForgetPassword,
+  ProjectDetail,
   About,
   Comments,
   Setting,
+  Bookmark,
+  UsersProjects,
+  UsersFollowers,
+  UsersFollowing,
+  Onboarding,
+  CreatorsProfile,
 };

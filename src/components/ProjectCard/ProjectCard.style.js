@@ -21,10 +21,17 @@ const style = StyleSheet.create({
     height: 188,
   },
 
+  clap: {
+    width: 20,
+    height: 20,
+  },
+
   image: {
     width: '100%',
     borderTopRightRadius: 15,
     borderTopLeftRadius: 15,
+    height: 188,
+    backgroundColor: THEME.COLORS.PRIMARY_YELLOW,
   },
 
   redContainer: {
@@ -42,9 +49,10 @@ const style = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: THEME.COLORS.PRIMARY_RED,
-    width: 40,
+    // width: 40,
     height: 30,
     borderRadius: 20,
+    paddingHorizontal: 7,
   },
 
   iconContainer: {
@@ -81,6 +89,7 @@ const style = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 50,
+    backgroundColor: THEME.COLORS.WHITE,
   },
 
   textContainer: {
@@ -109,6 +118,25 @@ const style = StyleSheet.create({
 
   space: {
     marginTop: 22,
+  },
+
+  role: {
+    textTransform: 'uppercase',
+  },
+
+  videoIcon: {
+    position: 'absolute',
+    top: 50,
+
+    alignSelf: 'center',
+  },
+
+  image: {
+    width: '100%',
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
+    height: 188,
+    backgroundColor: THEME.COLORS.PRIMARY_YELLOW,
   },
 });
 

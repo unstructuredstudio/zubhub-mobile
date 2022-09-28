@@ -1,16 +1,23 @@
-import { View, Text } from 'react-native';
+import { View, Image, TouchableOpacity, Alert } from 'react-native';
 import React from 'react';
 import { NativeUiText, Avater } from '@components/';
 import Entypo from 'react-native-vector-icons/Entypo';
 import * as THEME from '../../constants/theme';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import styles from './CommentCard.style';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const CommentCard = ({ authorName, commentTime, commentBody }) => {
+  const user = useSelector((state) => state.user);
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
       <View style={DefaultStyles.containerRow}>
-        <Avater width={40} height={40} uri={require('@asset/avater.jpg')} />
+        <View style={styles.avaterContainer}>
+          <Image source={{ uri: user?.user?.avatar }} style={styles.avater} />
+        </View>
+
         <View style={styles.authorsDretails}>
           <NativeUiText textType="medium"> {authorName} </NativeUiText>
           <NativeUiText
@@ -29,16 +36,24 @@ const CommentCard = ({ authorName, commentTime, commentBody }) => {
         </NativeUiText>
       </View>
 
-      <View style={[DefaultStyles.containerRow, styles.txt]}>
+      <TouchableOpacity
+        onPress={() => {
+          Alert.alert(
+            t('commentCard.comingSoon'),
+            t('commentCard.comingSoonDescription')
+          );
+        }}
+        style={[DefaultStyles.containerRow, styles.txt]}
+      >
         <NativeUiText
           textColor={THEME.COLORS.PRIMARY_TEAL}
           fontSize={THEME.FONT_SIZE.SMALL}
           textType={'medium'}
         >
-          REPLY
+          {t('general.reply')}
         </NativeUiText>
         <Entypo name="reply" size={18} color={THEME.COLORS.PRIMARY_TEAL} />
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };

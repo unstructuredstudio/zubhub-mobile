@@ -1,9 +1,11 @@
-import React from 'react';
-import { View, TextInput, Text, TextStyle, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, TouchableOpacity } from 'react-native';
 import { NativeUiText } from '../../components';
 import styles from './NativeUiInput.style';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import * as THEME from '../../constants/theme';
+import Entypo from 'react-native-vector-icons/Entypo';
+import { useTranslation } from 'react-i18next';
 
 const NativeUiInput = ({
   label,
@@ -18,6 +20,9 @@ const NativeUiInput = ({
   children,
   width,
   multiline,
+  error,
+  onBlur,
+  password,
 }) => {
   const inputType = email
     ? 'email-address'
@@ -26,6 +31,9 @@ const NativeUiInput = ({
     : phone
     ? 'phone-pad'
     : 'default';
+  const [showPassword, setShowPassword] = useState(true);
+  const { t } = useTranslation();
+
   return (
     <View>
       <View>
@@ -45,12 +53,9 @@ const NativeUiInput = ({
           },
         ]}
       >
-        <View
-          style={{
-            flex: 1,
-          }}
-        >
+        <View style={styles(labelColor).itemView}>
           <TextInput
+            onBlur={onBlur}
             keyboardType={inputType}
             onChangeText={onChangeText}
             autoCapitalize={'none'}
@@ -58,7 +63,20 @@ const NativeUiInput = ({
             placeholderTextColor={placeholderTextColor && placeholderTextColor}
             style={[styles(labelColor).textInputStyle]}
             multiline={multiline}
+            secureTextEntry={password && showPassword && true}
           />
+          {password && (
+            <TouchableOpacity
+              style={DefaultStyles.containerCenter}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <Entypo
+                name={showPassword ? 'eye-with-line' : 'eye'}
+                color={THEME.COLORS.SECONDARY_TEXT}
+                size={20}
+              />
+            </TouchableOpacity>
+          )}
         </View>
         <View>
           {children && (
@@ -73,6 +91,14 @@ const NativeUiInput = ({
           style={styles(labelColor).smallTextStyle}
         >
           {bottomText}
+        </NativeUiText>
+      )}
+      {error && (
+        <NativeUiText
+          textColor={THEME.COLORS.PRIMARY_RED}
+          style={styles(labelColor).errorText}
+        >
+          {t(error)}
         </NativeUiText>
       )}
     </View>

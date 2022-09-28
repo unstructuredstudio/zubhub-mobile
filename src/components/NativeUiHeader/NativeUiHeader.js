@@ -1,4 +1,4 @@
-import { View, Image } from 'react-native';
+import { View, Image, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { NativeUiText, Avater } from '@components/';
 import styles from './NativeUiHeader.style';
@@ -6,16 +6,15 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import * as THEME from '../../constants/theme';
 import DefaultStyles from '../../constants/DefaultStyles.style';
 import { useNavigation } from '@react-navigation/native';
-import RNBounceable from '@freakycoder/react-native-bounceable';
 
-const NativeUiHeader = ({ subScreen, sectionTitle }) => {
+const NativeUiHeader = ({ subScreen, sectionTitle, onPress }) => {
   const navigation = useNavigation();
   return (
     <View style={styles.headerContainer}>
       {subScreen ? (
         <View style={DefaultStyles.containerRow}>
-          <RNBounceable
-            onPress={() => navigation.goBack()}
+          <TouchableOpacity
+            onPress={onPress ? onPress : () => navigation.goBack()}
             style={[DefaultStyles.containerCenter, styles.header]}
           >
             <AntDesign
@@ -24,7 +23,7 @@ const NativeUiHeader = ({ subScreen, sectionTitle }) => {
               size={20}
               color={THEME.COLORS.WHITE}
             />
-          </RNBounceable>
+          </TouchableOpacity>
           <View style={styles.sectionTitleContainer}>
             <NativeUiText
               style={{
@@ -37,8 +36,6 @@ const NativeUiHeader = ({ subScreen, sectionTitle }) => {
               {sectionTitle}
             </NativeUiText>
           </View>
-          {/* <View />
-          <View /> */}
         </View>
       ) : (
         <View style={[DefaultStyles.containerSpaced, styles.container]}>
@@ -46,12 +43,12 @@ const NativeUiHeader = ({ subScreen, sectionTitle }) => {
             <Image style={styles.img} source={require('@asset/logo.png')} />
           </View>
           <View style={styles.spacing}>
-            <AntDesign
+            {/* <AntDesign
               style={styles.icon}
               name="search1"
               size={20}
               color={THEME.COLORS.WHITE}
-            />
+            /> */}
             <Avater uri={require('@asset/avater.jpg')} />
           </View>
         </View>

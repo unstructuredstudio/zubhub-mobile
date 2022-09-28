@@ -29,8 +29,8 @@ const styles = StyleSheet.create({
   },
 
   circle: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 25,
     backgroundColor: THEME.COLORS.PRIMARY_GREEN,
   },
@@ -60,6 +60,42 @@ const styles = StyleSheet.create({
 
   wizard: {
     marginBottom: 10,
+  },
+
+  inputContainer: {
+    paddingRight: 15,
+    borderRadius: 10,
+    backgroundColor: THEME.COLORS.WHITE,
+    shadowColor: '#ccc',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 2.22,
+    elevation: 3,
+    borderWidth: 2,
+    borderColor: '#eee',
+    fontWeight: 'bold',
+    color: THEME.COLORS.BLACK,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 55,
+    paddingHorizontal: 12,
+  },
+
+  dropdown: {
+    width: '100%',
+  },
+
+  arrow: {
+    position: 'absolute',
+    right: 0,
+    marginRight: 12,
+  },
+
+  location: {
+    marginBottom: 8,
   },
 });
 

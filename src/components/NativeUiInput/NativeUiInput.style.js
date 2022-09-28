@@ -11,10 +11,11 @@ const styles = (textColor) =>
       color: textColor ? textColor : '#ccc',
       fontWeight: '400',
       marginTop: 7,
+      fontStyle: 'italic',
     },
     textInputStyle: {
       flex: 1,
-      paddingVertical: 3,
+      // paddingVertical: 3,
     },
     labelItem: {
       marginBottom: 8,
@@ -34,9 +35,17 @@ const styles = (textColor) =>
       borderWidth: 2,
       borderColor: '#eee',
       fontWeight: 'bold',
-      color: THEME.BLACK,
+      color: THEME.COLORS.BLACK,
       flexDirection: 'row',
-      alignItems: 'center',
+    },
+
+    errorText: {
+      marginTop: 9,
+    },
+
+    itemView: {
+      flex: 1,
+      flexDirection: 'row',
     },
   });
 export default styles;

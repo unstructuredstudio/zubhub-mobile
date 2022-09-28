@@ -1,0 +1,162 @@
+{
+  "general": {
+    "login": "Login",
+    "goToHome": "Go to Home",
+    "userNameOrEmail": "Username or Email",
+    "enterPassword": "Enter your password",
+    "password": "Password",
+    "forgetPassword": "Forget Password",
+    "register": "Register",
+    "smagError": "Uh oh, seems like we hit a snag :( Maybe try again later?",
+    "fillAllFields": "Ensure to fill all fields before proceeding",
+    "usernameBlank": "We need your username to proceed",
+    "seemsLikeYouForgot": "Seems like you forgot this",
+    "strongPassword": "Provide a strong password here",
+    "whatWentWrong": " What went wrong?",
+    "createAccountFirst": " Lets create an account first!!",
+    "getStarted": "Lets get started",
+    "requiredToProceed": "Required to proceed",
+    "step1": "Step 1",
+    "step2": "Step 2",
+    "step3": "Step 3",
+    "username": "Username",
+    "email": "Email",
+    "confirmPassword": "Confirm your password",
+    "next": "Next",
+    "enterEmail": "Enter your email",
+    "Okay": "Okay",
+    "copied": "Copied",
+    "failed": "Falied",
+    "cancel": "Cancel",
+    "proceed": "Proceed",
+    "claps": "Claps",
+    "bookmark": "Bookmark",
+    "bookmarks": "Bookmarks",
+    "views": "Views",
+    "url": "URL",
+    "edit": "Edit",
+    "delete": "Delete",
+    "follow": "FOLLOW",
+    "unfollow": "UNFOLLOW",
+    "description": "Description",
+    "materailUsed": "Materials Used",
+    "category": "Catergory",
+    "comments": "Comments",
+    "writeAComment": "Write a comment...",
+    "projects": "Projects",
+    "followers": "Followers",
+    "following": "Following",
+    "aboutMe": "About Me",
+    "reply": "REPLY",
+    "comment": "Comment",
+    "about": "About",
+    "settings": "Settings",
+    "myProject": "My projects",
+    "yoursavedProjects": "Your saved projects",
+    "savedProjects": "Saved projects",
+    "isFollowing": "is following",
+    "creator": "Creator",
+    "changeLanguage": "Change Language",
+    "logout": "Logout",
+    "logoutText": "Sign out from your account",
+    "english": "English",
+    "hindi": "Hindi",
+    "toggleLanguage": "Change Language",
+    "toggle": "Toggle",
+    "logoutFailed": "Hmm..seems like an occured while signing you out. Please try again"
+  },
+
+  "onboarding": {
+    "title1": "Welcome to Zubhub!",
+    "description1": "It is a documentation and collaboration platform for young creators",
+    "title2": "Sharing projects",
+    "description2": "On Zubhub, you can get inspired by our collection of activity ideas, tinker with materials and tools around you, and share your creation with others",
+    "title3": "Getting started",
+    "description3": "It is simple! Sign up to create an account on ZubHub. Upload a project when you feel ready by filling out a form. Explore projects from peers and leave feedback on their work in the form of comments."
+  },
+
+  "login": {
+    "loginSuccess": "Your login was successful. Welcome onboard!",
+    "dontHaveAnAccount": "Don’t have an account yet?"
+  },
+
+  "register": {
+    "locationBlank": "Looks like you forgot this! Where are you from?",
+    "emailOrTel": "You must enter either an email or a phone number",
+    "passwordDontMatch": "Password does not match",
+    "accountCreationSuccess": "Your account was successfully created. Welcome onboard!",
+    "enterPhoneNumber": "Enter phone number",
+    "dateOfBirth": "Date of Birth",
+    "selectADate": "Select a date",
+    "provideLocation": "Please provide your location",
+    "tellUsAboutYou": "Tell us about yourself",
+    "bio": "Bio",
+    "alreadyAMember": " Already a member",
+    "createAccount": "Create Account"
+  },
+
+  "forgetPassword": {
+    "invalidEmail": "Uhmm...The email seems to be invalid 🤔",
+    "emailSent": "We just sent a password reset link to your email! Check your mail!",
+    "passwordReset": "Password Reset",
+    "enterEmailMessage": "Enter your email so we can send you a pass word reset link",
+    "sendResetLink": "Send reset link"
+  },
+
+  "bottomNavigator": {
+    "home": "Home",
+    "search": "Search",
+    "projects": "Projects",
+    "profile": "Profile"
+  },
+
+  "projectCard": {
+    "createAccountFirst": "Lets create an account for you first! so you can perform this action",
+    "urlCopied": "Project URL copied to clipboard",
+    "failedToCopyUrl": "Failed to copy Project URL to clipboard",
+    "deleteProjectMessage": "Delete Project",
+    "deleteProjectWarning": "Are you sure you want to delete this project You can't undo this action",
+    "projectDetailTitle": "Project Details",
+    "deleteProjectToastSuccess": "Your project was deleted successfully!",
+    "failedToDeleteProject": "Your project was not deleted successfully. Please try again!"
+  },
+
+  "creatorsDetails": {
+    "creatorsDetails": "Creators Details"
+  },
+
+  "commentCard": {
+    "comingSoon": "Coming soon!",
+    "comingSoonDescription": "We are working hard to make this available. Stay tunned for our next update"
+  },
+
+  "searchScreen": {
+    "search": "Search",
+    "default": "Try searching for project titles or authors"
+  },
+
+  "createProject": {
+    "title": "Create project",
+    "tellUsAboutYourProject": "Tell us about your project!",
+    "createProject": "Create Project",
+    "nameProject": "Name your project",
+    "projectName": "Project name",
+    "addPictures": "Lets add some pictures",
+    "dontHavePictures": "Dont have them? Add a video instead!",
+    "addImages": "ADD IMAGES",
+    "image": "image",
+    "added": "added",
+    "addVideo": "Lets add a video",
+    "noVideo": "Its ok if you dont have a video, you can add images",
+    "addVideoAction": "ADD VIDEO",
+    "materialUsed": "What materials did you use",
+    "addMore": "ADD MORE",
+    "selectCategory": "Select A Category",
+    "selectOption": "Select An Option",
+    "projectCategory": "What is the category of your project",
+    "whatTagsDescribesYourProject": "What tag best describe your project",
+    "addTag": "Add a tag...",
+    "publishOption": "What publish option do you want to set for this project",
+    "descriptionSubTitle": "Think about your target audience. Should this project be visible to all creators?, authenticated creators?, or do you want to provide the usernames of creators this project should be visible to?"
+  }
+}

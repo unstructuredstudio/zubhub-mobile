@@ -38,8 +38,9 @@ const styles = StyleSheet.create({
   },
 
   forgetPwd: {
-    alignItems: 'flex-end',
-    marginRight: 21,
+    alignSelf: 'flex-end',
+
+    paddingVertical: 15,
   },
 });
 
