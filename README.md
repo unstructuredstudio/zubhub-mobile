@@ -2,7 +2,7 @@
 
 > An open-source platform for educators to share, discover, and facilitate low-cost creative learning activities.
 
-Built with React Native (Expo) and Firebase. Designed to run smoothly on low-end Android devices (~₹8,000 range) with low-bandwidth connections.
+Built with React Native (Expo) and Firebase. 
 
 ---
 
