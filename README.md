@@ -1,8 +1,7 @@
+<img src="assets/logo.png" width="350">
+
 # ZubHub Mobile
-
-> An open-source platform for educators to share, discover, and facilitate low-cost creative learning activities.
-
-Built with React Native (Expo) and Firebase. 
+> An open-source platform for educators to share, discover, and facilitate low-cost creative learning activities. Built with React Native (Expo) and Firebase. 
 
 ---
 
