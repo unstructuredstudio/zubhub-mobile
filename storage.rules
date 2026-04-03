@@ -1,0 +1,19 @@
+rules_version = '2';
+// ─────────────────────────────────────────────────────────────────────────────
+// ZubHub Firebase Storage Rules
+// Paste these into: Firebase Console → Storage → Rules
+// ─────────────────────────────────────────────────────────────────────────────
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /uploads/{allPaths=**} {
+      // Anyone can view uploaded images (activity photos are public)
+      allow read: if true;
+
+      // Only signed-in users can upload
+      allow write: if request.auth != null
+        && request.resource.size < 5 * 1024 * 1024  // max 5 MB per image
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}

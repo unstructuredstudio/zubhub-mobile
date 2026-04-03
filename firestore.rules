@@ -1,0 +1,71 @@
+rules_version = '2';
+// ─────────────────────────────────────────────────────────────────────────────
+// ZubHub Firestore Security Rules
+// Paste these into: Firebase Console → Firestore → Rules
+// ─────────────────────────────────────────────────────────────────────────────
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Activities ────────────────────────────────────────────────────────────
+    match /activities/{activityId} {
+      // Anyone can read published activities; authors can read their own (incl. drafts)
+      allow read: if resource.data.is_published == true
+        || (request.auth != null && resource.data.created_by == request.auth.uid);
+
+      // Only signed-in users can create, and they must set themselves as author
+      allow create: if request.auth != null
+        && request.resource.data.created_by == request.auth.uid;
+
+      // Author can delete their own activities
+      allow delete: if request.auth != null
+        && resource.data.created_by == request.auth.uid;
+
+      // Author can update anything; other signed-in users can only increment counters
+      allow update: if request.auth != null
+        && (resource.data.created_by == request.auth.uid
+            || onlyCounterFieldsChanged());
+    }
+
+    // Helper: true when only engagement counters are changed
+    function onlyCounterFieldsChanged() {
+      let allowed = ['view_count', 'download_count', 'share_count',
+                     'facilitation_count', 'rating', 'rating_count'].toSet();
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowed);
+    }
+
+    // ── User Profiles ─────────────────────────────────────────────────────────
+    match /users/{userId} {
+      // Anyone can read profiles (for showing creator name on activities)
+      allow read: if true;
+
+      // Only the user themselves can write their profile
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ── Community Notes ───────────────────────────────────────────────────────
+    match /community_notes/{noteId} {
+      allow read: if true;
+
+      // Signed-in users can add notes, must set their own user_id
+      allow create: if request.auth != null
+        && request.resource.data.user_id == request.auth.uid;
+
+      // Only the note author can update or delete
+      allow update, delete: if request.auth != null
+        && resource.data.user_id == request.auth.uid;
+    }
+
+    // ── Engagement Events (Analytics) ─────────────────────────────────────────
+    match /engagement_events/{eventId} {
+      // Signed-in users can read events (needed for notifications on own activities)
+      allow read: if request.auth != null;
+
+      // Anyone can create events (tracks anonymous views); validate shape
+      allow create: if request.resource.data.keys().hasOnly(
+          ['activity_id', 'user_id', 'event_type', 'platform', 'metadata', 'created_at'])
+        && request.resource.data.event_type is string
+        && request.resource.data.event_type.size() < 50;
+    }
+  }
+}

@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Environment & secrets
+.env
+.env.local
+.env.production
+
+# Expo
+.expo/
+dist/
+
+# macOS
+.DS_Store
+
+# Android/iOS build artifacts
+android/app/build/
+ios/Pods/
+*.apk
+*.ipa
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# Android signing
+*.jks
+*.keystore
+
+# Claude Code
+.claude/

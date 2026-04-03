@@ -1,0 +1,66 @@
+{
+  "expo": {
+    "name": "ZubHub",
+    "slug": "zubhub",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E53E3E"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "org.zubhub.app",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "ZubHub needs access to your photos to upload activity images.",
+        "NSCameraUsageDescription": "ZubHub needs camera access to take photos for your activities.",
+        "NSMicrophoneUsageDescription": "ZubHub needs microphone access to record your voice when creating activities.",
+        "NSSpeechRecognitionUsageDescription": "ZubHub uses speech recognition to convert your voice into activity text."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo.png",
+        "backgroundColor": "#E53E3E"
+      },
+      "package": "org.zubhub.app",
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "INTERNET",
+        "RECORD_AUDIO"
+      ],
+      "versionCode": 1
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-font",
+      "expo-localization",
+      "expo-notifications",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#E53E3E",
+          "image": "./assets/splash.png",
+          "imageWidth": 200
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "ZubHub needs access to your photos to upload activity images."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "YOUR_EAS_PROJECT_ID"
+      }
+    }
+  }
+}
