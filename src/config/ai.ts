@@ -7,8 +7,8 @@
  */
 export const aiConfig = {
   apiKey: process.env.EXPO_PUBLIC_CLAUDE_API_KEY ?? '',
-  model: 'claude-sonnet-4-20250514',
-  maxTokens: 4096,
+  model: 'claude-sonnet-4-6',
+  maxTokens: 2500,
   baseUrl: 'https://api.anthropic.com/v1/messages',
   anthropicVersion: '2023-06-01',
 };
