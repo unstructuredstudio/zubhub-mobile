@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+data/
+
+# Model weights (too large for git — share via Git LFS / HF Hub / Releases)
+adapters/
+adapters_backup_pre_safety/
+
+# Logs & OS cruft
+*.log
+.DS_Store

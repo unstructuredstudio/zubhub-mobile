@@ -234,14 +234,23 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
               style={styles.logoImg}
               resizeMode="contain"
             />
-            <TouchableOpacity style={styles.bellBtn} onPress={() => { clearNotifBadge(); navigation.navigate('Notifications'); }}>
-              <Ionicons name="notifications-outline" size={24} color="#fff" />
-              {notifBadgeCount > 0 && (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{notifBadgeCount > 99 ? '99+' : notifBadgeCount}</Text>
-                </View>
-              )}
-            </TouchableOpacity>
+            <View style={styles.headerActions}>
+              <TouchableOpacity
+                style={styles.suggestBtn}
+                onPress={() => navigation.navigate('Suggest')}
+                accessibilityLabel="Get AI activity suggestions"
+              >
+                <Ionicons name="sparkles" size={20} color="#fff" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.bellBtn} onPress={() => { clearNotifBadge(); navigation.navigate('Notifications'); }}>
+                <Ionicons name="notifications-outline" size={24} color="#fff" />
+                {notifBadgeCount > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{notifBadgeCount > 99 ? '99+' : notifBadgeCount}</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
           <View style={styles.searchRow}>
             <Ionicons name="search" size={18} color="#718096" style={styles.searchIcon} />
@@ -395,6 +404,12 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   logoImg: { height: 32, width: 130 },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  suggestBtn: {
+    width: 36, height: 36, borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center', justifyContent: 'center',
+  },
   bellBtn: { position: 'relative' },
   badge: {
     position: 'absolute',
