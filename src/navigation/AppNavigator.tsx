@@ -28,6 +28,8 @@ import NotificationsScreen from '../screens/main/NotificationsScreen';
 import FacilitationSetupScreen from '../screens/main/FacilitationSetupScreen';
 import FacilitationActiveScreen from '../screens/main/FacilitationActiveScreen';
 import FacilitationCompleteScreen from '../screens/main/FacilitationCompleteScreen';
+import SuggestScreen from '../screens/main/SuggestScreen';
+import InspirationDetailScreen from '../screens/main/InspirationDetailScreen';
 
 const RootStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -59,6 +61,8 @@ function HomeNavigator() {
       <HomeStack.Screen name="FacilitationSetup" component={FacilitationSetupScreen} />
       <HomeStack.Screen name="FacilitationActive" component={FacilitationActiveScreen} />
       <HomeStack.Screen name="FacilitationComplete" component={FacilitationCompleteScreen} />
+      <HomeStack.Screen name="Suggest" component={SuggestScreen} />
+      <HomeStack.Screen name="InspirationDetail" component={InspirationDetailScreen} />
     </HomeStack.Navigator>
   );
 }

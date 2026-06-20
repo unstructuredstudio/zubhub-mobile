@@ -1,0 +1,31 @@
+# LoRA fine-tuning config for the ZubHub STEAM idea model.
+# Run with:  mlx_lm.lora --config lora_config.yaml
+
+# Base model — small, instruction-tuned, 4-bit (QLoRA-style).
+model: "mlx-community/Qwen2.5-1.5B-Instruct-4bit"
+
+train: true
+data: "data/mlx"            # expects train.jsonl + valid.jsonl here
+adapter_path: "adapters"    # the trained LoRA weights land here
+
+# LoRA — train small adapter layers, freeze the rest of the model.
+fine_tune_type: lora
+num_layers: 8               # apply LoRA to the last 8 transformer layers
+lora_parameters:
+  rank: 8                   # adapter size — bigger = more capacity, more overfit risk
+  scale: 20.0
+  dropout: 0.0
+
+# Training loop.
+batch_size: 4               # 400 train examples / 4 = 100 iters per epoch
+iters: 600                  # ~6 passes (epochs) over the training set
+max_seq_length: 1024        # our records are well under this
+learning_rate: 1e-5
+
+# Monitoring — watch validation loss to catch overfitting.
+steps_per_report: 25        # print train loss every 25 steps
+steps_per_eval: 100         # check validation loss every 100 steps
+val_batches: 12
+save_every: 200             # checkpoint adapters at 200 / 400 / 600
+
+seed: 42
