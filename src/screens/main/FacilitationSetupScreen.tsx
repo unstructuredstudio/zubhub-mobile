@@ -8,7 +8,10 @@ import { calculateAdaptations, buildFacilitationSteps } from '../../services/fac
 
 export default function FacilitationSetupScreen({ route, navigation }: { route: any; navigation: any }) {
   const activity = route.params?.activity;
-  const { resetFacilitation, setFacilitationStep, setFacilitationTime, setFacilitationTimerRunning } = useStore();
+  const {
+    resetFacilitation, setFacilitationStep, setFacilitationTime,
+    setFacilitationTimerRunning, startFacilitationRun,
+  } = useStore();
 
   useEffect(() => {
     if (!activity) return;
@@ -19,6 +22,9 @@ export default function FacilitationSetupScreen({ route, navigation }: { route: 
     const steps = buildFacilitationSteps(activity);
 
     resetFacilitation();
+    // Stamped before the run rather than at the end, so the session records how
+    // long it actually took instead of a zero-length window.
+    startFacilitationRun();
     const firstStepTime = Math.round((steps[0]?.duration || 15) * adaptations.timeMultiplier * 60);
     setFacilitationStep(0);
     setFacilitationTime(firstStepTime);

@@ -144,7 +144,7 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
                 <Text style={styles.statValue}>
                   {myActivities.reduce((sum, a) => sum + (a.facilitation_count ?? 0), 0)}
                 </Text>
-                <Text style={styles.statLabel}>Sessions</Text>
+                <Text style={styles.statLabel}>{t('sessions', selectedLanguage)}</Text>
               </View>
             </View>
           </SafeAreaView>
@@ -155,7 +155,7 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('myActivities', selectedLanguage)}</Text>
             {myActivities.length === 0 && (
-              <Text style={styles.emptyActivities}>No activities yet — create one from the Create tab!</Text>
+              <Text style={styles.emptyActivities}>No activities yet. Create one from the Create tab!</Text>
             )}
             {myActivities.map((act) => (
               <View key={act.id} style={styles.activityRow}>

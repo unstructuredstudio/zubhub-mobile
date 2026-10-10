@@ -60,8 +60,37 @@ export async function trackActivityCreation(activityId: string): Promise<void> {
   await trackEvent({ activityId, eventType: 'create_activity' });
 }
 
-export async function trackNoteAdded(activityId: string, hasRating: boolean): Promise<void> {
-  await trackEvent({ activityId, eventType: 'add_note', metadata: { has_rating: hasRating } });
+/**
+ * `photoCount` is the number that decides whether the projects gallery is worth
+ * its UI: if sessions rarely come with photos, nothing downstream of the upload
+ * matters. Recorded per experience so attach rate is measurable, not guessed.
+ */
+export async function trackNoteAdded(
+  activityId: string,
+  hasRating: boolean,
+  photoCount = 0,
+): Promise<void> {
+  await trackEvent({
+    activityId,
+    eventType: 'add_note',
+    metadata: { has_rating: hasRating, photo_count: photoCount },
+  });
+}
+
+/** One completed session. Pairs with `add_note` to give the attach rate. */
+export async function trackFacilitation(
+  activityId: string,
+  studentCount: number,
+): Promise<void> {
+  await trackEvent({
+    activityId,
+    eventType: 'facilitate',
+    metadata: { student_count: studentCount },
+  });
+}
+
+export async function trackRemix(activityId: string, sourceId: string): Promise<void> {
+  await trackEvent({ activityId, eventType: 'remix', metadata: { source_id: sourceId } });
 }
 
 // ─── Engagement Summary ───────────────────────────────────────────────────────

@@ -95,10 +95,10 @@ export default function EditProfileScreen({ navigation }: { navigation: any }) {
 
     setSaving(true);
     try {
-      const updates: Record<string, string | undefined> = {
+      const updates: Record<string, string> = {
         full_name: fullName.trim(),
-        organization: organization.trim() || undefined,
-        bio: bio.trim() || undefined,
+        organization: organization.trim(),
+        bio: bio.trim(),
       };
 
       if (avatarUrl && avatarUrl !== user?.avatar_url) {
@@ -110,7 +110,8 @@ export default function EditProfileScreen({ navigation }: { navigation: any }) {
       Alert.alert('Success', 'Your profile has been updated.', [
         { text: 'OK', onPress: () => navigation.goBack() },
       ]);
-    } catch {
+    } catch (err: any) {
+      console.warn('[Profile] Could not save:', err?.code ?? err?.message ?? err);
       Alert.alert('Error', 'Could not save your profile. Please try again.');
     } finally {
       setSaving(false);

@@ -10,6 +10,34 @@
 const BASE_URL =
   process.env.EXPO_PUBLIC_SUGGEST_API_URL ?? 'http://localhost:8000';
 
+/**
+ * Whether the suggest server is reachable from a distributed build.
+ *
+ * The default points at a Python server on the developer's own machine, and a
+ * LAN address means something different on every educator's network — usually
+ * nothing, occasionally someone else's device. Android also blocks cleartext
+ * HTTP in release builds, so such a URL cannot work even on the right network.
+ *
+ * The UI hides the feature when this is false rather than offering a button
+ * that always fails. Point EXPO_PUBLIC_SUGGEST_API_URL at a public HTTPS host
+ * and it comes back automatically, with no code change.
+ */
+export function isSuggestAvailable(): boolean {
+  try {
+    const { protocol, hostname } = new URL(BASE_URL);
+    if (protocol !== 'https:') return false;
+    if (hostname === 'localhost' || hostname.endsWith('.local')) return false;
+    // RFC1918 and loopback ranges are developer machines, not servers.
+    if (/^127\./.test(hostname)) return false;
+    if (/^10\./.test(hostname)) return false;
+    if (/^192\.168\./.test(hostname)) return false;
+    if (/^172\.(1[6-9]|2\d|3[01])\./.test(hostname)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export interface InspirationResult {
   id: number;
   title: string;

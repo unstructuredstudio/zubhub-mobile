@@ -8,18 +8,32 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
-import * as ImagePicker from 'expo-image-picker';
 import { downloadActivityPDF, openOrSharePDF } from '../../services/download';
-import { shareOnWhatsApp, shareActivity } from '../../services/share';
+import { usePhotoUpload } from '../../hooks/usePhotoUpload';
+import PhotoConsentModal from '../../components/PhotoConsentModal';
+import PhotoStrip from '../../components/PhotoStrip';
+import { shareActivity } from '../../services/share';
 import { trackActivityView, trackNoteAdded } from '../../services/analytics';
-import { deleteCommunityNote, addCommunityNote, deleteActivity } from '../../services/api';
+import { sendPushToUser } from '../../services/notifications';
+import {
+  deleteCommunityNote, addCommunityNote, deleteActivity, fetchActivity,
+  addActivityPhotos, deleteActivityPhoto,
+  MIN_EXPERIENCE_CHARS,
+} from '../../services/api';
 import { translateActivity, translateText } from '../../services/translate';
 import { useStore } from '../../store/useStore';
 import { useQueryClient } from '@tanstack/react-query';
-import { useCommunityNotes } from '../../hooks/useActivities';
-import { CommunityNote } from '../../types';
+import {
+  useCommunityNotes, useFacilitationSessions, useUserProfiles, useActivityPhotos,
+} from '../../hooks/useActivities';
+import {
+  ActivityPhoto, CommunityNote, FacilitationSession, NotePhoto, UserProfile,
+} from '../../types';
 import { Colors } from '../../theme';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+// Three-up grid inside a Section: 16pt margin + 16pt padding a side, two 6pt gaps.
+const PHOTO_CELL = (SCREEN_WIDTH - 64 - 12) / 3;
 
 // Extract YouTube video ID from various URL formats
 function getYouTubeVideoId(url: string): string | null {
@@ -35,8 +49,19 @@ function getYouTubeVideoId(url: string): string | null {
 }
 
 // ─── Image Lightbox ─────────────────────────────────────────────────────────
-function ImageLightbox({ images, visible, initialIndex, onClose }: {
-  images: string[];
+function LightboxPage({ photo }: { photo: NotePhoto }) {
+  return (
+    <View style={styles.lightboxPage}>
+      <Image source={{ uri: photo.url }} style={styles.lightboxImage} resizeMode="contain" />
+      {photo.caption?.trim() ? (
+        <Text style={styles.lightboxCaption}>{photo.caption}</Text>
+      ) : null}
+    </View>
+  );
+}
+
+function ImageLightbox({ photos, visible, initialIndex, onClose }: {
+  photos: NotePhoto[];
   visible: boolean;
   initialIndex: number;
   onClose: () => void;
@@ -49,21 +74,19 @@ function ImageLightbox({ images, visible, initialIndex, onClose }: {
         <TouchableOpacity style={styles.lightboxClose} onPress={onClose}>
           <Ionicons name="close" size={28} color="#fff" />
         </TouchableOpacity>
-        {images.length === 1 ? (
-          <Image source={{ uri: images[0] }} style={styles.lightboxImage} resizeMode="contain" />
+        {photos.length === 1 ? (
+          <LightboxPage photo={photos[0]} />
         ) : (
           <FlatList
             ref={flatListRef}
-            data={images}
+            data={photos}
             horizontal
             pagingEnabled
             initialScrollIndex={initialIndex}
             getItemLayout={(_, index) => ({ length: SCREEN_WIDTH, offset: SCREEN_WIDTH * index, index })}
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(_, i) => i.toString()}
-            renderItem={({ item }) => (
-              <Image source={{ uri: item }} style={styles.lightboxImage} resizeMode="contain" />
-            )}
+            keyExtractor={(item, i) => `${i}-${item.url}`}
+            renderItem={({ item }) => <LightboxPage photo={item} />}
           />
         )}
       </View>
@@ -115,51 +138,153 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
   const [downloadPercent, setDownloadPercent] = useState(0);
   const [translating, setTranslating] = useState(false);
   const [displayActivity, setDisplayActivity] = useState(activity);
-  const { user, selectedLanguage, facilitationCount } = useStore();
+  const { user, selectedLanguage } = useStore();
   const queryClient = useQueryClient();
 
   // Image lightbox state
-  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxPhotos, setLightboxPhotos] = useState<NotePhoto[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lightboxVisible, setLightboxVisible] = useState(false);
+
+  // Jumping from a note's photo chip up to that author's tiles in the gallery.
+  const [openingSource, setOpeningSource] = useState(false);
+  // Both sections grow without bound as an activity gets used. Rather than
+  // moving them to their own screens — which would put a tap between an
+  // educator and the social proof they came for — they stay inline and capped.
+  const [showAllExperiences, setShowAllExperiences] = useState(false);
 
   // Inline note form state
   const [noteText, setNoteText] = useState('');
   const [noteRating, setNoteRating] = useState(0);
-  const [notePhotos, setNotePhotos] = useState<string[]>([]);
   const [noteLoading, setNoteLoading] = useState(false);
+  // Each photo is added the moment it finishes uploading, so picking is the
+  // only step. There is no separate confirm.
+  const photoUpload = usePhotoUpload({
+    onUploaded: async (photo) => {
+      await addActivityPhotos(activity.id, [photo]);
+      queryClient.invalidateQueries({ queryKey: ['photos', activity.id] });
+    },
+  });
   const [showNoteForm, setShowNoteForm] = useState(false);
 
-  const openLightbox = (images: string[], index: number) => {
-    setLightboxImages(images);
+  const openLightbox = (photos: NotePhoto[], index: number) => {
+    setLightboxPhotos(photos);
     setLightboxIndex(index);
     setLightboxVisible(true);
   };
 
+  /**
+   * Opens the activity this one was remixed from. The screen needs the whole
+   * activity rather than an id, so it is fetched first — which also gives the
+   * deleted-original case somewhere to land.
+   */
+  const openRemixSource = async (sourceId: string) => {
+    setOpeningSource(true);
+    try {
+      const source = await fetchActivity(sourceId);
+      navigation.push('ActivityDetail', { activityId: source.id, activity: source });
+    } catch {
+      Alert.alert(
+        'Original unavailable',
+        'That activity could not be opened. It may have been removed.',
+      );
+    } finally {
+      setOpeningSource(false);
+    }
+  };
+
   // Fetch real community notes from Firestore
   const { data: communityNotes = [] } = useCommunityNotes(activity.id);
+  const { data: runs = [], error: runsError } = useFacilitationSessions(activity.id);
+  const { data: activityPhotos = [] } = useActivityPhotos(activity.id);
 
   const handleDeleteNote = (noteId: string) => {
-    Alert.alert('Delete Note', 'Are you sure you want to delete this note?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await deleteCommunityNote(noteId, activity.id);
-            queryClient.invalidateQueries({ queryKey: ['notes', activity.id] });
-          } catch {
-            Alert.alert('Error', 'Could not delete note. Please try again.');
-          }
+    // The photos sit on the card being deleted, so what goes with it is visible
+    // rather than needing to be spelled out.
+    Alert.alert(
+      'Delete experience',
+      'This removes the note and its photos. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteCommunityNote(noteId, activity.id);
+              queryClient.invalidateQueries({ queryKey: ['notes', activity.id] });
+            } catch {
+              Alert.alert('Error', 'Could not delete note. Please try again.');
+            }
+          },
         },
-      },
-    ]);
+      ],
+    );
   };
   const [translatedNotes, setTranslatedNotes] = useState<CommunityNote[]>([]);
 
   // Stable key to detect when notes actually change (avoids reference-equality loops)
   const notesKey = communityNotes.map((n: CommunityNote) => n.id).join(',');
+
+  // Run totals. `facilitation_count` is the denormalised tally on the activity;
+  // the session documents are the detail behind it, so the count falls back to
+  // the activity field when sessions have not loaded (or in demo mode).
+  const runsKey = runs.map((r: FacilitationSession) => r.id).join(',');
+  const runStats = React.useMemo(() => {
+    const participants = runs.reduce(
+      (sum: number, r: FacilitationSession) => sum + (r.student_count || 0),
+      0,
+    );
+    return {
+      // The larger of the two on purpose. `facilitation_count` is the running
+      // tally and includes runs facilitated before session documents existed;
+      // `runs.length` only counts sessions actually on record. Preferring
+      // `runs.length` made this screen report fewer sessions than the activity
+      // card on the home feed, which reads the tally.
+      runCount: Math.max(runs.length, activity.facilitation_count ?? 0),
+      participants,
+    };
+  }, [runsKey, activity.facilitation_count]);
+
+  /** Experiences shown before "Show N more". */
+  const VISIBLE_EXPERIENCES = 3;
+
+  /** Group size and date for a report, when it came from a recorded run. */
+  const runsById = React.useMemo(() => {
+    const map: Record<string, FacilitationSession> = {};
+    runs.forEach((r: FacilitationSession) => { map[r.id] = r; });
+    return map;
+  }, [runsKey]);
+
+  /** Distinct educators who have run this, most sessions first. */
+  const educatorRuns = React.useMemo(() => {
+    const counts: Record<string, number> = {};
+    runs.forEach((r: FacilitationSession) => {
+      if (r.user_id) counts[r.user_id] = (counts[r.user_id] ?? 0) + 1;
+    });
+    return Object.entries(counts)
+      .map(([userId, sessions]) => ({ userId, sessions }))
+      .sort((a, b) => b.sessions - a.sessions);
+  }, [runsKey]);
+
+  const educatorIds = educatorRuns.map((e) => e.userId);
+  const { data: educatorProfiles = [] } = useUserProfiles(educatorIds);
+
+  const educators = React.useMemo(() => {
+    const byId: Record<string, UserProfile> = {};
+    educatorProfiles.forEach((p: UserProfile) => { byId[p.id] = p; });
+    // A profile that failed to load is dropped rather than shown nameless.
+    return educatorRuns
+      .map((e) => ({ ...e, profile: byId[e.userId] }))
+      .filter((e) => !!e.profile);
+  }, [educatorRuns, educatorProfiles]);
+
+  const formatRunDate = (iso?: string) => {
+    if (!iso) return null;
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+  };
 
   // Keep translated notes in sync with fetched notes
   useEffect(() => {
@@ -205,12 +330,15 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
     const uri = await downloadActivityPDF(activity, (p) => setDownloadPercent(p.percent));
     setDownloading(false);
     if (uri) await openOrSharePDF(uri);
+    sendPushToUser(activity.created_by, user?.id, {
+      title: 'Your activity was downloaded',
+      body: `Someone saved "${activity.title}" to use offline.`,
+      data: { type: 'download', activity_id: activity.id },
+    });
   };
 
-  const handleWhatsApp = () => shareOnWhatsApp(activity, user?.id);
   const handleShare = () => shareActivity(activity, user?.id);
 
-  const myFacilitationCount = facilitationCount[activity.id] || 0;
 
   const isOwner = !!(user?.id && activity.created_by && user.id === activity.created_by);
 
@@ -245,34 +373,60 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
   };
 
   // Inline note handlers
-  const handlePickNotePhoto = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: true,
-      quality: 0.8,
-      selectionLimit: 5 - notePhotos.length,
-    });
-    if (!result.canceled && result.assets) {
-      setNotePhotos((prev) => [...prev, ...result.assets.map((a) => a.uri)].slice(0, 5));
-    }
+  const handleDeletePhoto = (photo: ActivityPhoto) => {
+    const isMine = photo.user_id === user?.id;
+    const isOwnerOfActivity = activity.created_by === user?.id;
+    if (!isMine && !isOwnerOfActivity) return;
+
+    Alert.alert('Remove photo', 'This cannot be undone.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteActivityPhoto(photo.id);
+            queryClient.invalidateQueries({ queryKey: ['photos', activity.id] });
+          } catch {
+            Alert.alert('Error', 'Could not remove the photo.');
+          }
+        },
+      },
+    ]);
   };
 
+  /** An experience needs a rating and enough words to be worth reading. */
+  const noteReady =
+    noteRating > 0 && noteText.trim().length >= MIN_EXPERIENCE_CHARS;
+
   const handleSubmitNote = async () => {
-    if (noteText.trim().length < 10) {
-      Alert.alert('Too short', 'Please write at least 10 characters about your experience.');
+    if (noteRating === 0) {
+      Alert.alert('Add a rating', 'Tap a star to rate how the activity went.');
+      return;
+    }
+    if (noteText.trim().length < MIN_EXPERIENCE_CHARS) {
+      Alert.alert(
+        'A bit more, please',
+        'Say what happened, what worked, or what you would change. A sentence or two is plenty.',
+      );
       return;
     }
     setNoteLoading(true);
     try {
-      await addCommunityNote(activity.id, noteText.trim(), noteRating > 0 ? noteRating : undefined, notePhotos.length > 0 ? notePhotos : undefined);
-      await trackNoteAdded(activity.id, noteRating > 0);
+      await addCommunityNote(activity.id, noteText.trim(), noteRating);
+      await trackNoteAdded(activity.id, noteRating > 0, 0);
+      sendPushToUser(activity.created_by, user?.id, {
+        title: 'New experience shared',
+        body: `Someone shared how "${activity.title}" went for them.`,
+        data: { type: 'add_note', activity_id: activity.id },
+      });
       queryClient.invalidateQueries({ queryKey: ['notes', activity.id] });
       setNoteText('');
       setNoteRating(0);
-      setNotePhotos([]);
       setShowNoteForm(false);
     } catch (err: any) {
-      Alert.alert('Error', err?.message ?? 'Could not save note. Please try again.');
+      console.warn('[Experience] save failed:', err?.code ?? err?.message ?? err);
+      Alert.alert('Could not share', 'Please try again in a moment.');
     } finally {
       setNoteLoading(false);
     }
@@ -286,10 +440,15 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
   return (
     <View style={styles.container}>
       <ImageLightbox
-        images={lightboxImages}
+        photos={lightboxPhotos}
         visible={lightboxVisible}
         initialIndex={lightboxIndex}
         onClose={() => setLightboxVisible(false)}
+      />
+      <PhotoConsentModal
+        visible={photoUpload.consentVisible}
+        onCancel={photoUpload.cancelConsent}
+        onConfirm={photoUpload.handleConsent}
       />
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
@@ -310,9 +469,6 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
                     </TouchableOpacity>
                   </>
                 )}
-                <TouchableOpacity onPress={handleShare}>
-                  <Ionicons name="share-outline" size={24} color="#fff" />
-                </TouchableOpacity>
               </View>
             </View>
 
@@ -332,11 +488,13 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
                   <Text style={styles.ratingCount}>{activity.rating_count} reviews</Text>
                 </>
               )}
-              {myFacilitationCount > 0 && (
+              {runStats.runCount > 0 && (
                 <>
                   <Text style={styles.ratingDot}>•</Text>
                   <Ionicons name="ribbon-outline" size={13} color="rgba(255,255,255,0.85)" />
-                  <Text style={styles.ratingCount}>{myFacilitationCount} sessions</Text>
+                  <Text style={styles.ratingCount}>
+                    {runStats.runCount} session{runStats.runCount === 1 ? '' : 's'}
+                  </Text>
                 </>
               )}
             </View>
@@ -353,42 +511,97 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
                 <Text style={styles.metaChipText}>{ageRange}</Text>
               </View>
               {activity.creator_name && (
-                <View style={styles.metaChip}>
+                <TouchableOpacity
+                  style={styles.metaChip}
+                  activeOpacity={0.75}
+                  disabled={!activity.created_by}
+                  onPress={() =>
+                    navigation.push('EducatorProfile', {
+                      userId: activity.created_by,
+                      name: activity.creator_name,
+                    })
+                  }
+                >
                   <Ionicons name="person-outline" size={13} color="rgba(255,255,255,0.8)" />
                   <Text style={styles.metaChipText}>{activity.creator_name}</Text>
+                </TouchableOpacity>
+              )}
+
+              {(activity.remix_count ?? 0) > 0 && (
+                <View style={styles.metaChip}>
+                  <Ionicons name="git-branch-outline" size={13} color="rgba(255,255,255,0.8)" />
+                  <Text style={styles.metaChipText}>
+                    {activity.remix_count} remix{activity.remix_count === 1 ? '' : 'es'}
+                  </Text>
                 </View>
               )}
             </View>
+
+            {/* Credit back to the original. Tapping opens it; the stored title
+                is used so the credit survives the source being renamed. */}
+            {activity.remixed_from && (
+              <TouchableOpacity
+                style={styles.remixCredit}
+                onPress={() => openRemixSource(activity.remixed_from!.id)}
+                disabled={openingSource}
+                activeOpacity={0.75}
+              >
+                {openingSource ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Ionicons name="git-branch-outline" size={12} color="rgba(255,255,255,0.9)" />
+                )}
+                <Text style={styles.remixCreditText} numberOfLines={1}>
+                  Remixed from {activity.remixed_from.title}
+                  {activity.remixed_from.creator_name
+                    ? ` by ${activity.remixed_from.creator_name}`
+                    : ''}
+                </Text>
+              </TouchableOpacity>
+            )}
           </SafeAreaView>
         </LinearGradient>
 
         <View style={styles.body}>
-          {/* Download & WhatsApp */}
+          {/* Secondary actions: icon-led, one word each. */}
           <View style={styles.actionRow}>
             <TouchableOpacity
-              style={[styles.actionBtn, styles.downloadBtn]}
+              style={styles.iconAction}
               onPress={handleDownload}
               disabled={downloading}
             >
               {downloading ? (
-                <>
-                  <ActivityIndicator color="#fff" size="small" />
-                  <Text style={styles.actionBtnText}>{downloadPercent}%</Text>
-                </>
+                <ActivityIndicator color="#3182CE" size="small" />
               ) : (
-                <>
-                  <Ionicons name="download-outline" size={20} color="#fff" />
-                  <Text style={styles.actionBtnText}>Download</Text>
-                </>
+                <Ionicons name="download-outline" size={20} color="#3182CE" />
               )}
+              <Text style={styles.iconActionText}>
+                {downloading ? `${downloadPercent}%` : 'PDF'}
+              </Text>
             </TouchableOpacity>
 
+            <View style={styles.actionDivider} />
+
+            <TouchableOpacity style={styles.iconAction} onPress={handleShare}>
+              <Ionicons name="share-social-outline" size={20} color="#25D366" />
+              <Text style={styles.iconActionText}>Share</Text>
+            </TouchableOpacity>
+
+            <View style={styles.actionDivider} />
+
+            {/* Remix is not gated on steps: an activity without them is still
+                worth adapting. */}
             <TouchableOpacity
-              style={[styles.actionBtn, styles.whatsappBtn]}
-              onPress={handleWhatsApp}
+              style={styles.iconAction}
+              onPress={() =>
+                navigation.navigate('CreateTab', {
+                  screen: 'ReviewActivity',
+                  params: { remixFrom: activity },
+                })
+              }
             >
-              <Ionicons name="logo-whatsapp" size={20} color="#fff" />
-              <Text style={styles.actionBtnText}>WhatsApp</Text>
+              <Ionicons name="git-branch-outline" size={20} color={Colors.primary} />
+              <Text style={styles.iconActionText}>Remix</Text>
             </TouchableOpacity>
           </View>
 
@@ -401,28 +614,23 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
             />
           )}
 
-          {/* Enter Facilitation Mode CTA */}
+          {/* Primary action */}
           {activity.steps?.length > 0 && (
-            <>
-              <TouchableOpacity
-                style={styles.facilitationCTA}
-                onPress={() => navigation.navigate('FacilitationSetup', { activity })}
-                activeOpacity={0.85}
+            <TouchableOpacity
+              style={styles.facilitationCTA}
+              onPress={() => navigation.navigate('FacilitationSetup', { activity })}
+              activeOpacity={0.85}
+            >
+              <LinearGradient
+                colors={[Colors.gradientStart, Colors.gradientEnd]}
+                style={styles.facilitationCTAGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
               >
-                <LinearGradient
-                  colors={[Colors.gradientStart, Colors.gradientEnd]}
-                  style={styles.facilitationCTAGradient}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                >
-                  <Ionicons name="play" size={24} color="#fff" />
-                  <Text style={styles.facilitationCTAText}>Enter Facilitation Mode</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-              <Text style={styles.facilitationCTAHint}>
-                Step-by-step guidance with timers and tips
-              </Text>
-            </>
+                <Ionicons name="play" size={18} color="#fff" />
+                <Text style={styles.facilitationCTAText}>Facilitate</Text>
+              </LinearGradient>
+            </TouchableOpacity>
           )}
 
           {/* Translating / translated banners */}
@@ -504,7 +712,7 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
                   {step.images?.length > 0 && (
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.stepImgRow}>
                       {step.images.map((uri: string, idx: number) => (
-                        <TouchableOpacity key={idx} onPress={() => openLightbox(step.images, idx)} activeOpacity={0.85}>
+                        <TouchableOpacity key={idx} onPress={() => openLightbox(step.images.map((url: string) => ({ url })), idx)} activeOpacity={0.85}>
                           <Image source={{ uri }} style={styles.stepImg} />
                         </TouchableOpacity>
                       ))}
@@ -540,22 +748,160 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
             );
           })()}
 
-          {/* Community Notes */}
-          <Section title="Community Notes">
-            {translatedNotes.length === 0 && !showNoteForm && (
-              <>
-                <Text style={styles.noNotesText}>No community notes yet. Be the first to share your experience!</Text>
-                <Text style={styles.photoPromptText}>Share photos of what participants made!</Text>
-              </>
+          {/* What participants made. Its own collection and its own button, so
+              adding photos needs no writing and deleting an experience cannot
+              take them away. */}
+          <Section
+            title="What Participants Made"
+          >
+            {activityPhotos.length > 0 && (
+              <View style={styles.photoGrid}>
+                {activityPhotos.map((photo: ActivityPhoto, idx: number) => (
+                  <TouchableOpacity
+                    key={photo.id}
+                    style={styles.photoCell}
+                    activeOpacity={0.85}
+                    onPress={() => openLightbox(
+                      activityPhotos.map((p: ActivityPhoto) => ({ url: p.url, caption: p.caption })),
+                      idx,
+                    )}
+                    onLongPress={() => handleDeletePhoto(photo)}
+                  >
+                    <Image source={{ uri: photo.url }} style={styles.photoImg} />
+
+                    {/* Long-press alone was undiscoverable: nothing on the tile
+                        said a photo could be removed. Shown only to the people
+                        the rules actually allow to remove it. */}
+                    {(photo.user_id === user?.id || activity.created_by === user?.id) && (
+                      <TouchableOpacity
+                        style={styles.photoRemove}
+                        onPress={() => handleDeletePhoto(photo)}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      >
+                        <Ionicons name="close" size={13} color="#fff" />
+                      </TouchableOpacity>
+                    )}
+
+                    <View style={styles.photoAttrib}>
+                      <Text style={styles.photoAttribText} numberOfLines={1}>
+                        {photo.user_name}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
             )}
-            {translatedNotes.map((note: CommunityNote) => (
+
+            {activityPhotos.length === 0 && (
+              <Text style={styles.noNotesText}>
+                No photos yet. Add what your group made.
+              </Text>
+            )}
+
+            <PhotoStrip
+              photos={photoUpload.photos}
+              onRemove={photoUpload.removePhoto}
+              onRetry={photoUpload.retryPhoto}
+              onCaptionChange={photoUpload.setCaption}
+            />
+
+            <TouchableOpacity
+              style={styles.addPhotosBtn}
+              onPress={photoUpload.openPicker}
+              disabled={photoUpload.isUploading || !photoUpload.canAddMore}
+              activeOpacity={0.85}
+            >
+              {photoUpload.isUploading ? (
+                <ActivityIndicator size="small" color={Colors.primary} />
+              ) : (
+                <Ionicons name="camera-outline" size={18} color={Colors.primary} />
+              )}
+              <Text style={styles.addPhotosText}>
+                {photoUpload.isUploading
+                  ? 'Adding...'
+                  : 'Add photos'}
+              </Text>
+            </TouchableOpacity>
+          </Section>
+
+          {educators.length > 0 && (
+            <Section
+              title="Educators Who Ran This"
+              subtitle="Tap to see what else they have made"
+            >
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {educators.map(({ userId, sessions, profile }) => (
+                  <TouchableOpacity
+                    key={userId}
+                    style={styles.educatorCard}
+                    activeOpacity={0.8}
+                    onPress={() =>
+                      navigation.push('EducatorProfile', {
+                        userId,
+                        name: profile!.full_name,
+                        organization: profile!.organization,
+                        bio: profile!.bio,
+                      })
+                    }
+                  >
+                    <Image
+                      source={{
+                        uri: `https://robohash.org/${encodeURIComponent(userId)}?set=set1&size=120x120&bgset=bg1`,
+                      }}
+                      style={styles.educatorAvatar}
+                    />
+                    <Text style={styles.educatorName} numberOfLines={1}>
+                      {profile!.full_name}
+                    </Text>
+                    <Text style={styles.educatorMeta}>
+                      {sessions} session{sessions === 1 ? '' : 's'}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </Section>
+          )}
+
+          {/* Reports from people who ran this — the facilitator's own included. */}
+          <Section
+            title="Experiences"
+          >
+            {translatedNotes.length === 0 && !showNoteForm && (
+              <Text style={styles.noNotesText}>
+                No one has shared how this went yet. Be the first.
+              </Text>
+            )}
+            {(showAllExperiences
+              ? translatedNotes
+              : translatedNotes.slice(0, VISIBLE_EXPERIENCES)
+            ).map((note: CommunityNote) => (
               <View key={note.id} style={styles.noteCard}>
                 <View style={styles.noteHeader}>
                   <View style={styles.noteAvatar}>
                     <Text style={styles.noteAvatarText}>{note.user_name?.[0] ?? '?'}</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.noteUser}>{note.user_name}</Text>
+                    <View style={styles.noteUserRow}>
+                      <Text style={styles.noteUser}>{note.user_name}</Text>
+                      {note.user_id === activity.created_by && (
+                        <View style={styles.authorBadge}>
+                          <Text style={styles.authorBadgeText}>Author</Text>
+                        </View>
+                      )}
+                    </View>
+                    {/* Which run this report is about. Absent on reports written
+                        from the activity page rather than after facilitating. */}
+                    {(() => {
+                      const run = note.session_id ? runsById[note.session_id] : undefined;
+                      if (!run) return null;
+                      const when = formatRunDate(run.completed_at);
+                      const parts = [
+                        run.student_count > 0 ? `${run.student_count} participants` : null,
+                        when,
+                      ].filter(Boolean);
+                      if (parts.length === 0) return null;
+                      return <Text style={styles.noteRunMeta}>{parts.join(' · ')}</Text>;
+                    })()}
                     {note.rating != null && (
                       <View style={styles.stars}>
                         {[1, 2, 3, 4, 5].map((s) => (
@@ -576,22 +922,26 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
                   )}
                 </View>
                 <Text style={styles.noteText}>{note.note}</Text>
-                {note.images && note.images.length > 0 && (
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.noteImgRow}>
-                    {note.images.map((uri: string, idx: number) => (
-                      <TouchableOpacity key={idx} onPress={() => openLightbox(note.images!, idx)} activeOpacity={0.85}>
-                        <Image source={{ uri }} style={styles.noteImg} />
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                )}
               </View>
             ))}
+
+            {!showAllExperiences && translatedNotes.length > VISIBLE_EXPERIENCES && (
+              <TouchableOpacity
+                style={styles.showAllBtn}
+                onPress={() => setShowAllExperiences(true)}
+                activeOpacity={0.75}
+              >
+                <Text style={styles.showAllText}>
+                  Show {translatedNotes.length - VISIBLE_EXPERIENCES} more
+                </Text>
+                <Ionicons name="chevron-down" size={14} color={Colors.primary} />
+              </TouchableOpacity>
+            )}
 
             {/* Inline note form */}
             {showNoteForm ? (
               <View style={styles.inlineNoteForm}>
-                <Text style={styles.inlineNoteLabel}>How did it go?</Text>
+                <Text style={styles.inlineNoteLabel}>Rate it</Text>
                 <View style={styles.inlineStars}>
                   {[1, 2, 3, 4, 5].map((s) => (
                     <TouchableOpacity key={s} onPress={() => setNoteRating(s)} activeOpacity={0.7}>
@@ -613,43 +963,27 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
                   onChangeText={setNoteText}
                   textAlignVertical="top"
                 />
-                <Text style={[styles.charCount, noteText.length < 10 && styles.charCountWarn]}>
-                  {noteText.length} / 10 min
-                </Text>
 
-                {notePhotos.length > 0 && (
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.inlinePhotoRow}>
-                    {notePhotos.map((uri, index) => (
-                      <View key={index} style={styles.inlinePhotoThumb}>
-                        <Image source={{ uri }} style={styles.inlinePhotoImg} />
-                        <TouchableOpacity
-                          style={styles.inlinePhotoRemove}
-                          onPress={() => setNotePhotos((prev) => prev.filter((_, i) => i !== index))}
-                        >
-                          <Ionicons name="close-circle" size={20} color={Colors.error} />
-                        </TouchableOpacity>
-                      </View>
-                    ))}
-                  </ScrollView>
-                )}
-
-                {notePhotos.length < 5 && (
-                  <TouchableOpacity style={styles.inlinePhotoBtn} onPress={handlePickNotePhoto}>
-                    <Ionicons name="camera-outline" size={18} color="#3182CE" />
-                    <Text style={styles.inlinePhotoBtnText}>
-                      {notePhotos.length === 0 ? 'Add Photos (Optional)' : `Add More (${notePhotos.length}/5)`}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-                {notePhotos.length === 0 && (
-                  <Text style={styles.photoPromptText}>Share photos of what participants made!</Text>
+                {/* A floor, not a cap: says "minimum" so the slash does not read
+                    as a limit, and disappears once met rather than counting past
+                    it. The unit is spelled out because "min" once read as
+                    minutes. */}
+                {noteText.trim().length < MIN_EXPERIENCE_CHARS && (
+                  <Text style={[styles.charCount, styles.charCountWarn]}>
+                    {`${noteText.trim().length} / ${MIN_EXPERIENCE_CHARS} chars minimum`}
+                  </Text>
                 )}
 
                 <View style={styles.inlineNoteActions}>
+                  {/* Dimmed until it will actually work, which says the same
+                      thing a running character count did without the text. */}
                   <TouchableOpacity
-                    style={styles.inlineSubmitBtn}
+                    style={[
+                      styles.inlineSubmitBtn,
+                      !noteReady && styles.submitDisabled,
+                    ]}
                     onPress={handleSubmitNote}
-                    disabled={noteLoading}
+                    disabled={noteLoading || !noteReady}
                     activeOpacity={0.85}
                   >
                     <LinearGradient
@@ -663,14 +997,14 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
                       ) : (
                         <>
                           <Ionicons name="send-outline" size={16} color="#fff" />
-                          <Text style={styles.inlineSubmitText}>Publish Note</Text>
+                          <Text style={styles.inlineSubmitText}>Share Your Experience</Text>
                         </>
                       )}
                     </LinearGradient>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.inlineCancelBtn}
-                    onPress={() => { setShowNoteForm(false); setNoteText(''); setNoteRating(0); setNotePhotos([]); }}
+                    onPress={() => { setShowNoteForm(false); setNoteText(''); setNoteRating(0); }}
                   >
                     <Text style={styles.inlineCancelText}>Cancel</Text>
                   </TouchableOpacity>
@@ -692,10 +1026,15 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, subtitle, children }: {
+  title: string;
+  subtitle?: string | null;
+  children: React.ReactNode;
+}) {
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
+      {subtitle ? <Text style={styles.sectionSubtitle}>{subtitle}</Text> : null}
       {children}
     </View>
   );
@@ -721,14 +1060,19 @@ const styles = StyleSheet.create({
   },
   metaChipText: { fontSize: 12, color: '#fff', fontWeight: '600', fontFamily: 'Raleway_600SemiBold' },
   body: { paddingBottom: 32 },
-  actionRow: { flexDirection: 'row', gap: 12, padding: 16 },
-  actionBtn: {
-    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 8, paddingVertical: 14, borderRadius: 14,
+  actionRow: {
+    flexDirection: 'row', alignItems: 'center',
+    paddingHorizontal: 16, paddingTop: 14,
   },
-  downloadBtn: { backgroundColor: '#3182CE' },
-  whatsappBtn: { backgroundColor: '#25D366' },
-  actionBtnText: { color: '#fff', fontSize: 15, fontWeight: '700', fontFamily: 'Raleway_700Bold' },
+  iconAction: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: 6, paddingVertical: 6,
+  },
+  iconActionText: {
+    fontSize: 13, fontWeight: '700',
+    fontFamily: 'Raleway_700Bold', color: '#4A5568',
+  },
+  actionDivider: { width: 1, height: 18, backgroundColor: '#E2E8F0' },
   translatingBar: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     backgroundColor: '#EBF8FF', borderWidth: 1, borderColor: '#BEE3F8',
@@ -812,7 +1156,70 @@ const styles = StyleSheet.create({
   },
   addNoteText: { fontSize: 14, color: '#718096', fontWeight: '600', fontFamily: 'Raleway_600SemiBold' },
   noNotesText: { fontSize: 13, color: '#A0AEC0', fontStyle: 'italic', marginBottom: 4 },
-  photoPromptText: { fontSize: 12, color: '#3182CE', marginBottom: 8 },
+  sectionSubtitle: { fontSize: 12, color: '#718096', marginTop: -6, marginBottom: 10 },
+  educatorCard: {
+    width: 84, alignItems: 'center', marginRight: 12,
+  },
+  educatorAvatar: {
+    width: 52, height: 52, borderRadius: 26,
+    backgroundColor: '#EDF2F7', marginBottom: 6,
+  },
+  educatorName: {
+    fontSize: 12, fontWeight: '700',
+    fontFamily: 'Raleway_700Bold', color: Colors.textPrimary,
+    textAlign: 'center',
+  },
+  educatorMeta: { fontSize: 10, color: '#718096', marginTop: 1 },
+  photoGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  photoCell: {
+    width: PHOTO_CELL, height: PHOTO_CELL,
+    borderRadius: 8, overflow: 'hidden', backgroundColor: '#E2E8F0',
+  },
+  photoImg: { width: '100%', height: '100%' },
+  photoRemove: {
+    position: 'absolute', top: 4, right: 4,
+    width: 20, height: 20, borderRadius: 10,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  photoAttrib: {
+    position: 'absolute', left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    paddingHorizontal: 5, paddingVertical: 3,
+  },
+  photoAttribText: {
+    color: '#fff', fontSize: 9,
+    fontWeight: '600', fontFamily: 'Raleway_600SemiBold',
+  },
+  addPhotosBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: 6, paddingVertical: 11, marginTop: 12,
+    borderRadius: 10, borderWidth: 1.5, borderColor: Colors.primary,
+    backgroundColor: '#FFF5F5',
+  },
+  addPhotosText: {
+    fontSize: 14, fontWeight: '700',
+    fontFamily: 'Raleway_700Bold', color: Colors.primary,
+  },
+  submitDisabled: { opacity: 0.45 },
+  showAllBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: 4, paddingVertical: 10, marginTop: 4,
+  },
+  showAllText: {
+    fontSize: 13, fontWeight: '700',
+    fontFamily: 'Raleway_700Bold', color: Colors.primary,
+  },
+  noteRunMeta: { fontSize: 11, color: '#718096', marginTop: 1 },
+  noteUserRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  authorBadge: {
+    backgroundColor: '#FFF5F5', borderRadius: 999,
+    paddingHorizontal: 7, paddingVertical: 2,
+  },
+  authorBadgeText: {
+    fontSize: 10, fontWeight: '700',
+    fontFamily: 'Raleway_700Bold', color: Colors.primary,
+  },
   videoCard: {
     backgroundColor: '#1A202C', borderRadius: 12, overflow: 'hidden',
     aspectRatio: 16 / 9, justifyContent: 'center', alignItems: 'center',
@@ -830,24 +1237,27 @@ const styles = StyleSheet.create({
   },
   videoLinkText: { color: '#fff', fontSize: 14, fontWeight: '700', fontFamily: 'Raleway_700Bold' },
   videoUrlText: { color: 'rgba(255,255,255,0.7)', fontSize: 11 },
-  noteImgRow: { marginTop: 8 },
-  noteImg: {
-    width: 80, height: 60, borderRadius: 6,
-    marginRight: 6, backgroundColor: '#E2E8F0',
+  remixCredit: {
+    flexDirection: 'row', alignItems: 'center', gap: 5,
+    alignSelf: 'flex-start', marginTop: 10,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5,
+    maxWidth: '100%',
+  },
+  remixCreditText: {
+    flexShrink: 1,
+    fontSize: 12, color: '#fff', fontWeight: '600',
+    fontFamily: 'Raleway_600SemiBold',
   },
   facilitationCTA: {
     marginHorizontal: 16, marginTop: 12, borderRadius: 16, overflow: 'hidden',
   },
   facilitationCTAGradient: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 10, paddingVertical: 18,
+    gap: 8, paddingVertical: 13,
   },
   facilitationCTAText: {
-    fontSize: 18, fontWeight: '900', fontFamily: 'Raleway_800ExtraBold', color: '#fff',
-  },
-  facilitationCTAHint: {
-    fontSize: 12, color: '#718096', textAlign: 'center',
-    marginTop: 8, marginHorizontal: 16,
+    fontSize: 15, fontWeight: '700', fontFamily: 'Raleway_700Bold', color: '#fff',
   },
   // Lightbox
   lightboxOverlay: {
@@ -860,8 +1270,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.2)',
     alignItems: 'center', justifyContent: 'center',
   },
+  lightboxPage: {
+    width: SCREEN_WIDTH, alignItems: 'center', justifyContent: 'center',
+  },
   lightboxImage: {
     width: SCREEN_WIDTH, height: SCREEN_WIDTH * 0.75,
+  },
+  lightboxCaption: {
+    color: '#fff', fontSize: 13, textAlign: 'center',
+    paddingHorizontal: 24, paddingTop: 14,
   },
   // Inline note form
   inlineNoteForm: {
@@ -877,13 +1294,6 @@ const styles = StyleSheet.create({
   },
   charCount: { fontSize: 11, color: '#718096', textAlign: 'right', marginTop: 4 },
   charCountWarn: { color: Colors.error },
-  inlinePhotoRow: { marginTop: 10, marginBottom: 4 },
-  inlinePhotoThumb: { position: 'relative', marginRight: 8 },
-  inlinePhotoImg: { width: 80, height: 80, borderRadius: 8, backgroundColor: '#E2E8F0' },
-  inlinePhotoRemove: {
-    position: 'absolute', top: -6, right: -6,
-    backgroundColor: '#fff', borderRadius: 10,
-  },
   inlinePhotoBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     gap: 6, paddingVertical: 10, marginTop: 8,

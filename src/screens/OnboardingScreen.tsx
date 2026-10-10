@@ -35,7 +35,7 @@ const SLIDES = [
     bg: '#C6F6D5',
     gradientColors: ['#C6F6D5', '#F0FFF4'] as [string, string],
     title: 'Learn Together',
-    description: 'Share experiences, add community notes, and help each other facilitate better.',
+    description: 'Report how your sessions went, share what participants made, and help each other facilitate better.',
   },
 ];
 
