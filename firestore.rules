@@ -1,7 +1,12 @@
 rules_version = '2';
 // ─────────────────────────────────────────────────────────────────────────────
 // ZubHub Firestore Security Rules
-// Paste these into: Firebase Console → Firestore → Rules
+//
+// Deploy with:  firebase deploy --only firestore:rules
+// (first time:  npm i -g firebase-tools && firebase login && firebase use --add)
+//
+// Editing this file alone changes nothing: the rules are enforced from the
+// deployed ruleset, so a new collection stays default-denied until you deploy.
 // ─────────────────────────────────────────────────────────────────────────────
 
 service cloud.firestore {
@@ -30,7 +35,8 @@ service cloud.firestore {
     // Helper: true when only engagement counters are changed
     function onlyCounterFieldsChanged() {
       let allowed = ['view_count', 'download_count', 'share_count',
-                     'facilitation_count', 'rating', 'rating_count'].toSet();
+                     'facilitation_count', 'remix_count',
+                     'rating', 'rating_count'].toSet();
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowed);
     }
 
@@ -51,9 +57,76 @@ service cloud.firestore {
       allow create: if request.auth != null
         && request.resource.data.user_id == request.auth.uid;
 
-      // Only the note author can update or delete
-      allow update, delete: if request.auth != null
+      // The note author can update or delete their own note. The owner of the
+      // activity may also delete notes attached to it, so deleting an activity
+      // does not leave other educators' notes stranded.
+      allow update: if request.auth != null
         && resource.data.user_id == request.auth.uid;
+      allow delete: if request.auth != null
+        && (resource.data.user_id == request.auth.uid
+            || ownsActivity(resource.data.activity_id));
+    }
+
+    // True when the signed-in user created the activity. Returns false once the
+    // activity is gone, so attached documents must be cleared before it.
+    function ownsActivity(activityId) {
+      return activityId is string
+        && exists(/databases/$(database)/documents/activities/$(activityId))
+        && get(/databases/$(database)/documents/activities/$(activityId))
+             .data.created_by == request.auth.uid;
+    }
+
+    // ── Facilitation Sessions (Runs) ──────────────────────────────────────────
+    // One document per completed run of an activity. Runs are recorded whether
+    // or not the educator writes a note, and they are what `facilitation_count`
+    // is meant to reflect.
+    match /facilitation_sessions/{sessionId} {
+      // Readable by anyone: activity pages aggregate runs across educators.
+      allow read: if true;
+
+      // Signed-in users can record their own runs only.
+      allow create: if request.auth != null
+        && request.resource.data.user_id == request.auth.uid
+        && request.resource.data.activity_id is string
+        && request.resource.data.student_count is number
+        && request.resource.data.student_count >= 0;
+
+      // A run is a historical fact — it may be removed by its owner, but not
+      // rewritten, so the counter it fed cannot be retroactively changed.
+      allow update: if false;
+      allow delete: if request.auth != null
+        && (resource.data.user_id == request.auth.uid
+            || ownsActivity(resource.data.activity_id));
+    }
+
+    // ── Activity Photos ───────────────────────────────────────────────────────
+    // What participants made. Deliberately its own collection: photos are added
+    // without writing anything, and deleting a written experience must not take
+    // them with it.
+    match /activity_photos/{photoId} {
+      allow read: if true;
+
+      allow create: if request.auth != null
+        && request.resource.data.user_id == request.auth.uid
+        && request.resource.data.activity_id is string
+        && request.resource.data.url is string;
+
+      // A photo is a record of what happened, so it is removed rather than
+      // edited. The uploader or the activity's owner may remove one.
+      allow update: if false;
+      allow delete: if request.auth != null
+        && (resource.data.user_id == request.auth.uid
+            || ownsActivity(resource.data.activity_id));
+    }
+
+    // ── Push Tokens ───────────────────────────────────────────────────────────
+    // Kept out of the user profile because profiles are world-readable and a
+    // push token should not be. Any signed-in user can read one, because the
+    // client that triggers an event is the one that sends the notification --
+    // when a server exists, tighten this to deny client reads entirely.
+    match /push_tokens/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
 
     // ── Engagement Events (Analytics) ─────────────────────────────────────────

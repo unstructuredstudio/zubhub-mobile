@@ -6,14 +6,25 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    match /uploads/{allPaths=**} {
-      // Anyone can view uploaded images (activity photos are public)
+
+    // Uploads are namespaced per user, so nobody can overwrite (or guess their
+    // way onto) another educator's files.
+    match /uploads/{userId}/{allPaths=**} {
+      // Activity and gallery photos are public.
       allow read: if true;
 
-      // Only signed-in users can upload
       allow write: if request.auth != null
+        && request.auth.uid == userId
         && request.resource.size < 5 * 1024 * 1024  // max 5 MB per image
         && request.resource.contentType.matches('image/.*');
+    }
+
+    // Legacy flat layout (uploads/<file>.jpg), written before uploads were
+    // namespaced. Kept readable so existing activity images and avatars still
+    // resolve; no new writes land here.
+    match /uploads/{fileName} {
+      allow read: if true;
+      allow write: if false;
     }
   }
 }
