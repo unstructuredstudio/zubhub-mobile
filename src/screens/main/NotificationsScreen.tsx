@@ -32,7 +32,11 @@ const EVENT_CONFIG: Record<string, { icon: string; color: string; label: string 
   download:        { icon: 'download-outline',  color: '#10B981', label: 'downloaded' },
   share_whatsapp:  { icon: 'logo-whatsapp',     color: '#25D366', label: 'shared on WhatsApp' },
   share_other:     { icon: 'share-outline',      color: '#8B5CF6', label: 'shared' },
-  add_note:        { icon: 'chatbubble-outline', color: '#F59E0B', label: 'added a note to' },
+  add_note:        { icon: 'chatbubble-outline', color: '#F59E0B', label: 'shared an experience of' },
+  // Without these two, a facilitation or a remix fell through to the `view`
+  // fallback below and was reported as "viewed your activity".
+  facilitate:      { icon: 'ribbon-outline',     color: '#E53E3E', label: 'facilitated' },
+  remix:           { icon: 'git-branch-outline', color: '#E53E3E', label: 'remixed' },
 };
 
 function relativeTime(date: Date): string {

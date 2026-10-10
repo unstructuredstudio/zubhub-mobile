@@ -10,6 +10,11 @@ import {
   fetchActivity,
   searchActivities,
   fetchCommunityNotes,
+  fetchFacilitationSessions,
+  fetchActivityPhotos,
+  fetchUserProfiles,
+  fetchUserActivities,
+  fetchUserSessionCount,
   addCommunityNote,
   createActivity,
   incrementViewCount,
@@ -24,6 +29,11 @@ export const queryKeys = {
   activity: (id: string) => ['activity', id] as const,
   search: (query: string, language?: string) => ['search', query, language] as const,
   notes: (activityId: string) => ['notes', activityId] as const,
+  runs: (activityId: string) => ['runs', activityId] as const,
+  photos: (activityId: string) => ['photos', activityId] as const,
+  profiles: (ids: string[]) => ['profiles', [...ids].sort().join(',')] as const,
+  userActivities: (userId: string) => ['userActivities', userId] as const,
+  userSessions: (userId: string) => ['userSessions', userId] as const,
 };
 
 // ─── Activity Feed ────────────────────────────────────────────────────────────
@@ -73,6 +83,56 @@ export function useCommunityNotes(activityId: string) {
     queryFn: () => fetchCommunityNotes(activityId),
     staleTime: 60 * 1000,
     enabled: !!activityId,
+  });
+}
+
+/** Photos of what participants made, independent of any written experience. */
+export function useActivityPhotos(activityId: string) {
+  return useQuery({
+    queryKey: queryKeys.photos(activityId),
+    queryFn: () => fetchActivityPhotos(activityId),
+    staleTime: 60 * 1000,
+    enabled: !!activityId,
+  });
+}
+
+/** Recorded runs of an activity — the source for run stats and group sizes. */
+export function useFacilitationSessions(activityId: string) {
+  return useQuery({
+    queryKey: queryKeys.runs(activityId),
+    queryFn: () => fetchFacilitationSessions(activityId),
+    staleTime: 60 * 1000,
+    enabled: !!activityId,
+  });
+}
+
+/** Profiles for a set of user ids, e.g. the educators who ran an activity. */
+export function useUserProfiles(userIds: string[]) {
+  return useQuery({
+    queryKey: queryKeys.profiles(userIds),
+    queryFn: () => fetchUserProfiles(userIds),
+    staleTime: 5 * 60 * 1000,
+    enabled: userIds.length > 0,
+  });
+}
+
+/** Activities written by one educator. */
+export function useUserActivities(userId: string) {
+  return useQuery({
+    queryKey: queryKeys.userActivities(userId),
+    queryFn: () => fetchUserActivities(userId),
+    staleTime: 60 * 1000,
+    enabled: !!userId,
+  });
+}
+
+/** How many sessions this educator has facilitated, across all activities. */
+export function useUserSessionCount(userId: string) {
+  return useQuery({
+    queryKey: queryKeys.userSessions(userId),
+    queryFn: () => fetchUserSessionCount(userId),
+    staleTime: 60 * 1000,
+    enabled: !!userId,
   });
 }
 

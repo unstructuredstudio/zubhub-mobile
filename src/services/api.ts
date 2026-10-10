@@ -11,7 +11,10 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { db, auth } from '../config/firebase';
-import { Activity, CommunityNote, UserProfile, PaginatedResponse } from '../types';
+import {
+  Activity, ActivityPhoto, CommunityNote, FacilitationSession, NotePhoto,
+  RemixSource, UserProfile, PaginatedResponse,
+} from '../types';
 
 // Recursively remove undefined values from an object (Firestore rejects them)
 function stripUndefined(obj: any): any {
@@ -70,6 +73,7 @@ const MOCK_ACTIVITIES: Activity[] = [
     download_count: 128,
     share_count: 45,
     view_count: 340,
+    facilitation_count: 12,
     rating: 4.7,
     rating_count: 32,
     tags: ['STEM', 'engineering', 'teamwork'],
@@ -77,7 +81,7 @@ const MOCK_ACTIVITIES: Activity[] = [
   {
     id: 'act-002',
     title: 'Story Dice',
-    description: 'Roll picture dice and collaboratively build a creative story — great for language and imagination.',
+    description: 'Roll picture dice and collaboratively build a creative story. Great for language and imagination.',
     duration_minutes: 30,
     min_age: 5,
     max_age: 10,
@@ -97,6 +101,7 @@ const MOCK_ACTIVITIES: Activity[] = [
     download_count: 89,
     share_count: 31,
     view_count: 210,
+    facilitation_count: 9,
     rating: 4.5,
     rating_count: 20,
     tags: ['language', 'creativity', 'storytelling'],
@@ -308,6 +313,7 @@ const MOCK_ACTIVITIES: Activity[] = [
     download_count: 54,
     share_count: 18,
     view_count: 145,
+    facilitation_count: 11,
     rating: 4.3,
     rating_count: 15,
     tags: ['outdoor', 'science', 'nature'],
@@ -389,9 +395,18 @@ export async function fetchActivities(
 
   let activities = snapshot.docs.map(docToActivity);
 
-  if (language && language !== 'en') {
-    activities = activities.filter(a => a.language === language);
-  }
+  // Remixes are reachable from the activity they came from, but they do not
+  // compete in the feed — a popular activity would otherwise crowd it out with
+  // near-identical variants. Filtered here rather than in the query so no
+  // composite index is needed; `hasMore` still counts pre-filter documents, so
+  // pagination is unaffected.
+  activities = activities.filter(a => !a.remixed_from);
+
+  // Deliberately NOT filtered by `language`. Every activity is stored with
+  // `language: 'en'` and translated on read, so filtering by the reader's
+  // chosen language emptied the feed for every non-English user -- the app
+  // looked like it had no content at all in Hindi, Tamil, Bengali and the rest.
+  // The parameter is kept because it still scopes the React Query cache.
 
   return {
     data: activities,
@@ -446,9 +461,7 @@ export async function searchActivities(
         a.tags?.some((t: string) => t.toLowerCase().includes(lower)),
     );
 
-  if (language && language !== 'en') {
-    results = results.filter(a => a.language === language);
-  }
+  // Not filtered by language, for the same reason as the feed above.
 
   return results.slice(0, 20);
 }
@@ -489,6 +502,38 @@ export async function createActivity(activity: Partial<Activity>): Promise<Activ
   });
 
   return fetchActivity(docRef.id);
+}
+
+/**
+ * Publish an activity derived from another one.
+ *
+ * The remix is an ordinary activity that additionally carries attribution back
+ * to its source, and this is the only place `remix_count` grows -- so, as with
+ * facilitation runs, the tally cannot drift from the remixes behind it.
+ */
+export async function createRemix(
+  source: Pick<Activity, 'id' | 'title' | 'creator_name'>,
+  activity: Partial<Activity>,
+): Promise<Activity> {
+  const remixedFrom: RemixSource = {
+    id: source.id,
+    title: source.title,
+    ...(source.creator_name ? { creator_name: source.creator_name } : {}),
+  };
+
+  const created = await createActivity({ ...activity, remixed_from: remixedFrom });
+
+  if (!IS_DEMO) {
+    // Attribution is already saved on the remix; a failed tally must not undo
+    // a published activity, so the source update is best-effort.
+    try {
+      await updateDoc(doc(db, 'activities', source.id), { remix_count: increment(1) });
+    } catch {
+      // The remix still carries `remixed_from`, which is the recoverable link.
+    }
+  }
+
+  return created;
 }
 
 export async function updateActivity(
@@ -534,19 +579,207 @@ export async function incrementFacilitationCount(activityId: string): Promise<vo
   await updateDoc(doc(db, 'activities', activityId), { facilitation_count: increment(1) });
 }
 
+// ─── Photos of what participants made ───────────────────────────────────────
+
+/**
+ * Photos for an activity, newest first.
+ *
+ * A separate collection rather than a field on the community note: photos are
+ * added without writing anything, and deleting a written experience must not
+ * remove them.
+ */
+export async function fetchActivityPhotos(activityId: string): Promise<ActivityPhoto[]> {
+  if (IS_DEMO) return [];
+
+  const snap = await getDocs(
+    query(collection(db, 'activity_photos'), where('activity_id', '==', activityId)),
+  );
+
+  return snap.docs
+    .map((d) => {
+      const data = d.data();
+      return {
+        id: d.id,
+        activity_id: data.activity_id,
+        user_id: data.user_id,
+        user_name: data.user_name ?? 'Educator',
+        session_id: data.session_id ?? undefined,
+        url: data.url,
+        caption: data.caption ?? undefined,
+        created_at: tsToIso(data.created_at),
+      } as ActivityPhoto;
+    })
+    .sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? ''));
+}
+
+/** Add uploaded photos to an activity. Returns how many landed. */
+export async function addActivityPhotos(
+  activityId: string,
+  photos: NotePhoto[],
+  sessionId?: string,
+): Promise<number> {
+  if (IS_DEMO) return photos.length;
+
+  const user = auth.currentUser;
+  if (!user) throw new Error('Must be signed in to add photos');
+
+  const profile = await fetchUserProfile(user.uid);
+
+  await Promise.all(
+    photos.map((photo) =>
+      addDoc(collection(db, 'activity_photos'), {
+        activity_id: activityId,
+        user_id: user.uid,
+        user_name: profile.full_name,
+        session_id: sessionId ?? null,
+        url: photo.url,
+        caption: photo.caption ?? null,
+        created_at: serverTimestamp(),
+      }),
+    ),
+  );
+
+  return photos.length;
+}
+
+export async function deleteActivityPhoto(photoId: string): Promise<void> {
+  if (IS_DEMO) return;
+  await deleteDoc(doc(db, 'activity_photos', photoId));
+}
+
+/**
+ * Every recorded run of an activity, newest first.
+ *
+ * One query serves the run stats, the "from N runs" counts and the group size
+ * shown on each report, so the screen never fans out per note. Filtering is a
+ * single equality on `activity_id`, which needs no composite index.
+ */
+export async function fetchFacilitationSessions(
+  activityId: string,
+): Promise<FacilitationSession[]> {
+  if (IS_DEMO) return [];
+
+  const snap = await getDocs(
+    query(collection(db, 'facilitation_sessions'), where('activity_id', '==', activityId)),
+  );
+
+  return snap.docs
+    .map((d) => {
+      const data = d.data();
+      return {
+        id: d.id,
+        activity_id: data.activity_id,
+        user_id: data.user_id,
+        student_count: typeof data.student_count === 'number' ? data.student_count : 0,
+        started_at: data.started_at ?? '',
+        completed_at: data.completed_at ?? '',
+        step_notes: data.step_notes ?? {},
+      } as FacilitationSession;
+    })
+    .sort((a, b) => (b.completed_at ?? '').localeCompare(a.completed_at ?? ''));
+}
+
+/**
+ * How many sessions an educator has facilitated, across every activity.
+ *
+ * Distinct from summing `facilitation_count` over the activities they wrote --
+ * that counts runs of *their* activities by anyone, which is a different
+ * statement and reads as zero for an educator who runs other people's work.
+ * Filtering is a single equality on `user_id`, so no composite index.
+ */
+export async function fetchUserSessionCount(userId: string): Promise<number> {
+  if (IS_DEMO || !userId) return 0;
+  const snap = await getDocs(
+    query(collection(db, 'facilitation_sessions'), where('user_id', '==', userId)),
+  );
+  return snap.size;
+}
+
+/**
+ * Persist one completed run of an activity.
+ *
+ * This is the only place `facilitation_count` grows, so the counter cannot
+ * drift away from the runs that produced it. Writing a community note is a
+ * separate, optional step that links back here by id.
+ */
+export async function recordFacilitationSession(input: {
+  activityId: string;
+  studentCount: number;
+  startedAt: string;
+  stepNotes: Record<number, string>;
+}): Promise<FacilitationSession> {
+  const completedAt = new Date().toISOString();
+
+  if (IS_DEMO) {
+    return {
+      id: `session-demo-${Date.now()}`,
+      activity_id: input.activityId,
+      user_id: 'demo-user-001',
+      student_count: input.studentCount,
+      started_at: input.startedAt,
+      completed_at: completedAt,
+      step_notes: input.stepNotes,
+    };
+  }
+
+  const user = auth.currentUser;
+  if (!user) throw new Error('Must be signed in to record a facilitation');
+
+  const docRef = await addDoc(collection(db, 'facilitation_sessions'), {
+    activity_id: input.activityId,
+    user_id: user.uid,
+    student_count: input.studentCount,
+    started_at: input.startedAt,
+    completed_at: completedAt,
+    step_notes: input.stepNotes ?? {},
+    created_at: serverTimestamp(),
+  });
+
+  // The run is what counts, so the tally only moves once the run is on record.
+  // A failure here must not lose the session that was already written.
+  try {
+    await incrementFacilitationCount(input.activityId);
+  } catch {
+    // The sessions collection remains the recoverable source of truth.
+  }
+
+  return {
+    id: docRef.id,
+    activity_id: input.activityId,
+    user_id: user.uid,
+    student_count: input.studentCount,
+    started_at: input.startedAt,
+    completed_at: completedAt,
+    step_notes: input.stepNotes ?? {},
+  };
+}
+
 export async function deleteActivity(activityId: string): Promise<void> {
   if (IS_DEMO) return;
 
   const user = auth.currentUser;
   if (!user) throw new Error('Must be signed in to delete an activity');
 
-  // Delete associated community notes
-  const notesSnap = await getDocs(
-    query(collection(db, 'community_notes'), where('activity_id', '==', activityId)),
-  );
-  await Promise.all(notesSnap.docs.map(d => deleteDoc(d.ref)));
+  // Attached documents are cleaned up first, because the rule that lets an
+  // activity owner remove them checks the activity still exists.
+  //
+  // Every one of these is best-effort. They used to run under `Promise.all`,
+  // so a single note written by another educator rejected the batch and the
+  // activity itself was never deleted — the delete button simply appeared not
+  // to work on any activity that had been used.
+  const attached = ['community_notes', 'facilitation_sessions', 'activity_photos'];
+  for (const name of attached) {
+    try {
+      const snap = await getDocs(
+        query(collection(db, name), where('activity_id', '==', activityId)),
+      );
+      await Promise.allSettled(snap.docs.map((d) => deleteDoc(d.ref)));
+    } catch {
+      // Leftovers are unreachable once the activity is gone; deleting the
+      // activity matters more than a tidy sweep.
+    }
+  }
 
-  // Delete the activity document
   await deleteDoc(doc(db, 'activities', activityId));
 }
 
@@ -568,11 +801,21 @@ export async function fetchCommunityNotes(activityId: string): Promise<Community
     .slice(0, 20);
 }
 
+/**
+ * Minimum length of a written experience.
+ *
+ * Ten characters allowed "went well", which tells the next educator nothing.
+ * Photos no longer require any writing, so the low-friction path is intact and
+ * this floor can ask for something substantive: roughly a full sentence.
+ */
+export const MIN_EXPERIENCE_CHARS = 100;
+
 export async function addCommunityNote(
   activityId: string,
   note: string,
   rating?: number,
-  images?: string[],
+  images?: NotePhoto[],
+  sessionId?: string,
 ): Promise<CommunityNote> {
   if (IS_DEMO) {
     return {
@@ -583,6 +826,7 @@ export async function addCommunityNote(
       note,
       rating,
       images,
+      session_id: sessionId,
       created_at: new Date().toISOString(),
     };
   }
@@ -600,6 +844,7 @@ export async function addCommunityNote(
     note,
     rating: rating ?? null,
     images: images ?? [],
+    session_id: sessionId ?? null,
     created_at: serverTimestamp(),
   });
 
@@ -678,8 +923,32 @@ export async function updateUserProfile(
     if (v !== undefined) cleaned[k] = v;
   }
 
-  await updateDoc(doc(db, 'users', user.uid), cleaned);
+  // `setDoc` with merge rather than `updateDoc`: an account whose profile
+  // document was never written (or was removed) would make `updateDoc` throw
+  // `not-found`, and the save would fail with nothing the user could do.
+  await setDoc(doc(db, 'users', user.uid), cleaned, { merge: true });
   return fetchUserProfile(user.uid);
+}
+
+/**
+ * Profiles for a set of user ids, deduplicated.
+ *
+ * Used to put names and faces on the educators who have run an activity. A
+ * missing or unreadable profile is skipped rather than failing the batch, so
+ * one deleted account cannot blank out the whole section.
+ */
+export async function fetchUserProfiles(userIds: string[]): Promise<UserProfile[]> {
+  const unique = Array.from(new Set(userIds.filter(Boolean)));
+  if (unique.length === 0) return [];
+  if (IS_DEMO) return [MOCK_USER];
+
+  const settled = await Promise.allSettled(
+    unique.map((id) => fetchUserProfile(id)),
+  );
+
+  return settled
+    .filter((r): r is PromiseFulfilledResult<UserProfile> => r.status === 'fulfilled')
+    .map((r) => r.value);
 }
 
 export async function fetchUserActivities(userId: string): Promise<Activity[]> {
@@ -697,6 +966,43 @@ export async function fetchUserActivities(userId: string): Promise<Activity[]> {
 }
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
+
+/**
+ * Turn a Firebase auth error into something an educator can act on.
+ *
+ * Firebase's own messages read like "Firebase: Error (auth/invalid-credential)."
+ * -- they name the SDK and a code, and say nothing about what to do. Anything
+ * unrecognised falls back to a plain sentence rather than leaking the code.
+ */
+export function authErrorMessage(err: unknown): string {
+  const code = (err as { code?: string })?.code ?? '';
+
+  switch (code) {
+    case 'auth/invalid-credential':
+    case 'auth/wrong-password':
+    case 'auth/user-not-found':
+      // Firebase deliberately blurs these three so an attacker cannot probe
+      // for registered addresses. The wording keeps that.
+      return 'That email and password do not match. Please check both and try again.';
+    case 'auth/invalid-email':
+      return 'That does not look like a valid email address.';
+    case 'auth/user-disabled':
+      return 'This account has been disabled. Please contact the ZubHub team.';
+    case 'auth/email-already-in-use':
+      return 'An account already exists with this email. Try signing in instead.';
+    case 'auth/weak-password':
+      return 'Please choose a password with at least 6 characters.';
+    case 'auth/too-many-requests':
+      return 'Too many attempts. Please wait a few minutes and try again.';
+    case 'auth/network-request-failed':
+      return 'Could not reach the server. Check your connection and try again.';
+    case 'auth/operation-not-allowed':
+      return 'Email sign-in is not enabled for this app yet.';
+    default:
+      if (code) console.warn('[Auth] unhandled error code:', code);
+      return 'Something went wrong. Please try again.';
+  }
+}
 
 export async function signIn(email: string, password: string): Promise<UserProfile> {
   if (IS_DEMO) return { ...MOCK_USER, email };

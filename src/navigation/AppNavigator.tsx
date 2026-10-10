@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
@@ -8,7 +8,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useStore } from '../store/useStore';
 import { auth } from '../config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { fetchUserProfile } from '../services/api';
+import { fetchUserProfile, fetchActivity } from '../services/api';
+import * as Notifications from 'expo-notifications';
+import {
+  registerForPushNotifications,
+  unregisterPushNotifications,
+} from '../services/notifications';
 import { Colors, FontSize } from '../theme';
 
 // ─── Screens ──────────────────────────────────────────────────────────────────
@@ -18,7 +23,6 @@ import SignInScreen from '../screens/auth/SignInScreen';
 import SignUpScreen from '../screens/auth/SignUpScreen';
 import HomeScreen from '../screens/main/HomeScreen';
 import ActivityDetailScreen from '../screens/main/ActivityDetailScreen';
-import AddNoteScreen from '../screens/main/AddNoteScreen';
 import SearchScreen from '../screens/main/SearchScreen';
 import CreateActivityScreen from '../screens/main/CreateActivityScreen';
 import ReviewActivityScreen from '../screens/main/ReviewActivityScreen';
@@ -30,6 +34,13 @@ import FacilitationActiveScreen from '../screens/main/FacilitationActiveScreen';
 import FacilitationCompleteScreen from '../screens/main/FacilitationCompleteScreen';
 import SuggestScreen from '../screens/main/SuggestScreen';
 import InspirationDetailScreen from '../screens/main/InspirationDetailScreen';
+import EducatorProfileScreen from '../screens/main/EducatorProfileScreen';
+
+/**
+ * Untyped on purpose: the navigators here are created without param lists, so a
+ * typed ref would only be as accurate as a param list nothing else uses.
+ */
+const navigationRef = createNavigationContainerRef<any>();
 
 const RootStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -56,13 +67,13 @@ function HomeNavigator() {
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="Home" component={HomeScreen} />
       <HomeStack.Screen name="ActivityDetail" component={ActivityDetailScreen} />
-      <HomeStack.Screen name="AddNote" component={AddNoteScreen} />
       <HomeStack.Screen name="Notifications" component={NotificationsScreen} />
       <HomeStack.Screen name="FacilitationSetup" component={FacilitationSetupScreen} />
       <HomeStack.Screen name="FacilitationActive" component={FacilitationActiveScreen} />
       <HomeStack.Screen name="FacilitationComplete" component={FacilitationCompleteScreen} />
       <HomeStack.Screen name="Suggest" component={SuggestScreen} />
       <HomeStack.Screen name="InspirationDetail" component={InspirationDetailScreen} />
+      <HomeStack.Screen name="EducatorProfile" component={EducatorProfileScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -185,6 +196,40 @@ export default function AppNavigator() {
     loadFacilitationCounts();
   }, []);
 
+  // Opening a notification should land on the thing it is about. Without this
+  // a tap just brought the app to the foreground on whatever screen it was
+  // last showing, which reads as the notification doing nothing.
+  useEffect(() => {
+    const openActivity = async (data: any) => {
+      const activityId = data?.activity_id;
+      if (!activityId || !navigationRef.isReady()) return;
+      try {
+        // ActivityDetail needs the whole activity, not just an id.
+        const activity = await fetchActivity(activityId);
+        navigationRef.navigate('Main', {
+          screen: 'HomeTab',
+          params: {
+            screen: 'ActivityDetail',
+            params: { activityId, activity },
+          },
+        });
+      } catch {
+        // Deleted activity, or offline. Leave the user where they are.
+      }
+    };
+
+    // Cold start: the app was launched by tapping a notification.
+    Notifications.getLastNotificationResponseAsync().then((response) => {
+      if (response) openActivity(response.notification.request.content.data);
+    });
+
+    // Warm: tapped while the app was already running.
+    const sub = Notifications.addNotificationResponseReceivedListener((response) => {
+      openActivity(response.notification.request.content.data);
+    });
+    return () => sub.remove();
+  }, []);
+
   useEffect(() => {
     // Firebase onAuthStateChanged handles both initial session restore
     // and subsequent sign-in / sign-out events in one listener.
@@ -193,10 +238,16 @@ export default function AppNavigator() {
         try {
           const profile = await fetchUserProfile(firebaseUser.uid);
           setUser(profile);
+          // After sign-in rather than on launch: a permission prompt makes more
+          // sense once there is an account for things to happen to. Awaited
+          // nowhere -- push setup must not delay showing the app.
+          registerForPushNotifications(firebaseUser.uid);
         } catch {
           setUser(null);
         }
       } else {
+        const previousId = useStore.getState().user?.id;
+        if (previousId) unregisterPushNotifications(previousId);
         setUser(null);
       }
     });
@@ -209,7 +260,7 @@ export default function AppNavigator() {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <RootStack.Navigator screenOptions={{ headerShown: false }}>
         {!isAuthenticated ? (
           <>

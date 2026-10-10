@@ -72,7 +72,10 @@ export async function generateActivity(
   videoUrl?: string,
 ): Promise<AIGeneratedActivity> {
   if (!aiConfig.apiKey) {
-    throw new Error('Claude API key not configured. Add EXPO_PUBLIC_CLAUDE_API_KEY to your .env file.');
+    console.warn('[AI] EXPO_PUBLIC_CLAUDE_API_KEY is not set.');
+    throw new Error(
+      "Activity suggestions aren't available right now. You can still write your activity out yourself.",
+    );
   }
 
   const photoContext = photoCount > 0
@@ -105,10 +108,15 @@ export async function generateActivity(
     if (response.status === 429) {
       throw new Error('Rate limited. Please wait a moment and try again.');
     }
-    if (response.status === 401) {
-      throw new Error('Invalid API key. Please check your EXPO_PUBLIC_CLAUDE_API_KEY.');
+    if (response.status === 401 || response.status === 403) {
+      console.warn('[AI] auth rejected:', response.status, errorBody.slice(0, 200));
+      throw new Error(
+        "Activity suggestions aren't available right now. You can still write your activity out yourself.",
+      );
     }
-    throw new Error(`AI generation failed (${response.status}): ${errorBody.slice(0, 200)}`);
+    // Status and body go to the console; the educator gets something actionable.
+    console.warn('[AI] generation failed:', response.status, errorBody.slice(0, 200));
+    throw new Error('Could not generate the activity. Please try again.');
   }
 
   const data = await response.json();

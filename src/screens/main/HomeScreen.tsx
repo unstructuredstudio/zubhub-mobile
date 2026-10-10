@@ -13,6 +13,7 @@ import { t } from '../../i18n';
 import { useStore } from '../../store/useStore';
 import { CATEGORIES, Category, Activity } from '../../types';
 import { translateText } from '../../services/translate';
+import { isSuggestAvailable } from '../../services/suggest';
 import { useActivitiesFeed } from '../../hooks/useActivities';
 import { fetchUserActivities } from '../../services/api';
 
@@ -76,7 +77,7 @@ const ActivityCard = React.memo(({
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.9}>
       {item.featured_image_url ? (
         <View style={styles.cardThumbnail}>
-          <Image source={{ uri: item.featured_image_url }} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
+          <Image source={{ uri: item.featured_image_url }} style={StyleSheet.absoluteFill} resizeMode="cover" />
           {item.is_featured && (
             <View style={styles.featuredBadge}>
               <Text style={styles.featuredText}>{t('featured', lang)}</Text>
@@ -235,13 +236,17 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
               resizeMode="contain"
             />
             <View style={styles.headerActions}>
-              <TouchableOpacity
-                style={styles.suggestBtn}
-                onPress={() => navigation.navigate('Suggest')}
-                accessibilityLabel="Get AI activity suggestions"
-              >
-                <Ionicons name="sparkles" size={20} color="#fff" />
-              </TouchableOpacity>
+              {/* Hidden unless the suggest server is a real public host —
+                  see isSuggestAvailable. */}
+              {isSuggestAvailable() && (
+                <TouchableOpacity
+                  style={styles.suggestBtn}
+                  onPress={() => navigation.navigate('Suggest')}
+                  accessibilityLabel="Get AI activity suggestions"
+                >
+                  <Ionicons name="sparkles" size={20} color="#fff" />
+                </TouchableOpacity>
+              )}
               <TouchableOpacity style={styles.bellBtn} onPress={() => { clearNotifBadge(); navigation.navigate('Notifications'); }}>
                 <Ionicons name="notifications-outline" size={24} color="#fff" />
                 {notifBadgeCount > 0 && (

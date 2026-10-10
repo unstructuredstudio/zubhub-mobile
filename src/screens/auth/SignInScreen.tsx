@@ -6,7 +6,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { signIn } from '../../services/api';
+import { signIn, authErrorMessage } from '../../services/api';
 import { useStore } from '../../store/useStore';
 
 export default function SignInScreen({ navigation }: { navigation: any }) {
@@ -29,7 +29,7 @@ export default function SignInScreen({ navigation }: { navigation: any }) {
       setUser(profile);
       // Navigation handled by AppNavigator auth state listener
     } catch (err: any) {
-      setError(err?.message ?? 'Sign in failed. Please try again.');
+      setError(authErrorMessage(err));
     } finally {
       setLoading(false);
     }

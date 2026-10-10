@@ -18,7 +18,10 @@ export interface UserProfile {
 export interface Material {
   name: string;
   price?: string;
-  amazon_url?: string;
+  /** Where an educator can realistically source this locally. */
+  buy_hint?: string;
+  /** Null is written deliberately to clear a previously set link. */
+  amazon_url?: string | null;
 }
 
 export interface ActivityStep {
@@ -30,13 +33,25 @@ export interface ActivityStep {
   images?: string[];
 }
 
+/**
+ * Attribution carried by an activity derived from another.
+ *
+ * The source's title and author are copied rather than looked up, so the credit
+ * still reads correctly if the original is later renamed or deleted.
+ */
+export interface RemixSource {
+  id: string;
+  title: string;
+  creator_name?: string;
+}
+
 export interface Activity {
   id: string;
   title: string;
   description: string;
   duration_minutes: number;
   min_age: number;
-  max_age?: number;
+  max_age?: number | null;
   group_size_min?: number;
   group_size_max?: number;
   materials: Material[];
@@ -60,11 +75,44 @@ export interface Activity {
   facilitation_count: number;
   rating: number;
   rating_count: number;
+  /** Set when this activity was derived from another. Absent on originals. */
+  remixed_from?: RemixSource;
+  /** How many activities have been derived from this one. */
+  remix_count?: number;
   tags: string[];
   category?: Category;
 }
 
 // ─── Community ───────────────────────────────────────────────────────────────
+
+/**
+ * A photo of what participants made.
+ *
+ * Owned by the activity and its uploader, not by a written experience: photos
+ * and reflections are captured separately, so deleting one must never take the
+ * other with it.
+ */
+export interface ActivityPhoto {
+  id: string;
+  activity_id: string;
+  user_id: string;
+  user_name: string;
+  /** The run it came out of, when it was added right after facilitating. */
+  session_id?: string;
+  url: string;
+  caption?: string;
+  created_at: string;
+}
+
+/** A photo attached to a community note. */
+export interface NotePhoto {
+  url: string;
+  /**
+   * Educator-supplied and always optional. Nothing in the capture flow asks for
+   * one, so most photos will never have it.
+   */
+  caption?: string;
+}
 
 export interface CommunityNote {
   id: string;
@@ -74,7 +122,18 @@ export interface CommunityNote {
   user_avatar?: string;
   note: string;
   rating?: number;
-  images?: string[];
+  /**
+   * Notes written before captions existed hold bare URL strings, so both shapes
+   * come back from Firestore. Read this through `notePhotos()` rather than
+   * touching it directly -- that also drops the dead `file://` URIs that an
+   * older upload path let through.
+   */
+  images?: Array<string | NotePhoto>;
+  /**
+   * The run this note reflects on. Absent on notes written from an activity
+   * page rather than at the end of a facilitation, and on notes predating runs.
+   */
+  session_id?: string;
   created_at: string;
 }
 
@@ -86,7 +145,9 @@ export type EngagementEventType =
   | 'share_whatsapp'
   | 'share_other'
   | 'create_activity'
-  | 'add_note';
+  | 'add_note'
+  | 'facilitate'
+  | 'remix';
 
 export interface EngagementEvent {
   activity_id?: string;
@@ -109,16 +170,23 @@ export interface FacilitationStep {
   tip?: string;
 }
 
+/**
+ * One run of an activity with a group.
+ *
+ * A run is recorded whether or not the educator writes anything about it
+ * afterwards, so this is the source of truth for "how often has this been
+ * facilitated" -- a community note is an optional reflection *on* a run, linked
+ * back by its `session_id`.
+ */
 export interface FacilitationSession {
   id: string;
   activity_id: string;
   user_id: string;
   student_count: number;
   started_at: string;
-  completed_at?: string;
-  notes: Record<number, string>; // step id -> note text
-  photos: string[];
-  community_note?: string;
+  completed_at: string;
+  /** Notes the educator typed against individual steps during the run. */
+  step_notes: Record<number, string>;
 }
 
 export interface ClassAdaptations {
@@ -166,15 +234,27 @@ export type MainTabParamList = {
 export type HomeStackParamList = {
   Home: undefined;
   ActivityDetail: { activityId: string; activity?: Activity };
-  AddNote: { activityId: string; activityTitle: string };
   FacilitationSetup: { activity: Activity };
   FacilitationActive: { activity: Activity; studentCount: number; adaptations: ClassAdaptations };
   FacilitationComplete: { activity: Activity; studentCount: number };
+  EducatorProfile: {
+    userId: string;
+    name?: string;
+    organization?: string;
+    bio?: string;
+  };
 };
 
 export type CreateStackParamList = {
   CreateActivity: undefined;
-  ReviewActivity: { draft?: DraftActivity; activity?: Activity; aiGenerated?: any };
+  ReviewActivity: {
+    draft?: DraftActivity;
+    /** Edit this activity in place. */
+    activity?: Activity;
+    /** Prefill from this activity and publish a new one crediting it. */
+    remixFrom?: Activity;
+    aiGenerated?: any;
+  };
 };
 
 // ─── API Responses ───────────────────────────────────────────────────────────

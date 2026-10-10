@@ -72,7 +72,10 @@ export default function CreateActivityScreen({ navigation }: { navigation: any }
         },
       });
     } catch (err: any) {
-      Alert.alert('Generation Failed', err?.message ?? 'Could not generate activity. Please try again.');
+      const friendly = typeof err?.message === 'string' && !/network request failed/i.test(err.message)
+        ? err.message
+        : 'Could not reach the server. Check your connection and try again.';
+      Alert.alert('Could not generate', friendly);
     } finally {
       setIsGenerating(false);
     }

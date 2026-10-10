@@ -34,6 +34,8 @@ interface FacilitationState {
   facilitationTime: number;
   facilitationTimerRunning: boolean;
   facilitationNotes: Record<number, string>;
+  /** ISO time the current run began, so a session records real elapsed time. */
+  facilitationStartedAt: string | null;
   facilitationCount: Record<string, number>; // activity_id -> count
   editingNotes: boolean;
   currentNoteEdit: string;
@@ -41,6 +43,7 @@ interface FacilitationState {
   setFacilitationTime: (time: number) => void;
   setFacilitationTimerRunning: (running: boolean) => void;
   setFacilitationNote: (stepId: number, note: string) => void;
+  startFacilitationRun: () => void;
   setEditingNotes: (editing: boolean) => void;
   setCurrentNoteEdit: (note: string) => void;
   incrementFacilitationCount: (activityId: string) => void;
@@ -88,6 +91,7 @@ export const useStore = create<StoreState>((set, get) => ({
   facilitationTime: 0,
   facilitationTimerRunning: false,
   facilitationNotes: {},
+  facilitationStartedAt: null,
   facilitationCount: {},
   editingNotes: false,
   currentNoteEdit: '',
@@ -99,6 +103,7 @@ export const useStore = create<StoreState>((set, get) => ({
     set((state) => ({
       facilitationNotes: { ...state.facilitationNotes, [stepId]: note },
     })),
+  startFacilitationRun: () => set({ facilitationStartedAt: new Date().toISOString() }),
   setEditingNotes: (editingNotes) => set({ editingNotes }),
   setCurrentNoteEdit: (currentNoteEdit) => set({ currentNoteEdit }),
 
@@ -129,6 +134,7 @@ export const useStore = create<StoreState>((set, get) => ({
       facilitationTime: 0,
       facilitationTimerRunning: false,
       facilitationNotes: {},
+      facilitationStartedAt: null,
       editingNotes: false,
       currentNoteEdit: '',
     }),

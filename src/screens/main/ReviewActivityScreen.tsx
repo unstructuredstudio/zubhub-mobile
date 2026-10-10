@@ -7,9 +7,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { DraftActivity, Activity, Category, CATEGORIES } from '../../types';
-import { createActivity, updateActivity } from '../../services/api';
-import { trackActivityCreation } from '../../services/analytics';
+import { DraftActivity, Activity, ActivityStep, Category, CATEGORIES, Material } from '../../types';
+import { createActivity, createRemix, updateActivity } from '../../services/api';
+import { trackActivityCreation, trackRemix } from '../../services/analytics';
+import { notifyActivityPublished, sendPushToUser } from '../../services/notifications';
 import { pickAndUploadImage } from '../../services/upload';
 
 // ─── Draft parsing helpers ─────────────────────────────────────────────────────
@@ -145,7 +146,7 @@ function generateSteps(description: string, duration: number, materialsRaw: stri
 
   if (hasSolar) {
     return [
-      { number: 1, title: 'Introduction to Solar Energy', description: 'Explain how solar panels convert sunlight into electricity. Show examples.', duration_minutes: 10, tip: 'Use simple diagrams — keep it visual!' },
+      { number: 1, title: 'Introduction to Solar Energy', description: 'Explain how solar panels convert sunlight into electricity. Show examples.', duration_minutes: 10, tip: 'Use simple diagrams. Keep it visual!' },
       { number: 2, title: 'Design Your Contraption', description: 'Participants sketch their solar-powered device and plan the components.', duration_minutes: 10, tip: 'Encourage creative, unusual ideas' },
       { number: 3, title: 'Build & Connect', description: 'Assemble the solar contraption using provided materials.', duration_minutes: buildTime, tip: 'Test in direct sunlight for best results' },
       { number: 4, title: 'Test & Showcase', description: 'Take contraptions outside to test. Present how each one works.', duration_minutes: 10, tip: undefined },
@@ -164,7 +165,7 @@ function generateSteps(description: string, duration: number, materialsRaw: stri
   // Generic but activity-aware steps
   return [
     { number: 1, title: 'Introduce the Activity', description: `Welcome participants and explain what they will ${description.toLowerCase().includes('make') || description.toLowerCase().includes('build') || description.toLowerCase().includes('create') ? 'create' : 'do'} today.`, duration_minutes: 10, tip: 'Start with a question to spark curiosity!' },
-    { number: 2, title: 'Demonstrate', description: 'Walk through the key steps or techniques participants will use.', duration_minutes: 10, tip: 'Show, don\'t just tell — do a live demo' },
+    { number: 2, title: 'Demonstrate', description: 'Walk through the key steps or techniques participants will use.', duration_minutes: 10, tip: 'Show, don\'t just tell. Do a live demo' },
     { number: 3, title: 'Create & Explore', description: 'Participants work on their own with your guidance and support.', duration_minutes: buildTime, tip: 'Walk around and encourage everyone' },
     { number: 4, title: 'Share & Reflect', description: 'Each person or group shares their creation. Discuss what worked and what they learned.', duration_minutes: 10, tip: undefined },
   ];
@@ -371,53 +372,107 @@ function Card({ label, children, onAdd }: { label: string; children: React.React
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
+/** Compare the parts of an activity a remix is expected to change. */
+function remixDiffersFromSource(
+  source: Activity,
+  next: {
+    title: string; description: string; durationVal: string;
+    minAge: string; maxAge: string;
+    materials: { name: string }[];
+    steps: { title?: string; description?: string }[];
+    tips: string[]; objectives: string[];
+  },
+): boolean {
+  const norm = (v: unknown) => String(v ?? '').trim().toLowerCase();
+  const list = (xs: string[]) => xs.map(norm).filter(Boolean).join('|');
+
+  if (norm(source.title) !== norm(next.title)) return true;
+  if (norm(source.description) !== norm(next.description)) return true;
+  if (String(source.duration_minutes) !== next.durationVal.trim()) return true;
+  if (String(source.min_age) !== next.minAge.trim()) return true;
+  if (String(source.max_age ?? '') !== next.maxAge.trim()) return true;
+  if (list(source.materials.map((m) => m.name)) !== list(next.materials.map((m) => m.name))) return true;
+  if (list(source.tips ?? []) !== list(next.tips)) return true;
+  if (list(source.objectives ?? []) !== list(next.objectives)) return true;
+
+  const sourceSteps = (source.steps ?? []).map(
+    (st: any) => `${norm(st.title)}~${norm(st.description)}`,
+  ).join('|');
+  const nextSteps = next.steps.map(
+    (st: any) => `${norm(st.title)}~${norm(st.description)}`,
+  ).join('|');
+  if (sourceSteps !== nextSteps) return true;
+
+  return false;
+}
+
+/**
+ * Inside the editor a material always carries its sourcing hint and a step
+ * always carries an images array, because every branch that seeds this state
+ * fills them in. The stored types leave both optional, so the editor states are
+ * narrowed here rather than guarded at every use site.
+ */
+type EditableMaterial = Omit<Material, 'buy_hint' | 'amazon_url'> & {
+  buy_hint: string;
+  amazon_url: string | null;
+};
+type EditableStep = Omit<ActivityStep, 'images'> & { images: string[] };
+
 export default function ReviewActivityScreen({ route, navigation }: { route: any; navigation: any }) {
   const existingActivity: Activity | undefined = route.params?.activity;
   const isEditMode = !!existingActivity;
+  const remixSource: Activity | undefined = route.params?.remixFrom;
+  const isRemixMode = !isEditMode && !!remixSource;
   const aiGenerated: any = route.params?.aiGenerated;
   const isAIMode = !!aiGenerated;
+
+  // Editing and remixing start from the same place — an activity that already
+  // exists — so every field below prefills from `source`. What separates them is
+  // only what happens on publish: an edit updates, a remix creates.
+  const source: Activity | undefined = existingActivity ?? remixSource;
+  const hasSource = !!source;
   const draft: DraftActivity = route.params?.draft ?? { description: '', timing: '', materials: '', tips: '' };
 
-  const duration = isAIMode ? aiGenerated.duration_minutes : isEditMode ? (existingActivity!.duration_minutes) : parseDuration(draft.timing);
-  const ageInfo = isAIMode ? { min: aiGenerated.min_age, max: aiGenerated.max_age } : isEditMode ? { min: existingActivity!.min_age, max: existingActivity!.max_age } : parseAge(draft.timing);
+  const duration = isAIMode ? aiGenerated.duration_minutes : hasSource ? source!.duration_minutes : parseDuration(draft.timing);
+  const ageInfo = isAIMode ? { min: aiGenerated.min_age, max: aiGenerated.max_age } : hasSource ? { min: source!.min_age, max: source!.max_age } : parseAge(draft.timing);
 
   const [title, setTitle] = useState(
-    isAIMode ? aiGenerated.title : isEditMode ? existingActivity!.title : generateSmartTitle(draft.description)
+    isAIMode ? aiGenerated.title : hasSource ? source!.title : generateSmartTitle(draft.description)
   );
   const [description, setDescription] = useState(
-    isAIMode ? aiGenerated.description : isEditMode ? existingActivity!.description : draft.description
+    isAIMode ? aiGenerated.description : hasSource ? source!.description : draft.description
   );
   const [durationVal, setDurationVal] = useState(String(duration));
   const [minAge, setMinAge] = useState(String(ageInfo.min));
   const [maxAge, setMaxAge] = useState(ageInfo.max ? String(ageInfo.max) : '');
-  const [materials, setMaterials] = useState(
+  const [materials, setMaterials] = useState<EditableMaterial[]>(
     isAIMode ? aiGenerated.materials.map((m: any) => ({ name: m.name, buy_hint: m.buy_hint ?? '', amazon_url: m.amazon_url ?? null }))
-    : isEditMode ? existingActivity!.materials.map(m => ({ name: m.name, buy_hint: (m as any).buy_hint ?? getBuyHint(m.name), amazon_url: (m as any).amazon_url ?? null }))
+    : hasSource ? source!.materials.map(m => ({ name: m.name, buy_hint: (m as any).buy_hint ?? getBuyHint(m.name), amazon_url: (m as any).amazon_url ?? null }))
     : parseMaterials(draft.materials)
   );
-  const [steps, setSteps] = useState(
+  const [steps, setSteps] = useState<EditableStep[]>(
     isAIMode ? aiGenerated.steps.map((s: any) => ({ ...s, images: s.images ?? [] }))
-    : isEditMode
-      ? existingActivity!.steps.map(s => ({ ...s, images: ((s as any).images ?? []) as string[] }))
+    : hasSource
+      ? source!.steps.map(s => ({ ...s, images: ((s as any).images ?? []) as string[] }))
       : parseSteps(draft.steps, draft.description, duration, draft.materials).map(s => ({ ...s, images: [] as string[] }))
   );
-  const [tips, setTips] = useState(
-    isAIMode ? (aiGenerated.tips ?? []) : isEditMode ? existingActivity!.tips : parseTips(draft.tips)
+  const [tips, setTips] = useState<string[]>(
+    isAIMode ? (aiGenerated.tips ?? []) : hasSource ? source!.tips : parseTips(draft.tips)
   );
-  const [objectives, setObjectives] = useState(
-    isAIMode ? aiGenerated.objectives : isEditMode ? existingActivity!.objectives : generateObjectives(draft.description)
+  const [objectives, setObjectives] = useState<string[]>(
+    isAIMode ? aiGenerated.objectives : hasSource ? source!.objectives : generateObjectives(draft.description)
   );
   const [videoUrl, setVideoUrl] = useState(
-    isAIMode ? (aiGenerated.video_url ?? '') : isEditMode ? (existingActivity!.video_url ?? '') : ''
+    isAIMode ? (aiGenerated.video_url ?? '') : hasSource ? (source!.video_url ?? '') : ''
   );
   const [featuredImage, setFeaturedImage] = useState<string | null>(
-    isAIMode ? (aiGenerated.featured_image_url ?? null) : isEditMode ? (existingActivity!.featured_image_url ?? null) : null
+    isAIMode ? (aiGenerated.featured_image_url ?? null) : hasSource ? (source!.featured_image_url ?? null) : null
   );
   const [uploadingFeatured, setUploadingFeatured] = useState(false);
   const [uploadingStepIdx, setUploadingStepIdx] = useState<number | null>(null);
   const [category, setCategory] = useState<Category>(
     isAIMode ? (aiGenerated.category ?? detectCategory(aiGenerated.description, []))
-    : isEditMode ? (existingActivity!.category ?? detectCategory(existingActivity!.description, existingActivity!.tags))
+    : hasSource ? (source!.category ?? detectCategory(source!.description, source!.tags))
     : detectCategory(draft.description, [])
   );
   const [loading, setLoading] = useState(false);
@@ -522,6 +577,17 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
       ...(videoUrl.trim() ? { video_url: videoUrl.trim() } : {}),
     };
 
+    if (isRemixMode && !remixDiffersFromSource(remixSource!, {
+      title, description, durationVal, minAge, maxAge,
+      materials, steps, tips, objectives,
+    })) {
+      Alert.alert(
+        'Nothing changed yet',
+        `This is still identical to "${remixSource!.title}". Change the steps, materials, timing or age range so other educators can see how your version differs.`,
+      );
+      return;
+    }
+
     setLoading(true);
     try {
       if (isEditMode) {
@@ -541,11 +607,26 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
           ]
         );
       } else {
-        const newActivity = await createActivity({ ...payload, language: 'en', is_featured: false, tags: [] });
+        const base = { ...payload, language: 'en', is_featured: false, tags: [] };
+        const newActivity = isRemixMode
+          ? await createRemix(remixSource!, base)
+          : await createActivity(base);
         await trackActivityCreation(newActivity.id);
+        if (isRemixMode) {
+          await trackRemix(newActivity.id, remixSource!.id);
+          sendPushToUser(remixSource!.created_by, newActivity.created_by, {
+            title: 'Your activity was remixed',
+            body: `Someone published their own version of "${remixSource!.title}".`,
+            data: { type: 'remix', activity_id: newActivity.id },
+          });
+        }
+        // Local confirmation to the author that their own activity is live.
+        notifyActivityPublished(newActivity.title);
         Alert.alert(
-          'Published! 🎉',
-          'Your activity is now live on ZubHub. Educators can discover and download it.',
+          isRemixMode ? 'Remix published! 🎉' : 'Published! 🎉',
+          isRemixMode
+            ? `Your version is live and credits "${remixSource!.title}" as the original.`
+            : 'Your activity is now live on ZubHub. Educators can discover and download it.',
           [
             {
               text: 'View Activity',
@@ -559,7 +640,8 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
         );
       }
     } catch (err: any) {
-      Alert.alert('Error', err?.message ?? 'Could not save. Please try again.');
+      console.warn('[Activity] save failed:', err?.code ?? err?.message ?? err);
+      Alert.alert('Could not save', 'Please try again in a moment.');
     } finally {
       setLoading(false);
     }
@@ -573,21 +655,43 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back}>
               <Ionicons name="arrow-back" size={24} color="#fff" />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>{isEditMode ? 'Edit Activity ✏️' : 'Review Your Activity ✅'}</Text>
-            <Text style={styles.headerSub}>{isEditMode ? 'Update your activity details' : 'AI-structured • Edit everything!'}</Text>
+            <Text style={styles.headerTitle}>
+              {isEditMode ? 'Edit Activity ✏️' : isRemixMode ? 'Remix Activity 🔀' : 'Review Your Activity ✅'}
+            </Text>
+            <Text style={styles.headerSub}>
+              {isEditMode
+                ? 'Update your activity details'
+                : isRemixMode
+                  ? 'Make it yours. The original stays untouched'
+                  : 'AI-structured • Edit everything!'}
+            </Text>
           </SafeAreaView>
         </LinearGradient>
 
         <View style={styles.body}>
           {/* Banner */}
-          {isEditMode ? (
+          {isRemixMode ? (
+            <View style={styles.editBanner}>
+              <View style={styles.editBannerIcon}>
+                <Ionicons name="git-branch-outline" size={20} color="#fff" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.editBannerTitle} numberOfLines={2}>
+                  Remixing "{remixSource!.title}"
+                </Text>
+                <Text style={styles.editBannerSub}>
+                  Publishes as a new activity that credits the original
+                </Text>
+              </View>
+            </View>
+          ) : isEditMode ? (
             <View style={styles.editBanner}>
               <View style={styles.editBannerIcon}>
                 <Ionicons name="create-outline" size={20} color="#fff" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.editBannerTitle}>Editing your activity</Text>
-                <Text style={styles.editBannerSub}>All fields are editable — save when you're done</Text>
+                <Text style={styles.editBannerSub}>All fields are editable. Save when you're done</Text>
               </View>
             </View>
           ) : (
@@ -616,7 +720,7 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
 
           {/* Category */}
           <Card label="CATEGORY">
-            <Text style={styles.categoryHint}>Auto-detected — tap to change</Text>
+            <Text style={styles.categoryHint}>Auto-detected. Tap to change</Text>
             <View style={styles.categoryChips}>
               {CATEGORIES.map((cat) => {
                 const active = category === cat.id;
@@ -715,7 +819,7 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
           </Card>
 
           {/* Steps */}
-          <Card label="STEPS (AI GENERATED — EDIT FREELY) 📋" onAdd={addStep}>
+          <Card label="STEPS (AI GENERATED, EDIT FREELY) 📋" onAdd={addStep}>
             {steps.map((s, i) => (
               <EditableStep
                 key={i}
@@ -786,12 +890,16 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
               {loading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.publishText}>{isEditMode ? 'Save Changes ✅' : 'Publish Activity 🎉'}</Text>
+                <Text style={styles.publishText}>
+                  {isEditMode ? 'Save Changes ✅' : isRemixMode ? 'Publish Remix 🔀' : 'Publish Activity 🎉'}
+                </Text>
               )}
             </LinearGradient>
           </TouchableOpacity>
 
-          {!isEditMode && (
+          {/* Drafts do not carry `remixFrom`, so offering one here would quietly
+              drop the attribution when the draft is restored and published. */}
+          {!isEditMode && !isRemixMode && (
             <TouchableOpacity style={styles.draftBtn} onPress={handleSaveDraft}>
               <Text style={styles.draftText}>Save as Draft</Text>
             </TouchableOpacity>
