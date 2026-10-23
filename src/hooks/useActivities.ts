@@ -7,6 +7,7 @@
 import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   fetchActivities,
+  fetchActivityTotal,
   fetchActivity,
   searchActivities,
   fetchCommunityNotes,
@@ -26,6 +27,8 @@ import { trackActivityCreation, trackNoteAdded } from '../services/analytics';
 
 export const queryKeys = {
   activities: (language?: string) => ['activities', language] as const,
+  // Under 'activities' so creating or deleting an activity refreshes it too.
+  activityTotal: () => ['activities', 'total'] as const,
   activity: (id: string) => ['activity', id] as const,
   search: (query: string, language?: string) => ['search', query, language] as const,
   notes: (activityId: string) => ['notes', activityId] as const,
@@ -45,6 +48,14 @@ export function useActivitiesFeed(language?: string) {
     getNextPageParam: (lastPage, allPages) =>
       lastPage.hasMore ? allPages.length : undefined,
     initialPageParam: 0,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useActivityTotal() {
+  return useQuery({
+    queryKey: queryKeys.activityTotal(),
+    queryFn: fetchActivityTotal,
     staleTime: 5 * 60 * 1000,
   });
 }

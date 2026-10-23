@@ -14,7 +14,7 @@ import { useStore } from '../../store/useStore';
 import { CATEGORIES, Category, Activity } from '../../types';
 import { translateText } from '../../services/translate';
 import { isSuggestAvailable } from '../../services/suggest';
-import { useActivitiesFeed } from '../../hooks/useActivities';
+import { useActivitiesFeed, useActivityTotal } from '../../hooks/useActivities';
 import { fetchUserActivities } from '../../services/api';
 
 const LANGUAGES = [
@@ -204,6 +204,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     return matchesSearch && matchesCategory;
   });
 
+  // The feed loads a page at a time, so with no filter applied the loaded list
+  // undercounts; show the server total instead.
+  const { data: activityTotal } = useActivityTotal();
+  const isFiltered = !!searchText.trim() || !!selectedCategory;
+  const shownCount = !isFiltered && activityTotal !== undefined ? activityTotal : filtered.length;
+
   const currentLangLabel =
     LANGUAGES.find((l) => l.code === selectedLang)?.label ?? 'English';
 
@@ -211,10 +217,10 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     () => (
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>{t('activities', selectedLang)}</Text>
-        <Text style={styles.sectionCount}>{filtered.length} {t('activities', selectedLang).toLowerCase()}</Text>
+        <Text style={styles.sectionCount}>{shownCount} {t('activities', selectedLang).toLowerCase()}</Text>
       </View>
     ),
-    [filtered.length, selectedLang]
+    [shownCount, selectedLang]
   );
 
   return (

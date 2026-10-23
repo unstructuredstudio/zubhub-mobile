@@ -1,6 +1,6 @@
 import {
   collection, doc, getDoc, getDocs, addDoc, updateDoc, setDoc, deleteDoc,
-  query, where, orderBy, limit, startAfter, serverTimestamp,
+  query, where, orderBy, limit, startAfter, serverTimestamp, getCountFromServer,
   increment, DocumentSnapshot, DocumentData, QueryDocumentSnapshot,
   Timestamp,
 } from 'firebase/firestore';
@@ -413,6 +413,32 @@ export async function fetchActivities(
     count: activities.length,
     hasMore: snapshot.docs.length === PAGE_SIZE,
   };
+}
+
+/**
+ * How many activities the feed holds in total, not just the pages loaded so far.
+ *
+ * Remixes are subtracted because the feed hides them. Counting those needs the
+ * composite index in firestore.indexes.json; until it is deployed that query
+ * fails, and the total falls back to all published activities.
+ */
+export async function fetchActivityTotal(): Promise<number> {
+  if (IS_DEMO) return MOCK_ACTIVITIES.filter(a => !a.remixed_from).length;
+
+  const published = where('is_published', '==', true);
+  const all = await getCountFromServer(query(collection(db, 'activities'), published));
+
+  let remixes = 0;
+  try {
+    const snap = await getCountFromServer(
+      query(collection(db, 'activities'), published, where('remixed_from.id', '>', '')),
+    );
+    remixes = snap.data().count;
+  } catch {
+    // Index not deployed yet.
+  }
+
+  return all.data().count - remixes;
 }
 
 export async function fetchActivity(id: string): Promise<Activity> {
