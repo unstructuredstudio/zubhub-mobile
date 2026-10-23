@@ -2,9 +2,10 @@ import React, { useState, useCallback, useEffect } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
   TextInput, Modal, ScrollView, StatusBar, Image,
-  ActivityIndicator,
+  ActivityIndicator, RefreshControl,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -177,6 +178,19 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
   const allActivities: Activity[] = feedData?.pages.flatMap((p) => p.data) ?? [];
 
+  // Pull-to-refresh, so newly published activities show without restarting the
+  // app. Invalidating 'activities' refreshes the feed and the total together.
+  const queryClient = useQueryClient();
+  const [refreshing, setRefreshing] = useState(false);
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await queryClient.invalidateQueries({ queryKey: ['activities'] });
+    } finally {
+      setRefreshing(false);
+    }
+  }, [queryClient]);
+
   // Translate card titles and descriptions when language changes
   useEffect(() => {
     if (selectedLanguage === 'en' || allActivities.length === 0) {
@@ -337,6 +351,9 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         contentContainerStyle={styles.list}
         onEndReached={() => { if (hasNextPage) fetchNextPage(); }}
         onEndReachedThreshold={0.5}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#E53E3E" colors={['#E53E3E']} />
+        }
         ListFooterComponent={
           isLoading || isFetchingNextPage ? (
             <View style={styles.loadingFooter}>

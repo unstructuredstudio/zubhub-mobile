@@ -11,9 +11,7 @@
       "bundleIdentifier": "org.zubhub.app",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "ZubHub needs access to your photos to upload activity images.",
-        "NSCameraUsageDescription": "ZubHub needs camera access to take photos for your activities.",
-        "NSMicrophoneUsageDescription": "ZubHub needs microphone access to record your voice when creating activities.",
-        "NSSpeechRecognitionUsageDescription": "ZubHub uses speech recognition to convert your voice into activity text."
+        "NSCameraUsageDescription": "ZubHub needs camera access to take photos for your activities."
       }
     },
     "android": {
@@ -26,10 +24,9 @@
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.INTERNET",
-        "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA"
       ],
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "favicon": "./assets/favicon.png"
