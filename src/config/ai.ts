@@ -7,7 +7,9 @@
  */
 export const aiConfig = {
   apiKey: process.env.EXPO_PUBLIC_CLAUDE_API_KEY ?? '',
-  model: 'claude-sonnet-4-6',
+  // Haiku: generation is short, plain writing to a fixed schema, and educators
+  // wait on it. Swap back to 'claude-sonnet-4-6' if quality falls short.
+  model: 'claude-haiku-5-5',
   maxTokens: 2500,
   baseUrl: 'https://api.anthropic.com/v1/messages',
   anthropicVersion: '2023-06-01',

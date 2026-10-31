@@ -314,6 +314,9 @@ function EditableStep({ step, onChange, onRemove, onAddImage, onRemoveImage, upl
   );
 }
 
+/** Activity cards show the cover wide, so crop it to match. */
+const COVER_ASPECT: [number, number] = [16, 9];
+
 // ─── Editable Material Item ────────────────────────────────────────────────────
 
 function EditableMaterial({ item, onChange, onRemove }: {
@@ -494,7 +497,7 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
   const handleAddFeaturedImage = async () => {
     setUploadingFeatured(true);
     try {
-      const url = await pickAndUploadImage();
+      const url = await pickAndUploadImage(COVER_ASPECT);
       if (url) setFeaturedImage(url);
     } finally {
       setUploadingFeatured(false);
@@ -851,6 +854,22 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
                 <TouchableOpacity style={styles.featuredRemove} onPress={() => setFeaturedImage(null)}>
                   <Ionicons name="close-circle" size={22} color="#E53E3E" />
                 </TouchableOpacity>
+                {/* The AI picks a cover from the uploaded photos without cropping,
+                    so offer a way to choose and frame one. */}
+                <TouchableOpacity
+                  style={styles.featuredChange}
+                  onPress={handleAddFeaturedImage}
+                  disabled={uploadingFeatured}
+                >
+                  {uploadingFeatured ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <>
+                      <Ionicons name="crop-outline" size={14} color="#fff" />
+                      <Text style={styles.featuredChangeText}>Change & crop</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
               </View>
             ) : (
               <TouchableOpacity
@@ -1054,7 +1073,14 @@ const styles = StyleSheet.create({
   featuredPickerText: { fontSize: 14, fontWeight: '600', fontFamily: 'Raleway_600SemiBold', color: '#553C9A' },
   featuredPickerSub: { fontSize: 11, color: '#9F7AEA' },
   featuredWrap: { position: 'relative', borderRadius: 12, overflow: 'hidden' },
-  featuredImage: { width: '100%', height: 160, borderRadius: 12 },
+  featuredImage: { width: '100%', aspectRatio: 16 / 9, borderRadius: 12 },
+  featuredChange: {
+    position: 'absolute', bottom: 8, right: 8,
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 14,
+    paddingHorizontal: 10, paddingVertical: 6,
+  },
+  featuredChangeText: { fontSize: 12, fontWeight: '600', color: '#fff' },
   featuredRemove: { position: 'absolute', top: 8, right: 8, backgroundColor: '#fff', borderRadius: 12 },
   mediaInput: {
     borderWidth: 2, borderColor: '#D6BCFA', borderRadius: 10,
