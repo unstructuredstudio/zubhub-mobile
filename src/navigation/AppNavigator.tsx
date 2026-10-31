@@ -1,5 +1,9 @@
 import React, { useEffect } from 'react';
-import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
+import {
+  CommonActions,
+  NavigationContainer,
+  createNavigationContainerRef,
+} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
@@ -166,6 +170,24 @@ function MainNavigator() {
       <Tab.Screen
         name="CreateTab"
         component={CreateNavigator}
+        // Edit and Remix open ReviewActivity inside this tab from elsewhere, and
+        // the tab keeps that screen. Without this, tapping + later landed back
+        // on a stale edit or remix instead of a new activity.
+        listeners={({ navigation, route }) => ({
+          tabPress: (e) => {
+            const stack = (route as any).state;
+            const openedFromElsewhere = stack?.routes?.some(
+              (r: any) => r.params?.remixFrom || r.params?.activity,
+            );
+            if (!openedFromElsewhere) return;
+            e.preventDefault();
+            navigation.dispatch({
+              ...CommonActions.reset({ index: 0, routes: [{ name: 'CreateActivity' }] }),
+              target: stack.key,
+            });
+            navigation.navigate('CreateTab');
+          },
+        })}
         options={{
           title: '',
           tabBarIcon: () => <TabIcon name="add" focused={false} isCreate />,
@@ -276,12 +298,13 @@ export default function AppNavigator() {
 }
 
 const styles = StyleSheet.create({
+  // No fixed height or bottom padding: the tab bar adds the system navigation
+  // bar's inset itself, and overriding it put Android's back/home buttons on
+  // top of the tabs.
   tabBar: {
     backgroundColor: Colors.surface,
     borderTopColor: Colors.border,
     borderTopWidth: 1,
-    height: 60,
-    paddingBottom: 8,
     paddingTop: 4,
   },
   tabLabel: {

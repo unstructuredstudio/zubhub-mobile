@@ -12,7 +12,6 @@ const { width } = Dimensions.get('window');
 const SLIDES = [
   {
     icon: 'create-outline' as const,
-    emoji: '✏️',
     color: '#E53E3E',
     bg: '#FED7D7',
     gradientColors: ['#FDE68A', '#FED7D7'] as [string, string],
@@ -21,16 +20,14 @@ const SLIDES = [
   },
   {
     icon: 'compass-outline' as const,
-    emoji: '🔍',
     color: '#3182CE',
     bg: '#BEE3F8',
     gradientColors: ['#BEE3F8', '#EBF8FF'] as [string, string],
     title: 'Discover Activities',
-    description: 'Browse hundreds of educator-tested activities. Filter by age, duration, and materials.',
+    description: 'Browse educator-tested activities. Filter by age, duration, and materials.',
   },
   {
     icon: 'people-circle-outline' as const,
-    emoji: '🤝',
     color: '#38A169',
     bg: '#C6F6D5',
     gradientColors: ['#C6F6D5', '#F0FFF4'] as [string, string],
@@ -79,7 +76,6 @@ export default function OnboardingScreen({ navigation }: { navigation: any }) {
             <View key={i} style={[styles.slide, { width }]}>
               <View style={[styles.iconBox, { backgroundColor: s.bg }]}>
                 <Ionicons name={s.icon} size={64} color={s.color} />
-                <Text style={styles.slideEmoji}>{s.emoji}</Text>
               </View>
               <Text style={styles.slideTitle}>{s.title}</Text>
               <Text style={styles.slideDesc}>{s.description}</Text>
@@ -153,12 +149,6 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     borderWidth: 3,
     borderColor: 'rgba(0,0,0,0.08)',
-  },
-  slideEmoji: {
-    fontSize: 24,
-    position: 'absolute',
-    bottom: 8,
-    right: 8,
   },
   slideTitle: {
     fontSize: 26,
