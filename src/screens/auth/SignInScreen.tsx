@@ -52,7 +52,7 @@ export default function SignInScreen({ navigation }: { navigation: any }) {
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back}>
               <Ionicons name="arrow-back" size={24} color="#fff" />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Welcome Back! 👋</Text>
+            <Text style={styles.headerTitle}>Welcome Back!</Text>
             <Text style={styles.headerSub}>Sign in to continue</Text>
           </SafeAreaView>
         </LinearGradient>
@@ -124,7 +124,7 @@ export default function SignInScreen({ navigation }: { navigation: any }) {
               {loading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.submitText}>Sign In ✨</Text>
+                <Text style={styles.submitText}>Sign In</Text>
               )}
             </LinearGradient>
           </TouchableOpacity>
