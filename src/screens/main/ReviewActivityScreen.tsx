@@ -468,9 +468,13 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
   const [videoUrl, setVideoUrl] = useState(
     isAIMode ? (aiGenerated.video_url ?? '') : hasSource ? (source!.video_url ?? '') : ''
   );
-  const [featuredImage, setFeaturedImage] = useState<string | null>(
+  // The cover the screen opened with (the AI's pick, or the activity's own when
+  // editing or remixing), kept so a change or removal can be undone.
+  const [originalFeaturedImage] = useState<string | null>(
     isAIMode ? (aiGenerated.featured_image_url ?? null) : hasSource ? (source!.featured_image_url ?? null) : null
   );
+  const [featuredImage, setFeaturedImage] = useState<string | null>(originalFeaturedImage);
+  const canRestoreCover = !!originalFeaturedImage && featuredImage !== originalFeaturedImage;
   const [uploadingFeatured, setUploadingFeatured] = useState(false);
   const [uploadingStepIdx, setUploadingStepIdx] = useState<number | null>(null);
   const [category, setCategory] = useState<Category>(
@@ -890,6 +894,16 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
               </TouchableOpacity>
             )}
 
+            {canRestoreCover && (
+              <TouchableOpacity
+                style={styles.restoreCover}
+                onPress={() => setFeaturedImage(originalFeaturedImage)}
+              >
+                <Ionicons name="arrow-undo-outline" size={14} color="#6B46C1" />
+                <Text style={styles.restoreCoverText}>Use original cover</Text>
+              </TouchableOpacity>
+            )}
+
             {/* Video URL */}
             <Text style={[styles.mediaLabel, { marginTop: 14 }]}>Demo Video</Text>
             <TextInput
@@ -1072,6 +1086,11 @@ const styles = StyleSheet.create({
   },
   featuredPickerText: { fontSize: 14, fontWeight: '600', fontFamily: 'Raleway_600SemiBold', color: '#553C9A' },
   featuredPickerSub: { fontSize: 11, color: '#9F7AEA' },
+  restoreCover: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    alignSelf: 'flex-start', marginTop: 8, paddingVertical: 4,
+  },
+  restoreCoverText: { fontSize: 13, fontWeight: '600', color: '#6B46C1' },
   featuredWrap: { position: 'relative', borderRadius: 12, overflow: 'hidden' },
   featuredImage: { width: '100%', aspectRatio: 16 / 9, borderRadius: 12 },
   featuredChange: {
