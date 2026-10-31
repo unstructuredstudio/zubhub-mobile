@@ -559,6 +559,17 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
     }
   };
 
+  /**
+   * Leave for the Home tab with this flow cleared out of the Create tab.
+   * Navigating away alone left the + tab parked on this screen, so tapping +
+   * later reopened an activity that was already published, or since deleted.
+   */
+  const leaveToHome = (homeParams?: object) => {
+    const tabs = navigation.getParent();
+    navigation.reset({ index: 0, routes: [{ name: 'CreateActivity' }] });
+    tabs?.navigate('HomeTab', homeParams);
+  };
+
   const handlePublish = async () => {
     if (!title.trim()) {
       Alert.alert('Missing title', 'Please add a title for your activity.');
@@ -605,7 +616,7 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
           [
             {
               text: 'View Activity',
-              onPress: () => navigation.navigate('HomeTab', {
+              onPress: () => leaveToHome({
                 screen: 'ActivityDetail',
                 params: { activityId: updated.id, activity: updated },
               }),
@@ -637,12 +648,12 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
           [
             {
               text: 'View Activity',
-              onPress: () => navigation.navigate('HomeTab', {
+              onPress: () => leaveToHome({
                 screen: 'ActivityDetail',
                 params: { activityId: newActivity.id, activity: newActivity },
               }),
             },
-            { text: 'Go Home', onPress: () => navigation.navigate('HomeTab') },
+            { text: 'Go Home', onPress: () => leaveToHome() },
           ]
         );
       }
