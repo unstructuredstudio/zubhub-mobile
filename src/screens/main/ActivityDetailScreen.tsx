@@ -669,17 +669,19 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
             <Section title="Materials">
               {displayActivity.materials.map((m: any, i: number) => (
                 <View key={i} style={styles.materialRow}>
+                  {/* Where-to-get sits under the name rather than beside it: a long
+                      hint in its own column squeezed the name to a few letters a line. */}
                   <View style={styles.materialLeft}>
                     <Text style={styles.materialName}>{m.name}</Text>
                     {m.price && <Text style={styles.materialPrice}>{m.price}</Text>}
-                  </View>
-                  <View style={styles.materialRight}>
                     {m.buy_hint && (
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                        <Ionicons name="location-outline" size={13} color="#718096" />
+                      <View style={styles.buyHintRow}>
+                        <Ionicons name="location-outline" size={11} color="#A0AEC0" />
                         <Text style={styles.buyHint}>{m.buy_hint}</Text>
                       </View>
                     )}
+                  </View>
+                  <View style={styles.materialRight}>
                     {m.amazon_url && (
                       <TouchableOpacity onPress={() => Linking.openURL(m.amazon_url)}>
                         <View style={styles.amazonBtn}>
@@ -1107,8 +1109,9 @@ const styles = StyleSheet.create({
   materialLeft: { flex: 1 },
   materialName: { fontSize: 14, color: '#1A202C', fontWeight: '500', fontFamily: 'Raleway_500Medium' },
   materialPrice: { fontSize: 12, color: '#718096', marginTop: 2 },
-  materialRight: { alignItems: 'flex-end', gap: 4 },
-  buyHint: { fontSize: 11, color: '#718096', fontStyle: 'italic', flexShrink: 1 },
+  materialRight: { alignItems: 'flex-end', gap: 4, marginLeft: 8 },
+  buyHintRow: { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 2 },
+  buyHint: { fontSize: 10, color: '#A0AEC0', fontStyle: 'italic', flexShrink: 1 },
   amazonBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   amazonText: { fontSize: 12, color: '#3182CE', fontWeight: '600', fontFamily: 'Raleway_600SemiBold' },
   stepCard: {

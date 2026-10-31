@@ -61,15 +61,26 @@ async function ensureCameraPermission(): Promise<boolean> {
 
 // ─── Picking ─────────────────────────────────────────────────────────────────
 
-/** Opens the photo library. Returns local URIs, or [] if cancelled/denied. */
-export async function pickImagesFromLibrary(limit = 1): Promise<string[]> {
+/**
+ * Opens the photo library. Returns local URIs, or [] if cancelled/denied.
+ *
+ * With `cropAspect`, a single pick goes through the system crop screen, where
+ * the educator can zoom and drag to choose the part of the photo that shows.
+ * Android honours the aspect ratio; iOS always crops square.
+ */
+export async function pickImagesFromLibrary(
+  limit = 1,
+  cropAspect?: [number, number],
+): Promise<string[]> {
   if (!(await ensureLibraryPermission())) return [];
 
+  const crop = !!cropAspect && limit === 1;
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ['images'],
     allowsMultipleSelection: limit > 1,
     selectionLimit: limit,
     quality: 1,
+    ...(crop ? { allowsEditing: true, aspect: cropAspect } : {}),
   });
 
   if (result.canceled || !result.assets) return [];
@@ -155,8 +166,10 @@ export async function uploadImages(
  * Used by activity authoring and profile avatars, where a consent gate does not
  * apply because the image is of materials or the educator themselves.
  */
-export async function pickAndUploadImage(): Promise<string | null> {
-  const [uri] = await pickImagesFromLibrary(1);
+export async function pickAndUploadImage(
+  cropAspect?: [number, number],
+): Promise<string | null> {
+  const [uri] = await pickImagesFromLibrary(1, cropAspect);
   if (!uri) return null;
 
   try {

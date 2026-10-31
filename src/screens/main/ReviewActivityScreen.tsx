@@ -314,6 +314,9 @@ function EditableStep({ step, onChange, onRemove, onAddImage, onRemoveImage, upl
   );
 }
 
+/** Activity cards show the cover wide, so crop it to match. */
+const COVER_ASPECT: [number, number] = [16, 9];
+
 // ─── Editable Material Item ────────────────────────────────────────────────────
 
 function EditableMaterial({ item, onChange, onRemove }: {
@@ -465,9 +468,13 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
   const [videoUrl, setVideoUrl] = useState(
     isAIMode ? (aiGenerated.video_url ?? '') : hasSource ? (source!.video_url ?? '') : ''
   );
-  const [featuredImage, setFeaturedImage] = useState<string | null>(
+  // The cover the screen opened with (the AI's pick, or the activity's own when
+  // editing or remixing), kept so a change or removal can be undone.
+  const [originalFeaturedImage] = useState<string | null>(
     isAIMode ? (aiGenerated.featured_image_url ?? null) : hasSource ? (source!.featured_image_url ?? null) : null
   );
+  const [featuredImage, setFeaturedImage] = useState<string | null>(originalFeaturedImage);
+  const canRestoreCover = !!originalFeaturedImage && featuredImage !== originalFeaturedImage;
   const [uploadingFeatured, setUploadingFeatured] = useState(false);
   const [uploadingStepIdx, setUploadingStepIdx] = useState<number | null>(null);
   const [category, setCategory] = useState<Category>(
@@ -494,7 +501,7 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
   const handleAddFeaturedImage = async () => {
     setUploadingFeatured(true);
     try {
-      const url = await pickAndUploadImage();
+      const url = await pickAndUploadImage(COVER_ASPECT);
       if (url) setFeaturedImage(url);
     } finally {
       setUploadingFeatured(false);
@@ -552,6 +559,17 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
     }
   };
 
+  /**
+   * Leave for the Home tab with this flow cleared out of the Create tab.
+   * Navigating away alone left the + tab parked on this screen, so tapping +
+   * later reopened an activity that was already published, or since deleted.
+   */
+  const leaveToHome = (homeParams?: object) => {
+    const tabs = navigation.getParent();
+    navigation.reset({ index: 0, routes: [{ name: 'CreateActivity' }] });
+    tabs?.navigate('HomeTab', homeParams);
+  };
+
   const handlePublish = async () => {
     if (!title.trim()) {
       Alert.alert('Missing title', 'Please add a title for your activity.');
@@ -598,7 +616,7 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
           [
             {
               text: 'View Activity',
-              onPress: () => navigation.navigate('HomeTab', {
+              onPress: () => leaveToHome({
                 screen: 'ActivityDetail',
                 params: { activityId: updated.id, activity: updated },
               }),
@@ -630,12 +648,12 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
           [
             {
               text: 'View Activity',
-              onPress: () => navigation.navigate('HomeTab', {
+              onPress: () => leaveToHome({
                 screen: 'ActivityDetail',
                 params: { activityId: newActivity.id, activity: newActivity },
               }),
             },
-            { text: 'Go Home', onPress: () => navigation.navigate('HomeTab') },
+            { text: 'Go Home', onPress: () => leaveToHome() },
           ]
         );
       }
@@ -851,6 +869,22 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
                 <TouchableOpacity style={styles.featuredRemove} onPress={() => setFeaturedImage(null)}>
                   <Ionicons name="close-circle" size={22} color="#E53E3E" />
                 </TouchableOpacity>
+                {/* The AI picks a cover from the uploaded photos without cropping,
+                    so offer a way to choose and frame one. */}
+                <TouchableOpacity
+                  style={styles.featuredChange}
+                  onPress={handleAddFeaturedImage}
+                  disabled={uploadingFeatured}
+                >
+                  {uploadingFeatured ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <>
+                      <Ionicons name="crop-outline" size={14} color="#fff" />
+                      <Text style={styles.featuredChangeText}>Change & crop</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
               </View>
             ) : (
               <TouchableOpacity
@@ -868,6 +902,16 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
                     <Text style={styles.featuredPickerSub}>Shown on activity cards</Text>
                   </>
                 )}
+              </TouchableOpacity>
+            )}
+
+            {canRestoreCover && (
+              <TouchableOpacity
+                style={styles.restoreCover}
+                onPress={() => setFeaturedImage(originalFeaturedImage)}
+              >
+                <Ionicons name="arrow-undo-outline" size={14} color="#6B46C1" />
+                <Text style={styles.restoreCoverText}>Use original cover</Text>
               </TouchableOpacity>
             )}
 
@@ -1053,8 +1097,20 @@ const styles = StyleSheet.create({
   },
   featuredPickerText: { fontSize: 14, fontWeight: '600', fontFamily: 'Raleway_600SemiBold', color: '#553C9A' },
   featuredPickerSub: { fontSize: 11, color: '#9F7AEA' },
+  restoreCover: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    alignSelf: 'flex-start', marginTop: 8, paddingVertical: 4,
+  },
+  restoreCoverText: { fontSize: 13, fontWeight: '600', color: '#6B46C1' },
   featuredWrap: { position: 'relative', borderRadius: 12, overflow: 'hidden' },
-  featuredImage: { width: '100%', height: 160, borderRadius: 12 },
+  featuredImage: { width: '100%', aspectRatio: 16 / 9, borderRadius: 12 },
+  featuredChange: {
+    position: 'absolute', bottom: 8, right: 8,
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 14,
+    paddingHorizontal: 10, paddingVertical: 6,
+  },
+  featuredChangeText: { fontSize: 12, fontWeight: '600', color: '#fff' },
   featuredRemove: { position: 'absolute', top: 8, right: 8, backgroundColor: '#fff', borderRadius: 12 },
   mediaInput: {
     borderWidth: 2, borderColor: '#D6BCFA', borderRadius: 10,
