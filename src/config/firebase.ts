@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore } from 'firebase/firestore';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,7 +16,18 @@ const firebaseConfig = {
 // Prevent re-initialising on hot reload
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
-export const db      = getFirestore(app);
+// Firestore's default streaming connection often fails to open in React Native
+// on Android ("Could not reach Cloud Firestore backend"), leaving writes queued
+// on the phone. Long polling is the transport Firebase recommends there. Hot
+// reload re-runs this file, and Firestore can only be initialised once.
+function createFirestore() {
+  try {
+    return initializeFirestore(app, { experimentalForceLongPolling: true });
+  } catch {
+    return getFirestore(app);
+  }
+}
+export const db      = createFirestore();
 export const auth    = initializeAuth(app, {
   persistence: getReactNativePersistence(AsyncStorage),
 });
