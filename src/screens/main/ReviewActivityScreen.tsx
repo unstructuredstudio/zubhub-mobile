@@ -9,7 +9,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { DraftActivity, Activity, ActivityStep, Category, CATEGORIES, Material } from '../../types';
 import { createActivity, createRemix, updateActivity } from '../../services/api';
 import { trackActivityCreation, trackRemix } from '../../services/analytics';
-import { notifyActivityPublished, sendPushToUser } from '../../services/notifications';
+import { nameForAuthors, notifyActivityPublished, sendPushToUser } from '../../services/notifications';
+import { useStore } from '../../store/useStore';
 import { pickAndUploadImage } from '../../services/upload';
 
 // ─── Draft parsing helpers ─────────────────────────────────────────────────────
@@ -626,7 +627,7 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
           await trackRemix(remixSource!.id, newActivity.id);
           sendPushToUser(remixSource!.created_by, newActivity.created_by, {
             title: 'Your activity was remixed',
-            body: `Someone published their own version of "${remixSource!.title}".`,
+            body: `${nameForAuthors(useStore.getState().user)} published their own version of "${remixSource!.title}".`,
             data: { type: 'remix', activity_id: newActivity.id },
           });
         }

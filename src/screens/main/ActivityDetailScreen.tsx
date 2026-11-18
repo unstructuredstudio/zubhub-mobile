@@ -14,7 +14,7 @@ import PhotoConsentModal from '../../components/PhotoConsentModal';
 import PhotoStrip from '../../components/PhotoStrip';
 import { shareActivity } from '../../services/share';
 import { trackActivityView, trackNoteAdded } from '../../services/analytics';
-import { sendPushToUser } from '../../services/notifications';
+import { nameForAuthors, sendPushToUser } from '../../services/notifications';
 import {
   deleteCommunityNote, addCommunityNote, deleteActivity, fetchActivity,
   addActivityPhotos, deleteActivityPhoto,
@@ -334,7 +334,7 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
     // is closed, so a sheet left open meant the author was never told.
     sendPushToUser(activity.created_by, user?.id, {
       title: 'Your activity was downloaded',
-      body: `Someone saved "${activity.title}" to use offline.`,
+      body: `${nameForAuthors(user)} saved "${activity.title}" to use offline.`,
       data: { type: 'download', activity_id: activity.id },
     });
     await openOrSharePDF(uri);
@@ -426,7 +426,7 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
       await trackNoteAdded(activity.id, noteRating > 0, 0);
       sendPushToUser(activity.created_by, user?.id, {
         title: 'New experience shared',
-        body: `Someone shared how "${activity.title}" went for them.`,
+        body: `${nameForAuthors(user)} shared how "${activity.title}" went for them.`,
         data: { type: 'add_note', activity_id: activity.id },
       });
       queryClient.invalidateQueries({ queryKey: ['notes', activity.id] });

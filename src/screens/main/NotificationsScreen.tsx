@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
-  ActivityIndicator, RefreshControl,
+  ActivityIndicator, RefreshControl, Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,8 +11,9 @@ import {
 } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { useStore } from '../../store/useStore';
-import { fetchUserActivities } from '../../services/api';
-import type { Activity, EngagementEventType } from '../../types';
+import { fetchUserActivities, fetchUserProfiles } from '../../services/api';
+import { ANONYMOUS_EDUCATOR, nameForAuthors } from '../../services/notifications';
+import type { Activity, EngagementEventType, UserProfile } from '../../types';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -21,9 +22,13 @@ interface NotificationItem {
   activityId: string;
   activityTitle: string;
   eventType: EngagementEventType;
-  count: number;
+  /** Who did it, most recent first: a user id, or null for a signed-out visitor. */
+  actorIds: (string | null)[];
   latestAt: Date;
 }
+
+/** Views are passive, so they are counted for the week rather than named. */
+const VIEW_WINDOW_DAYS = 7;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -57,6 +62,7 @@ function relativeTime(date: Date): string {
 export default function NotificationsScreen({ navigation }: { navigation: any }) {
   const { user } = useStore();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [profiles, setProfiles] = useState<Map<string, UserProfile>>(new Map());
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -98,30 +104,45 @@ export default function NotificationsScreen({ navigation }: { navigation: any })
         (e) => e.user_id !== user.id && e.event_type !== 'create_activity',
       );
 
-      // 4. Group by (activity_id, event_type)
-      const grouped = new Map<string, NotificationItem>();
-      events.forEach((e) => {
-        const key = `${e.activity_id}__${e.event_type}`;
-        const ts = e.created_at?.toDate?.() ?? new Date();
-        const activity = activityMap.get(e.activity_id);
+      // 4. Group by (activity_id, event_type), keeping who acted. Views older
+      //    than the window are dropped: they are only shown as this week's count.
+      const viewCutoff = Date.now() - VIEW_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+      const sortedEvents = events
+        .map((e) => ({ ...e, ts: (e.created_at?.toDate?.() as Date | undefined) ?? new Date() }))
+        .filter((e) => e.event_type !== 'view' || e.ts.getTime() >= viewCutoff)
+        .sort((a, b) => b.ts.getTime() - a.ts.getTime());
 
-        if (!grouped.has(key)) {
-          grouped.set(key, {
+      const grouped = new Map<string, NotificationItem>();
+      sortedEvents.forEach((e) => {
+        const key = `${e.activity_id}__${e.event_type}`;
+        let item = grouped.get(key);
+        if (!item) {
+          item = {
             id: key,
             activityId: e.activity_id,
-            activityTitle: activity?.title ?? 'Unknown Activity',
+            activityTitle: activityMap.get(e.activity_id)?.title ?? 'Unknown Activity',
             eventType: e.event_type,
-            count: 1,
-            latestAt: ts,
-          });
-        } else {
-          const existing = grouped.get(key)!;
-          existing.count += 1;
-          if (ts > existing.latestAt) existing.latestAt = ts;
+            actorIds: [],
+            latestAt: e.ts, // events are newest first
+          };
+          grouped.set(key, item);
         }
+        // Each signed-in person once; every signed-out visit counts on its own.
+        const actor: string | null = e.user_id ?? null;
+        if (actor === null || !item.actorIds.includes(actor)) item.actorIds.push(actor);
       });
 
-      // 5. Sort by most recent
+      // 5. Names and photos for the people involved, except viewers, who stay
+      //    anonymous.
+      const namedIds = new Set<string>();
+      grouped.forEach((item) => {
+        if (item.eventType === 'view') return;
+        item.actorIds.forEach((id) => { if (id) namedIds.add(id); });
+      });
+      const profileList = await fetchUserProfiles([...namedIds]).catch(() => []);
+      setProfiles(new Map(profileList.map((p) => [p.id, p])));
+
+      // 6. Sort by most recent
       const sorted = Array.from(grouped.values()).sort(
         (a, b) => b.latestAt.getTime() - a.latestAt.getTime(),
       );
@@ -144,14 +165,44 @@ export default function NotificationsScreen({ navigation }: { navigation: any })
 
   const renderItem = ({ item }: { item: NotificationItem }) => {
     const config = EVENT_CONFIG[item.eventType] ?? EVENT_CONFIG.view;
-    const countText = item.count > 1 ? `${item.count} people` : 'Someone';
-    const message = `${countText} ${config.label} "${item.activityTitle}"`;
+    const people = item.actorIds.length;
+    const title = `"${item.activityTitle}"`;
+
+    // Lead with the most recent person who shows their name; everyone else is
+    // counted. Views are never named.
+    const lead = item.eventType === 'view'
+      ? undefined
+      : item.actorIds
+          .map((id) => (id ? profiles.get(id) : undefined))
+          .find((p) => p && nameForAuthors(p) !== ANONYMOUS_EDUCATOR);
+
+    let message: string;
+    if (item.eventType === 'view') {
+      message = `${people} ${people === 1 ? 'educator' : 'educators'} viewed ${title} this week`;
+    } else if (lead) {
+      const others = people - 1;
+      const rest = others === 0 ? '' : ` and ${others} ${others === 1 ? 'other' : 'others'}`;
+      message = `${nameForAuthors(lead)}${rest} ${config.label} ${title}`;
+    } else {
+      message = people === 1
+        ? `${ANONYMOUS_EDUCATOR} ${config.label} ${title}`
+        : `${people} educators ${config.label} ${title}`;
+    }
 
     return (
       <View style={styles.notifRow}>
-        <View style={[styles.iconCircle, { backgroundColor: config.color + '18' }]}>
-          <Ionicons name={config.icon as any} size={20} color={config.color} />
-        </View>
+        {lead?.avatar_url ? (
+          <View>
+            <Image source={{ uri: lead.avatar_url }} style={styles.avatar} />
+            <View style={[styles.avatarBadge, { backgroundColor: config.color }]}>
+              <Ionicons name={config.icon as any} size={11} color="#fff" />
+            </View>
+          </View>
+        ) : (
+          <View style={[styles.iconCircle, { backgroundColor: config.color + '18' }]}>
+            <Ionicons name={config.icon as any} size={20} color={config.color} />
+          </View>
+        )}
         <View style={styles.notifContent}>
           <Text style={styles.notifMessage} numberOfLines={2}>{message}</Text>
           <Text style={styles.notifTime}>{relativeTime(item.latestAt)}</Text>
@@ -198,7 +249,7 @@ export default function NotificationsScreen({ navigation }: { navigation: any })
               <Ionicons name="notifications-off-outline" size={56} color="#CBD5E0" />
               <Text style={styles.emptyTitle}>No notifications yet</Text>
               <Text style={styles.emptySubtitle}>
-                When educators view, download, or share your activities, you'll see it here.
+                When educators remix, run, download or share your activities, you'll see who here.
               </Text>
             </View>
           )
@@ -232,6 +283,13 @@ const styles = StyleSheet.create({
   },
   iconCircle: {
     width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center',
+  },
+  avatar: { width: 42, height: 42, borderRadius: 21, backgroundColor: '#EDF2F7' },
+  avatarBadge: {
+    position: 'absolute', right: -2, bottom: -2,
+    width: 20, height: 20, borderRadius: 10,
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 2, borderColor: '#fff',
   },
   notifContent: { flex: 1 },
   notifMessage: { fontSize: 14, fontWeight: '600', color: '#1A202C', lineHeight: 20 },

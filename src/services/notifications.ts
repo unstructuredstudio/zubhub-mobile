@@ -20,6 +20,7 @@ import {
   doc, getDoc, setDoc, updateDoc, deleteField, FieldPath, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import type { UserProfile } from '../types';
 
 const EXPO_PUSH_ENDPOINT = 'https://exp.host/--/api/v2/push/send';
 
@@ -141,6 +142,22 @@ export async function unregisterPushNotifications(userId: string): Promise<void>
   } catch {
     // Best effort.
   }
+}
+
+/** How a person is named to the authors whose activities they use. */
+export const ANONYMOUS_EDUCATOR = 'An educator';
+
+/**
+ * The name to show an author for the person who acted on their activity: the
+ * person's full name, unless they turned off "Show my name to authors" or
+ * have no name on their profile.
+ */
+export function nameForAuthors(
+  person: Pick<UserProfile, 'full_name' | 'show_name_to_authors'> | null | undefined,
+): string {
+  const name = person?.full_name?.trim();
+  if (!name || person?.show_name_to_authors === false) return ANONYMOUS_EDUCATOR;
+  return name;
 }
 
 /** Every device token recorded for a user, including a pre-devices `token`. */

@@ -15,7 +15,7 @@ import {
   MIN_EXPERIENCE_CHARS,
 } from '../../services/api';
 import { trackNoteAdded, trackFacilitation } from '../../services/analytics';
-import { sendPushToUser } from '../../services/notifications';
+import { nameForAuthors, sendPushToUser } from '../../services/notifications';
 
 /** 1st, 2nd, 3rd, 4th… */
 function ordinal(n: number): string {
@@ -81,7 +81,7 @@ export default function FacilitationCompleteScreen({ route, navigation }: { rout
           // are the one running it.
           sendPushToUser(activity.created_by, user?.id, {
             title: 'Your activity was facilitated',
-            body: `Someone just ran "${activity.title}" with ${studentCount} participants.`,
+            body: `${nameForAuthors(user)} just ran "${activity.title}" with ${studentCount} participants.`,
             data: { type: 'facilitate', activity_id: activity.id },
           });
           return session.id;
