@@ -11,6 +11,11 @@ export interface UserProfile {
   activities_shared: number;
   activities_used: number;
   created_at: string;
+  /**
+   * Whether authors see this person's name when they remix, run, download or
+   * share their activities. Unset means yes; false shows "An educator".
+   */
+  show_name_to_authors?: boolean;
 }
 
 // ─── Activity Content ────────────────────────────────────────────────────────

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, TextInput, TouchableOpacity,
   ScrollView, Image, ActivityIndicator, Alert,
-  KeyboardAvoidingView, Platform,
+  KeyboardAvoidingView, Platform, Switch,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,6 +23,7 @@ export default function EditProfileScreen({ navigation }: { navigation: any }) {
   const [organization, setOrganization] = useState(user?.organization ?? '');
   const [bio, setBio] = useState(user?.bio ?? '');
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url ?? '');
+  const [showName, setShowName] = useState(user?.show_name_to_authors !== false);
   const [saving, setSaving] = useState(false);
   const [pickingImage, setPickingImage] = useState(false);
 
@@ -95,10 +96,11 @@ export default function EditProfileScreen({ navigation }: { navigation: any }) {
 
     setSaving(true);
     try {
-      const updates: Record<string, string> = {
+      const updates: Record<string, string | boolean> = {
         full_name: fullName.trim(),
         organization: organization.trim(),
         bio: bio.trim(),
+        show_name_to_authors: showName,
       };
 
       if (avatarUrl && avatarUrl !== user?.avatar_url) {
@@ -228,6 +230,26 @@ export default function EditProfileScreen({ navigation }: { navigation: any }) {
             </View>
           </View>
 
+          {/* Privacy */}
+          <Text style={styles.sectionTitle}>Privacy</Text>
+          <View style={styles.card}>
+            <View style={[styles.fieldGroup, styles.switchRow]}>
+              <View style={styles.switchText}>
+                <Text style={styles.switchTitle}>Show my name to authors</Text>
+                <Text style={styles.switchHint}>
+                  When you remix, run, download or share someone's activity, they see
+                  your name and photo. Turn off to appear as "An educator".
+                </Text>
+              </View>
+              <Switch
+                value={showName}
+                onValueChange={setShowName}
+                trackColor={{ false: '#CBD5E0', true: '#F56565' }}
+                thumbColor="#fff"
+              />
+            </View>
+          </View>
+
           {/* Account Section */}
           <Text style={styles.sectionTitle}>Account</Text>
 
@@ -350,6 +372,10 @@ const styles = StyleSheet.create({
   bioInput: { minHeight: 100, maxHeight: 160 },
   charCount: { fontSize: 11, color: '#A0AEC0', textAlign: 'right', marginTop: 6 },
   divider: { height: 1, backgroundColor: '#F0F4F8', marginLeft: 16 },
+  switchRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  switchText: { flex: 1 },
+  switchTitle: { fontSize: 15, fontWeight: '700', fontFamily: 'Raleway_700Bold', color: '#1A202C' },
+  switchHint: { fontSize: 12, color: '#718096', marginTop: 4, lineHeight: 17 },
   sectionTitle: {
     fontSize: 16, fontWeight: '800', fontFamily: 'Raleway_800ExtraBold',
     color: '#1A202C', marginTop: 24, marginBottom: 10,
