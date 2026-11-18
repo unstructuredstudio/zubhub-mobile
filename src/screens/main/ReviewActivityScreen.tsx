@@ -6,7 +6,6 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DraftActivity, Activity, ActivityStep, Category, CATEGORIES, Material } from '../../types';
 import { createActivity, createRemix, updateActivity } from '../../services/api';
 import { trackActivityCreation, trackRemix } from '../../services/analytics';
@@ -537,28 +536,6 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
   const updateObjective = (i: number, val: string) =>
     setObjectives(prev => prev.map((o, idx) => idx === i ? val : o));
 
-  const handleSaveDraft = async () => {
-    try {
-      const draftData = {
-        title,
-        description,
-        durationVal,
-        minAge,
-        maxAge,
-        materials,
-        steps,
-        tips,
-        objectives,
-        videoUrl,
-        savedAt: new Date().toISOString(),
-      };
-      await AsyncStorage.setItem('activity_draft', JSON.stringify(draftData));
-      Alert.alert('Draft saved', 'You can continue editing this activity later.');
-    } catch {
-      Alert.alert('Error', 'Could not save draft. Please try again.');
-    }
-  };
-
   /**
    * Leave for the Home tab with this flow cleared out of the Create tab.
    * Navigating away alone left the + tab parked on this screen, so tapping +
@@ -569,6 +546,21 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
     navigation.reset({ index: 0, routes: [{ name: 'CreateActivity' }] });
     tabs?.navigate('HomeTab', homeParams);
   };
+
+  // An edit or remix is opened into the Create tab from another tab. Once the
+  // educator leaves it, clear it out so + starts a new activity rather than
+  // reopening this one. Nothing is pushed on top of this screen, so blur only
+  // fires when the tab is left. The reset has to come from this stack: the tab
+  // navigator only sees the stack's state after a navigation inside it, so a
+  // stack that opened directly on this screen looks empty from the tab bar.
+  React.useEffect(() => {
+    if (!hasSource) return;
+    return navigation.addListener('blur', () => {
+      const stack = navigation.getState();
+      if (!stack?.routes.some((r: any) => r.key === route.key)) return;
+      navigation.reset({ index: 0, routes: [{ name: 'CreateActivity' }] });
+    });
+  }, [hasSource, navigation, route.key]);
 
   const handlePublish = async () => {
     if (!title.trim()) {
@@ -631,7 +623,7 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
           : await createActivity(base);
         await trackActivityCreation(newActivity.id);
         if (isRemixMode) {
-          await trackRemix(newActivity.id, remixSource!.id);
+          await trackRemix(remixSource!.id, newActivity.id);
           sendPushToUser(remixSource!.created_by, newActivity.created_by, {
             title: 'Your activity was remixed',
             body: `Someone published their own version of "${remixSource!.title}".`,
@@ -940,14 +932,6 @@ export default function ReviewActivityScreen({ route, navigation }: { route: any
               )}
             </LinearGradient>
           </TouchableOpacity>
-
-          {/* Drafts do not carry `remixFrom`, so offering one here would quietly
-              drop the attribution when the draft is restored and published. */}
-          {!isEditMode && !isRemixMode && (
-            <TouchableOpacity style={styles.draftBtn} onPress={handleSaveDraft}>
-              <Text style={styles.draftText}>Save as Draft</Text>
-            </TouchableOpacity>
-          )}
         </View>
       </ScrollView>
     </View>
@@ -1127,9 +1111,4 @@ const styles = StyleSheet.create({
   categoryChipText: { fontSize: 12, fontWeight: '600', fontFamily: 'Raleway_600SemiBold', color: '#4A5568' },
   publishBtn: { borderRadius: 14, paddingVertical: 16, alignItems: 'center' },
   publishText: { color: '#fff', fontSize: 17, fontWeight: '700', fontFamily: 'Raleway_700Bold' },
-  draftBtn: {
-    borderWidth: 2, borderColor: '#E2E8F0', borderRadius: 14,
-    paddingVertical: 14, alignItems: 'center',
-  },
-  draftText: { fontSize: 15, color: '#4A5568', fontWeight: '600', fontFamily: 'Raleway_600SemiBold' },
 });

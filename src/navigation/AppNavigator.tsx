@@ -1,9 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  CommonActions,
-  NavigationContainer,
-  createNavigationContainerRef,
-} from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
@@ -170,24 +166,9 @@ function MainNavigator() {
       <Tab.Screen
         name="CreateTab"
         component={CreateNavigator}
-        // Edit and Remix open ReviewActivity inside this tab from elsewhere, and
-        // the tab keeps that screen. Without this, tapping + later landed back
-        // on a stale edit or remix instead of a new activity.
-        listeners={({ navigation, route }) => ({
-          tabPress: (e) => {
-            const stack = (route as any).state;
-            const openedFromElsewhere = stack?.routes?.some(
-              (r: any) => r.params?.remixFrom || r.params?.activity,
-            );
-            if (!openedFromElsewhere) return;
-            e.preventDefault();
-            navigation.dispatch({
-              ...CommonActions.reset({ index: 0, routes: [{ name: 'CreateActivity' }] }),
-              target: stack.key,
-            });
-            navigation.navigate('CreateTab');
-          },
-        })}
+        // Edit and Remix open ReviewActivity inside this tab from elsewhere;
+        // ReviewActivityScreen clears itself out when the tab is left, so +
+        // starts a new activity instead of reopening a stale edit or remix.
         options={{
           title: '',
           tabBarIcon: () => <TabIcon name="add" focused={false} isCreate />,

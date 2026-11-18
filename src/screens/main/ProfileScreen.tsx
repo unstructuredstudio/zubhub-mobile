@@ -3,14 +3,19 @@ import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   Modal, Alert, Image, ActivityIndicator,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { useQuery } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useStore } from '../../store/useStore';
 import { t } from '../../i18n';
 import { translateText } from '../../services/translate';
-import { fetchUserActivities, fetchActivity, signOut } from '../../services/api';
+import { fetchUserActivities, fetchActivity, signOut, MY_ACTIVITIES_KEY } from '../../services/api';
 import type { Activity } from '../../types';
+
+// Stable empty list, so effects keyed on the list don't rerun every render.
+const NO_ACTIVITIES: Activity[] = [];
 
 const LANGUAGES = [
   { code: 'en', label: 'English' },
@@ -29,15 +34,23 @@ const LANGUAGES = [
 export default function ProfileScreen({ navigation }: { navigation: any }) {
   const { user, signOut: storeSignOut, selectedLanguage, setLanguage } = useStore();
   const [showLangModal, setShowLangModal] = useState(false);
-  const [myActivities, setMyActivities] = useState<Activity[]>([]);
   const [translatedTitles, setTranslatedTitles] = useState<Record<string, string>>({});
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  // Fetch this user's activities on mount
-  useEffect(() => {
-    if (!user?.id) return;
-    fetchUserActivities(user.id).then(setMyActivities).catch(() => {});
-  }, [user?.id]);
+  // This user's activities live in the shared query cache under
+  // MY_ACTIVITIES_KEY, so a delete elsewhere can drop the activity from this
+  // list straight away. Profile also refetches whenever it comes into view:
+  // the screen stays mounted, and new activities would otherwise be missing.
+  const { data: myActivities = NO_ACTIVITIES, refetch } = useQuery({
+    queryKey: [...MY_ACTIVITIES_KEY, user?.id],
+    queryFn: () => fetchUserActivities(user!.id),
+    enabled: !!user?.id,
+  });
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user?.id) refetch();
+    }, [user?.id, refetch]),
+  );
 
   // Translate activity titles when language changes
   useEffect(() => {

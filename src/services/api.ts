@@ -977,6 +977,12 @@ export async function fetchUserProfiles(userIds: string[]): Promise<UserProfile[
     .map((r) => r.value);
 }
 
+/**
+ * Query key for one user's own activities, followed by their id. It sits under
+ * 'activities', so invalidating that key refreshes this list too.
+ */
+export const MY_ACTIVITIES_KEY = ['activities', 'mine'] as const;
+
 export async function fetchUserActivities(userId: string): Promise<Activity[]> {
   if (IS_DEMO) return MOCK_ACTIVITIES.filter(a => a.created_by === 'demo-user-001');
 

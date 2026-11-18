@@ -89,8 +89,13 @@ export async function trackFacilitation(
   });
 }
 
-export async function trackRemix(activityId: string, sourceId: string): Promise<void> {
-  await trackEvent({ activityId, eventType: 'remix', metadata: { source_id: sourceId } });
+/**
+ * Record a remix against the activity that was remixed, so it reaches that
+ * author's notifications. Recording it against the new remix put it under the
+ * remixer's own activity, where nobody saw it.
+ */
+export async function trackRemix(sourceId: string, remixId: string): Promise<void> {
+  await trackEvent({ activityId: sourceId, eventType: 'remix', metadata: { remix_id: remixId } });
 }
 
 // ─── Engagement Summary ───────────────────────────────────────────────────────

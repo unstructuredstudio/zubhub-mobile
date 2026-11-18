@@ -18,7 +18,7 @@ import { sendPushToUser } from '../../services/notifications';
 import {
   deleteCommunityNote, addCommunityNote, deleteActivity, fetchActivity,
   addActivityPhotos, deleteActivityPhoto,
-  MIN_EXPERIENCE_CHARS,
+  MIN_EXPERIENCE_CHARS, MY_ACTIVITIES_KEY,
 } from '../../services/api';
 import { translateActivity, translateText } from '../../services/translate';
 import { useStore } from '../../store/useStore';
@@ -27,7 +27,7 @@ import {
   useCommunityNotes, useFacilitationSessions, useUserProfiles, useActivityPhotos,
 } from '../../hooks/useActivities';
 import {
-  ActivityPhoto, CommunityNote, FacilitationSession, NotePhoto, UserProfile,
+  Activity, ActivityPhoto, CommunityNote, FacilitationSession, NotePhoto, UserProfile,
 } from '../../types';
 import { Colors } from '../../theme';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -329,12 +329,15 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
     setDownloading(true);
     const uri = await downloadActivityPDF(activity, (p) => setDownloadPercent(p.percent));
     setDownloading(false);
-    if (uri) await openOrSharePDF(uri);
+    if (!uri) return;
+    // Notify before opening: on iOS the PDF sheet holds this function until it
+    // is closed, so a sheet left open meant the author was never told.
     sendPushToUser(activity.created_by, user?.id, {
       title: 'Your activity was downloaded',
       body: `Someone saved "${activity.title}" to use offline.`,
       data: { type: 'download', activity_id: activity.id },
     });
+    await openOrSharePDF(uri);
   };
 
   const handleShare = () => shareActivity(activity, user?.id);
@@ -361,6 +364,12 @@ export default function ActivityDetailScreen({ route, navigation }: { route: any
           onPress: async () => {
             try {
               await deleteActivity(activity.id);
+              // Drop it from Profile's list now, rather than leaving it listed
+              // until the refetch below comes back.
+              queryClient.setQueriesData<Activity[]>(
+                { queryKey: MY_ACTIVITIES_KEY },
+                (list) => list?.filter((a) => a.id !== activity.id),
+              );
               queryClient.invalidateQueries({ queryKey: ['activities'] });
               navigation.goBack();
             } catch {
